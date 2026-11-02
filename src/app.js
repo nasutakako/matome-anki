@@ -1,0 +1,1385 @@
+/**
+ * 画面（ビュー）とナビゲーション
+ * 教材は window.KAIGO_DATA、進捗は window.KaigoStore からのみ読み書きする。
+ */
+(function () {
+  "use strict";
+
+  if (window.finalizeData) window.finalizeData();
+  var DATA = window.KAIGO_DATA;
+  var Store = window.KaigoStore;
+  var $app = document.getElementById("app");
+  var $sheet = document.getElementById("sheet-root");
+
+  /* ---------------- 学習メニュー（将来の機能はここに追加） ---------------- */
+  var MENU = [
+    { id: "study", title: "基礎学習", sub: "テーマごとに重要用語を一覧で覚える", icon: "grid", ready: true },
+    { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
+    { id: "past-exams", title: "過去問題", sub: "国家試験と同じ5択形式で、科目ごとに解く", icon: "doc", ready: true, action: "open-exams" },
+    { id: "review", title: "過去に間違えた問題", sub: "間違えた問題を科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
+    { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis" },
+  ];
+  var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題" };
+
+  /* ---------------- アイコン ---------------- */
+  var ICONS = {
+    back: '<path d="M15 18l-6-6 6-6"/>',
+    chev: '<path d="M9 6l6 6-6 6"/>',
+    close: '<path d="M6 6l12 12M18 6L6 18"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    quiz: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 014.8.9c0 1.7-2.4 2.2-2.4 3.6M12 17h.01"/>',
+    layers: '<path d="M12 4l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 16l8 4 8-4"/>',
+    doc: '<path d="M7 3.5h7l4 4V20a.5.5 0 01-.5.5h-10A.5.5 0 017 20V3.5z"/><path d="M14 3.5V8h4M9.5 12.5h5M9.5 16h5"/>',
+    flag: '<path d="M6 21V4M6 4h11l-2 4 2 4H6"/>',
+    book: '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5v-13zM20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5v-13z"/>',
+    info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
+    chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+  };
+  function icon(name, cls) {
+    return (
+      '<svg class="' + (cls || "") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + "</svg>"
+    );
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  /* ---------------- 教材インデックス ---------------- */
+  var fieldById = {};
+  var themeById = {};
+  var fieldOfTheme = {};
+  var termById = {};
+
+  DATA.fields.forEach(function (f) {
+    fieldById[f.id] = f;
+    f.themes.forEach(function (t) {
+      themeById[t.id] = t;
+      fieldOfTheme[t.id] = f;
+      t.pages.forEach(function (p, pi) {
+        p.terms.forEach(function (term) {
+          termById[term.id] = { term: term, theme: t, page: p, pageIndex: pi };
+        });
+      });
+    });
+  });
+
+  /* 過去問題の索引（関連用語は同じ科目のカードから名前で探す） */
+  var examById = {};
+  var examsByField = {};
+  var EXAMS = window.KAIGO_EXAMS || {};
+  Object.keys(EXAMS).forEach(function (fid) {
+    var field = fieldById[fid];
+    if (!field) return;
+    examsByField[fid] = EXAMS[fid].map(function (q, i) {
+      var id = "exam." + fid + "." + (i + 1);
+      q.id = id;
+      q.field = fid;
+      q.termIds = (q.terms || []).map(function (name) {
+        var hit = null;
+        field.themes.forEach(function (t) {
+          t.pages.forEach(function (p) { p.terms.forEach(function (x) { if (!hit && x.term === name) hit = x.id; }); });
+        });
+        return hit;
+      }).filter(Boolean);
+      examById[id] = q;
+      return id;
+    });
+  });
+
+  function isReady(theme) { return theme.pages.length > 0; }
+  function pageTermIds(page) { return page.terms.map(function (t) { return t.id; }); }
+  function themeTermIds(theme) {
+    return theme.pages.reduce(function (acc, p) { return acc.concat(pageTermIds(p)); }, []);
+  }
+  function fieldTermIds(field) {
+    return field.themes.reduce(function (acc, t) { return acc.concat(themeTermIds(t)); }, []);
+  }
+  function allTermIds() {
+    return DATA.fields.reduce(function (acc, f) { return acc.concat(fieldTermIds(f)); }, []);
+  }
+  function readyThemes() {
+    var list = [];
+    DATA.fields.forEach(function (f) { f.themes.forEach(function (t) { if (isReady(t)) list.push(t); }); });
+    return list;
+  }
+  /** 未確認の用語が残っている最初のページ（全て確認済みなら 0） */
+  function firstOpenPage(theme) {
+    for (var i = 0; i < theme.pages.length; i++) {
+      var ids = pageTermIds(theme.pages[i]);
+      if (Store.countChecked(ids) < ids.length) return i;
+    }
+    return 0;
+  }
+
+  /* ---------------- 状態とナビゲーション ---------------- */
+  var view = { name: "home" };
+  var openTermId = null;
+  var lastTrigger = null;
+  var justChecked = null;
+
+  function go(next) {
+    view = next;
+    closeSheet(true);
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function startTheme(themeId, pageIndex) {
+    var theme = themeById[themeId];
+    var pi = typeof pageIndex === "number" ? pageIndex : firstOpenPage(theme);
+    Store.setLast(themeId, pi);
+    go({ name: "study", themeId: themeId, pageIndex: pi });
+  }
+
+  /* ---------------- 共通パーツ ---------------- */
+  function topbar(eyebrow, title, backAction) {
+    return (
+      '<header class="topbar">' +
+      (backAction
+        ? '<button class="icon-btn" data-action="' + backAction + '" aria-label="戻る">' + icon("back") + "</button>"
+        : '<span style="width:8px"></span>') +
+      '<div class="topbar__titles">' +
+      (eyebrow ? '<p class="topbar__eyebrow">' + esc(eyebrow) + "</p>" : "") +
+      '<h1 class="topbar__title">' + esc(title) + "</h1>" +
+      "</div></header>"
+    );
+  }
+
+  function bar(done, total) {
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    return (
+      '<div class="bar' + (total && done === total ? " bar--done" : "") + '" role="progressbar" aria-valuemin="0" aria-valuemax="' +
+      total + '" aria-valuenow="' + done + '"><div class="bar__fill" style="width:' + pct + '%"></div></div>'
+    );
+  }
+
+  function themeStatusChip(theme) {
+    if (!isReady(theme)) return '<span class="chip">準備中</span>';
+    var ids = themeTermIds(theme);
+    var n = Store.countChecked(ids);
+    if (n === ids.length) return '<span class="chip chip--done">' + icon("check") + "完了</span>";
+    if (n > 0) return '<span class="chip chip--progress">' + n + " / " + ids.length + "</span>";
+    if (Store.isThemeCompleted(theme.id)) return '<span class="chip chip--done">' + icon("check") + "完了済み</span>";
+    return '<span class="chip">未学習</span>';
+  }
+
+  /* ---------------- 1. ホーム ---------------- */
+  function renderHome() {
+    var ids = allTermIds();
+    var checked = Store.countChecked(ids);
+    var themes = readyThemes();
+    var doneThemes = themes.filter(function (t) { return Store.isThemeCompleted(t.id); }).length;
+    var last = Store.getLast();
+    var lastTheme = last && themeById[last.themeId];
+
+    var resume = "";
+    if (lastTheme && isReady(lastTheme)) {
+      var lIds = themeTermIds(lastTheme);
+      var lDone = Store.countChecked(lIds);
+      var finished = lDone === lIds.length;
+      resume =
+        '<section class="section"><h2 class="section__label">' + (finished ? "前回の学習" : "続きから") + "</h2>" +
+        '<div class="panel resume">' +
+        '<div><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + "</p>" +
+        '<p class="resume__title">' + esc(lastTheme.name) + "</p></div>" +
+        '<div class="progress"><div class="progress__text"><span>確認済み</span><span class="progress__count">' +
+        lDone + " / " + lIds.length + "</span></div>" + bar(lDone, lIds.length) + "</div>" +
+        '<button class="btn btn--primary" data-action="resume">' +
+        (finished ? "もう一度見る" : "続きから学習する") + icon("arrow") + "</button>" +
+        "</div></section>";
+    }
+
+    var quizStats = Store.answerStats(ids);
+    var menu = MENU.map(function (m) {
+      return (
+        '<button class="row" ' + (m.ready ? 'data-action="' + (m.action || "open-fields") + '" data-ctx="' + m.id + '"' : "disabled") + ">" +
+        '<span class="row__icon">' + icon(m.icon) + "</span>" +
+        '<span class="row__body"><span class="row__title">' + esc(m.title) + "</span>" +
+        '<span class="row__sub">' + esc(m.sub) + "</span></span>" +
+        (m.ready ? icon("chev", "row__chev") : '<span class="chip">準備中</span>') +
+        "</button>"
+      );
+    }).join("");
+
+    return (
+      topbar("介護福祉士国家試験", "まとめ暗記", null) +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">確認した用語</p><p class="stat__value">' + checked + "<small>/ " + ids.length + "語</small></p></div>" +
+      '<div><p class="stat__label">完了したテーマ</p><p class="stat__value">' + doneThemes + "<small>/ " + themes.length + "</small></p></div>" +
+      '<div><p class="stat__label">問題の正答率</p><p class="stat__value">' +
+      (quizStats.answered ? Math.round((quizStats.correct / quizStats.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
+      bar(checked, ids.length) +
+      "</div></section>" +
+      resume +
+      '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
+      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 2. 分野一覧 ---------------- */
+  function rateChip(stats) {
+    if (!stats.answered) return '<span class="chip">未挑戦</span>';
+    var pct = Math.round((stats.correct / stats.answered) * 100);
+    return '<span class="chip ' + (pct >= 80 ? "chip--done" : "chip--progress") + '">' + pct + "%</span>";
+  }
+
+  function renderFields() {
+    var ctx = view.ctx;
+    var groups = DATA.areas.map(function (area) {
+      var rows = area.fields.map(function (id) {
+        var f = fieldById[id];
+        if (!f) return "";
+        var ids = fieldTermIds(f);
+        var aside, extra = "";
+        if (ctx === "quiz") {
+          var st = Store.answerStats(ids);
+          aside = rateChip(st);
+          extra = bar(st.answered, ids.length);
+        } else {
+          var n = Store.countChecked(ids);
+          aside = '<span class="chip' + (n ? " chip--progress" : "") + '">' + n + " / " + ids.length + "</span>";
+          extra = bar(n, ids.length);
+        }
+        return (
+          '<button class="row" data-action="open-field" data-id="' + f.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
+          '<span class="row__sub">' + esc(f.description) + " ・ " + ids.length + "語</span>" + extra + "</span>" +
+          '<span class="row__aside">' + aside + icon("chev", "row__chev") + "</span>" +
+          "</button>"
+        );
+      }).join("");
+      return '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>";
+    }).join("");
+
+    return (
+      topbar(CTX_LABEL[ctx], "分野を選ぶ", "home") +
+      '<main class="content">' +
+      (ctx === "quiz" ? '<p class="hint">' + icon("info") + "<span>正答率は、各用語の最後の解答で計算しています。バーは解いたことのある用語の割合です。</span></p>" : "") +
+      groups + "</main>"
+    );
+  }
+
+  /* ---------------- 3. テーマ一覧 ---------------- */
+  function renderThemes() {
+    var f = fieldById[view.fieldId];
+    var ctx = view.ctx;
+    var rows = f.themes.map(function (t) {
+      var ready = isReady(t);
+      var count = themeTermIds(t).length;
+      var sub, chip, action;
+      if (ctx === "quiz") {
+        var q = Store.getQuizResult(t.id);
+        sub = (t.summary ? esc(t.summary) + "<br>" : "") + count + "問" + (q ? " ・ 最高 " + q.best + "% ・ " + q.count + "回" : "");
+        chip = q ? '<span class="chip ' + (q.best >= 80 ? "chip--done" : "chip--progress") + '">前回 ' + q.last + "/" + q.total + "</span>" : '<span class="chip">未挑戦</span>';
+        action = "open-quiz";
+      } else {
+        var laps = Store.getCompletedCount(t.id);
+        sub = (t.summary ? esc(t.summary) + "<br>" : "") + count + "語" + (t.pages.length > 1 ? " ・ " + t.pages.length + "ページ" : "") +
+          (laps ? " ・ " + laps + "周完了" : "");
+        chip = themeStatusChip(t);
+        action = "open-theme";
+      }
+      if (!ready) { sub = "教材を準備しています"; chip = '<span class="chip">準備中</span>'; }
+      return (
+        '<button class="row" ' + (ready ? 'data-action="' + action + '" data-id="' + t.id + '"' : "disabled") + ">" +
+        '<span class="row__body"><span class="row__title">' + esc(t.name) + "</span>" +
+        '<span class="row__sub">' + sub + "</span></span>" +
+        '<span class="row__aside">' + chip + (ready ? icon("chev", "row__chev") : "") + "</span>" +
+        "</button>"
+      );
+    }).join("");
+
+    return (
+      topbar(CTX_LABEL[ctx], f.name, "fields") +
+      '<main class="content"><div class="rows">' + rows + "</div></main>"
+    );
+  }
+
+  /* ---------------- 4. 基礎学習 ---------------- */
+  function renderStudy() {
+    var theme = themeById[view.themeId];
+    var field = fieldOfTheme[theme.id];
+    var page = theme.pages[view.pageIndex];
+    var ids = pageTermIds(page);
+    var done = Store.countChecked(ids);
+    var total = ids.length;
+    var allDone = done === total;
+    var multi = theme.pages.length > 1;
+    var isLastPage = view.pageIndex === theme.pages.length - 1;
+
+    var mode = Store.getPref("studyMode", "cards");
+
+    // 説明つきで読む：用語・説明・ポイントを1画面に収めた「まとめシート」
+    var list = page.terms.map(function (t) {
+      var on = Store.isChecked(t.id);
+      return (
+        '<div class="rs-item' + (on ? " is-checked" : "") + '">' +
+        '<button class="rs-item__body" data-action="open-term" data-id="' + t.id + '">' +
+        '<span class="rs-item__text"><b class="rs-item__term">' + esc(t.term) + "</b>" + esc(t.definition) + "</span>" +
+        (t.point ? '<span class="rs-item__point">' + esc(t.point) + "</span>" : "") +
+        "</button>" +
+        '<button class="rs-item__check" data-action="toggle-check" data-id="' + t.id + '" aria-pressed="' + on + '" aria-label="' +
+        esc(t.term) + (on ? "の確認を外す" : "を確認済みにする") + '">' + icon("check") + "</button>" +
+        "</div>"
+      );
+    }).join("");
+
+    var cards = page.terms.map(function (t) {
+      var on = Store.isChecked(t.id);
+      return (
+        '<button class="term' + (on ? " is-checked" : "") + (justChecked === t.id ? " just-checked" : "") +
+        '" data-action="open-term" data-id="' + t.id + '" aria-label="' + esc(t.term) + (on ? "（確認済み）" : "") + '">' +
+        '<span class="term__check">' + icon("check") + "</span>" +
+        '<span class="term__name">' + esc(t.term) + "</span>" +
+        (t.reading ? '<span class="term__reading">' + esc(t.reading) + "</span>" : "") +
+        "</button>"
+      );
+    }).join("");
+
+    var dock = allDone
+      ? '<button class="btn btn--primary" data-action="next-page">' +
+        (isLastPage ? "学習を完了する" : "次のページへ") + icon("arrow") + "</button>"
+      : '<p class="dock__status">すべて確認すると次へ進めます（あと ' + (total - done) + " 語）</p>";
+
+    return (
+      topbar(field.name, theme.name, "back-themes") +
+      '<main class="content content--with-dock' + (mode === "list" ? " content--read" : "") + '">' +
+      '<div class="study-head">' +
+      '<div class="study-head__row">' +
+      (multi
+        ? '<div class="page-tabs" role="tablist" aria-label="ページ">' + theme.pages.map(function (p, i) {
+            var pIds = pageTermIds(p);
+            var pDone = Store.countChecked(pIds) === pIds.length;
+            return '<button class="page-tab' + (i === view.pageIndex ? " is-current" : "") + (pDone ? " is-done" : "") +
+              '" role="tab" aria-selected="' + (i === view.pageIndex) + '" data-action="goto-page" data-page="' + i + '">' +
+              (pDone ? icon("check") : "") + "<span>" + (i + 1) + ". " + esc(p.title) + "</span></button>";
+          }).join("") + "</div>"
+        : '<h2 class="page-tag__title">' + esc(page.title) + "</h2>") +
+      '<span class="progress__count" aria-live="polite">確認済み <b>' + done + "</b> / " + total + "</span></div>" +
+      bar(done, total) +
+      (page.lead && mode !== "list" ? '<p class="page-tag__lead">' + esc(page.lead) + "</p>" : "") +
+      "</div>" +
+      '<div class="seg" role="group" aria-label="表示の切り替え">' +
+      '<button class="seg__btn" data-action="mode" data-mode="cards" aria-pressed="' + (mode === "cards") + '">カードで覚える</button>' +
+      '<button class="seg__btn" data-action="mode" data-mode="list" aria-pressed="' + (mode === "list") + '">説明つきで読む</button>' +
+      "</div>" +
+      (mode === "list"
+        ? '<div class="read-sheet">' + list + "</div>" +
+          '<p class="hint">' + icon("info") + "<span>1画面のまとめとして、配置ごと目で覚えましょう。用語をタップすると確認画面が開きます。</span></p>"
+        : '<div class="term-grid">' + cards + "</div>" +
+          '<p class="hint">' + icon("info") + "<span>用語を見て意味を思い出してから、カードをタップして説明を確認しましょう。</span></p>") +
+      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
+  /* ---------------- 説明シート ---------------- */
+  function openSheet(termId, trigger) {
+    openTermId = termId;
+    lastTrigger = trigger || null;
+    renderSheet();
+    document.body.classList.add("is-locked");
+    var btn = $sheet.querySelector("[data-autofocus]");
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  function closeSheet(silent) {
+    if (!openTermId) return;
+    var id = openTermId;
+    openTermId = null;
+    $sheet.innerHTML = "";
+    document.body.classList.remove("is-locked");
+    if (!silent) {
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    }
+  }
+
+  function renderSheet() {
+    var entry = termById[openTermId];
+    if (!entry) return;
+    var t = entry.term;
+    var on = Store.isChecked(t.id);
+    var foot = on
+      ? '<p class="sheet__done">' + icon("check") + "確認済み</p>" +
+        '<button class="btn btn--ghost" data-action="close-sheet" data-autofocus>一覧に戻る</button>' +
+        '<button class="btn btn--text" data-action="uncheck">未確認に戻す</button>'
+      : '<button class="btn btn--ok" data-action="check" data-autofocus>' + icon("check") + "確認した</button>";
+
+    $sheet.innerHTML =
+      '<div class="sheet-scrim" data-action="close-sheet"></div>' +
+      '<section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-term">' +
+      '<div class="sheet__grip"></div>' +
+      '<div class="sheet__head"><div class="sheet__titles">' +
+      '<p class="sheet__meta">' + esc(entry.theme.name) + " ・ " + esc(entry.page.title) + "</p>" +
+      '<h2 class="sheet__term" id="sheet-term">' + esc(t.term) + "</h2>" +
+      (t.reading ? '<p class="sheet__reading">' + esc(t.reading) + "</p>" : "") +
+      "</div>" +
+      '<button class="icon-btn" data-action="close-sheet" aria-label="閉じる">' + icon("close") + "</button></div>" +
+      '<div class="sheet__body">' +
+      (t.profile ? '<p class="sheet__person"><span>人物</span>' + esc(t.profile) + "</p>" : "") +
+      (t.person ? '<p class="sheet__person"><span>提唱・開発</span>' + esc(t.person) + "</p>" : "") +
+      '<div><p class="sheet__label">説明</p><p class="sheet__def">' + esc(t.definition) + "</p></div>" +
+      (t.point ? '<div class="sheet__point"><p class="sheet__label">覚えるポイント</p><p>' + esc(t.point) + "</p></div>" : "") +
+      (t.example ? '<div class="sheet__example"><p class="sheet__label">例</p><p>' + esc(t.example) + "</p></div>" : "") +
+      "</div>" +
+      '<div class="sheet__foot">' + foot + "</div>" +
+      "</section>";
+  }
+
+  /* ---------------- 5. 学習完了 ---------------- */
+  function renderComplete() {
+    var theme = themeById[view.themeId];
+    var field = fieldOfTheme[theme.id];
+    var total = themeTermIds(theme).length;
+    var themes = readyThemes();
+    var idx = themes.indexOf(theme);
+    var next = null;
+    for (var i = 1; i < themes.length; i++) {
+      var cand = themes[(idx + i) % themes.length];
+      if (!Store.isThemeCompleted(cand.id)) { next = cand; break; }
+    }
+
+    var groups = theme.pages.map(function (p) {
+      return (
+        '<div class="review__group"><p class="review__title">' + esc(p.title) + "</p>" +
+        '<div class="review__terms">' +
+        p.terms.map(function (t) { return '<span class="review__term">' + esc(t.term) + "</span>"; }).join("") +
+        "</div></div>"
+      );
+    }).join("");
+
+    return (
+      topbar(field.name, theme.name, "back-themes") +
+      '<main class="content">' +
+      '<section class="done-hero"><div class="done-hero__mark">' + icon("check") + "</div>" +
+      '<h2 class="done-hero__title">' + Store.getCompletedCount(theme.id) + "周目 完了</h2>" +
+      '<p class="done-hero__sub">' + total + "語すべて確認しました" + (theme.pages.length > 1 ? "（" + theme.pages.length + "ページ）" : "") + "</p>" +
+      '<p class="done-hero__tip">繰り返し見るほど、配置ごと記憶に残ります。時間をおいてもう一周しましょう。</p></section>' +
+      '<section class="section"><h2 class="section__label">このテーマで覚えた用語</h2>' +
+      '<div class="panel review">' + groups + "</div></section>" +
+      '<div class="btn-stack">' +
+      (next
+        ? '<button class="btn btn--primary" data-action="open-theme" data-id="' + next.id + '">次のテーマ：' + esc(next.name) + icon("arrow") + "</button>"
+        : "") +
+      '<button class="btn btn--ghost" data-action="restart">' + icon("redo") + "もう一度学習する</button>" +
+      '<button class="btn btn--ghost" data-action="back-themes">テーマ一覧へ</button>' +
+      '<button class="btn btn--text" data-action="home">ホームに戻る</button>' +
+      "</div></main>"
+    );
+  }
+
+  /* ---------------- 6. 基礎問題・過去問題（5択） ---------------- */
+  var quiz = null;
+  var CHOICES = 5;
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  /* ----- 紛らわしい選択肢づくり ----- */
+
+  /** 2文字ずつの重なりで、用語名がどれくらい似ているか（0〜1） */
+  function bigrams(s) {
+    var set = {};
+    for (var i = 0; i < s.length - 1; i++) set[s.substr(i, 2)] = true;
+    return set;
+  }
+  function similarity(a, b) {
+    var A = bigrams(a), B = bigrams(b), inter = 0, union = 0, k;
+    for (k in A) { union++; if (B[k]) inter++; }
+    for (k in B) if (!A[k]) union++;
+    return union ? inter / union : 0;
+  }
+
+  /**
+   * 正解に近い順に誤答の用語を選ぶ。
+   * 用語名が似ているもの（例：腹圧性尿失禁と切迫性尿失禁）、同じページ・同じテーマのものを優先する。
+   */
+  function pickDistractors(termId, dir, count) {
+    var entry = termById[termId];
+    var field = fieldOfTheme[entry.theme.id];
+    var key = dir === "t2d" ? "definition" : "term";
+    var seen = {};
+    seen[entry.term[key]] = true;
+    var scored = fieldTermIds(field).filter(function (id) { return id !== termId; }).map(function (id) {
+      var e = termById[id];
+      var s = similarity(entry.term.term, e.term.term) * 2;
+      if (e.page === entry.page) s += 0.6;
+      else if (e.theme === entry.theme) s += 0.35;
+      return { id: id, s: s + Math.random() * 0.25 };
+    }).sort(function (a, b) { return b.s - a.s; });
+    var picked = [];
+    scored.forEach(function (x) {
+      if (picked.length >= count) return;
+      var v = termById[x.id].term[key];
+      if (seen[v]) return;
+      seen[v] = true;
+      picked.push(x.id);
+    });
+    return picked;
+  }
+
+  /**
+   * 正しい説明の一部だけを入れ替えた「ひっかけ」の説明をつくる（2択で迷わせる選択肢）。
+   * 入れ替えられる語がなければ null。
+   */
+  var SWAP_PAIRS = [
+    ["健側", "患側"], ["上顎", "下顎", /顎呼吸/], ["末梢", "中枢"], ["目頭", "目尻"], ["時計回り", "反時計回り"],
+    ["副交感神経", "交感神経"], ["小腸", "大腸"], ["左側臥位", "右側臥位"], ["仰臥位", "側臥位"],
+    ["増加", "減少"], ["高い", "低い"], ["浅い", "深い"], ["多い", "少ない"],
+    ["以上", "以下"], ["早朝", "夕方"], ["前傾", "後傾"], ["内側", "外側"], ["下から", "上から"],
+    ["急に", "徐々に"], ["市町村", "都道府県"], ["貸与", "購入"], ["名称独占", "業務独占"],
+    ["共助", "公助"], ["陽性症状", "陰性症状"], ["流動性知能", "結晶性知能"], ["引き戸", "開き戸"],
+    ["前から後ろ", "後ろから前"], ["近時記憶", "遠隔記憶"], ["保たれる", "失われる"],
+  ];
+  var NUM_UNITS = "歳|℃|万円|日間|日|回|時間|割|年|分|秒|%|％|cm|ml|か月|段階|項目|点|人";
+  function makeFake(text) {
+    var pairs = shuffle(SWAP_PAIRS);
+    for (var i = 0; i < pairs.length; i++) {
+      var a = pairs[i][0], b = pairs[i][1], skip = pairs[i][2];
+      if (skip && skip.test(text)) continue;
+      var alt = a.length >= b.length ? a + "|" + b : b + "|" + a;
+      var first = text.match(new RegExp(alt));
+      if (!first) continue;
+      // 「市町村や都道府県」のように並べて書かれている場合は、入れ替えても意味が同じになるので使わない
+      if (new RegExp("(" + alt + ")[や・、と]|及び|および").test(text) &&
+          text.indexOf(a) !== -1 && text.indexOf(b) !== -1 &&
+          new RegExp("(" + a + "[や・、と]" + b + ")|(" + b + "[や・、と]" + a + ")").test(text)) continue;
+      // 両方の語をまとめて入れ替える（例：外すときは下顎、入れるときは上顎 → 逆にする）
+      var swapped = text.replace(new RegExp(alt, "g"), function (m) { return m === a ? b : a; });
+      if (swapped === text) continue;
+      var to = first[0] === a ? b : a;
+      return { text: swapped, from: first[0], to: to };
+    }
+    // 数字を変える（範囲「〜」の一部や「1960年代」「1回の」は変えない）
+    var numRe = new RegExp("(^|[^0-9〜.])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の)");
+    var nm = text.match(numRe);
+    if (nm) {
+      var n = parseInt(nm[2], 10);
+      var alt2 = n >= 1900 ? n - 2 : n >= 100 ? n + Math.round(n * 0.2) : n >= 10 ? n + (n % 10 === 0 ? 10 : 5) : n + 1;
+      var at = nm.index + nm[1].length;
+      return { text: text.slice(0, at) + alt2 + text.slice(at + nm[2].length), from: nm[2] + nm[3], to: alt2 + nm[3] };
+    }
+    return null;
+  }
+
+  /** 用語の5択（基礎問題） */
+  function buildTermItem(termId, dir) {
+    var t = termById[termId].term;
+    var options = [{ text: dir === "t2d" ? t.definition : t.term, correct: true, termId: termId }];
+    var fake = dir === "t2d" ? makeFake(t.definition) : null;
+    if (fake) options.push({ text: fake.text, correct: false, fake: fake });
+    pickDistractors(termId, dir, CHOICES - options.length).forEach(function (id) {
+      var o = termById[id].term;
+      options.push({ text: dir === "t2d" ? o.definition : o.term, correct: false, termId: id });
+    });
+    return { kind: "term", termId: termId, dir: dir, options: shuffle(options), chosen: null };
+  }
+
+  function buildItems(termIds, dir) {
+    return shuffle(termIds).map(function (id, i) {
+      return buildTermItem(id, dir === "mix" ? (i % 2 ? "d2t" : "t2d") : dir);
+    });
+  }
+
+  /** 過去問題の5択 */
+  function buildExamItems(qids) {
+    return shuffle(qids).map(function (qid) {
+      var q = examById[qid];
+      var options = q.c.map(function (text, i) { return { text: text, correct: i === q.a - 1 }; });
+      return { kind: "exam", qid: qid, options: shuffle(options), chosen: null };
+    });
+  }
+
+  function itemCorrect(item) {
+    return item.chosen !== null && item.options[item.chosen].correct;
+  }
+
+  /**
+   * quiz の種類
+   *   theme  : テーマの全問（基礎問題）。結果をテーマの成績として保存する
+   *   review : 過去に間違えた用語など、任意の用語の集合
+   *   exam   : 過去問題（科目ごと・まとめて・間違えた問題）
+   */
+  function startQuiz(themeId) {
+    var theme = themeById[themeId];
+    quiz = {
+      kind: "theme", themeId: themeId, termIds: themeTermIds(theme),
+      title: theme.name, eyebrow: fieldOfTheme[themeId].name,
+      dir: null, items: null, index: 0, saved: false, full: true,
+    };
+    go({ name: "quiz", themeId: themeId, ctx: "quiz" });
+  }
+
+  function startReviewQuiz(termIds, title, eyebrow) {
+    quiz = {
+      kind: "review", termIds: termIds, title: title, eyebrow: eyebrow,
+      dir: null, items: null, index: 0, saved: false, full: false,
+    };
+    go({ name: "quiz", ctx: "review" });
+  }
+
+  function startExam(qids, title, eyebrow, back) {
+    quiz = {
+      kind: "exam", qids: qids, title: title, eyebrow: eyebrow, back: back || "exams",
+      items: buildExamItems(qids), index: 0, saved: false, full: false,
+    };
+    go({ name: "quiz", ctx: "exam" });
+  }
+
+  function quizBackAction() {
+    if (quiz.kind === "theme") return "back-themes";
+    if (quiz.kind === "exam") return quiz.back === "review" ? "back-review" : "back-exams";
+    return "back-review";
+  }
+
+  function renderQuizSetup() {
+    var total = quiz.termIds.length;
+    var q = quiz.kind === "theme" ? Store.getQuizResult(quiz.themeId) : null;
+    var opt = function (dir, title, sub) {
+      return (
+        '<button class="row" data-action="quiz-dir" data-dir="' + dir + '">' +
+        '<span class="row__body"><span class="row__title">' + title + "</span>" +
+        '<span class="row__sub">' + sub + "</span></span>" + icon("chev", "row__chev") + "</button>"
+      );
+    };
+    return (
+      topbar(quiz.eyebrow, quiz.title, quizBackAction()) +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">' +
+      (quiz.kind === "theme" ? "基礎問題" : "間違えた問題") + " ・ 全" + total + "問 ・ 5択</h2>" +
+      (q ? '<p class="hint">' + icon("info") + "<span>前回 " + q.last + " / " + q.total + " 問正解 ・ 最高 " + q.best + "%</span></p>" : "") +
+      '<div class="rows">' +
+      opt("t2d", "用語を見て、説明を選ぶ", "一語だけ違う「ひっかけ」の説明が混ざります") +
+      opt("d2t", "説明を見て、用語を選ぶ", "国家試験と同じく、説明から用語を思い出す") +
+      opt("mix", "ミックス", "2つの形式を交互に出題") +
+      "</div></section>" +
+      (quiz.kind === "theme"
+        ? '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "先に基礎学習で見る</button>"
+        : "") +
+      "</main>"
+    );
+  }
+
+  function renderQuizQuestion() {
+    var item = quiz.items[quiz.index];
+    var answered = item.chosen !== null;
+    var correct = itemCorrect(item);
+    var n = quiz.items.length;
+    var last = quiz.index === n - 1;
+    var prompt, feedbackBody, sub = "";
+
+    if (item.kind === "exam") {
+      var q = examById[item.qid];
+      sub = " ・ " + esc(fieldById[q.field].name) + (q.case ? " ・ 事例" : "");
+      prompt = '<div class="q-prompt q-prompt--def">' + esc(q.q) + "</div>";
+      var related = (q.termIds || []).map(function (id) { return termById[id].term.term; });
+      feedbackBody =
+        '<p class="q-feedback__term">正解：' + esc(q.c[q.a - 1]) + "</p>" +
+        '<p class="q-feedback__def">' + esc(q.exp) + "</p>" +
+        (related.length ? '<p class="q-feedback__point">関連する用語：' + related.map(esc).join("・") + "</p>" : "");
+    } else {
+      var entry = termById[item.termId];
+      var t = entry.term;
+      if (quiz.kind === "review") sub = " ・ " + esc(entry.theme.name);
+      prompt = item.dir === "t2d"
+        ? '<p class="q-label">この用語の説明として正しいものは？</p><div class="q-prompt q-prompt--term">' + esc(t.term) +
+          (t.reading ? '<span class="q-prompt__reading">' + esc(t.reading) + "</span>" : "") + "</div>"
+        : '<p class="q-label">この説明に当てはまる用語は？</p><div class="q-prompt q-prompt--def">' + esc(t.definition) + "</div>";
+      var chosen = answered ? item.options[item.chosen] : null;
+      feedbackBody =
+        (chosen && chosen.fake
+          ? '<p class="q-feedback__trap">ひっかけ：「' + esc(chosen.fake.to) + "」ではなく「" + esc(chosen.fake.from) + "」</p>"
+          : "") +
+        '<p class="q-feedback__term">' + esc(t.term) + "</p>" +
+        (item.dir === "d2t" ? "" : '<p class="q-feedback__def">' + esc(t.definition) + "</p>") +
+        (t.point ? '<p class="q-feedback__point">' + esc(t.point) + "</p>" : "");
+    }
+
+    var longText = item.kind === "exam" || item.dir === "t2d";
+    var options = item.options.map(function (o, i) {
+      var cls = "q-opt" + (longText ? " q-opt--def" : "");
+      if (answered) {
+        if (o.correct) cls += " is-correct";
+        else if (i === item.chosen) cls += " is-wrong";
+        else cls += " is-dim";
+      }
+      return (
+        '<button class="' + cls + '" data-action="quiz-answer" data-index="' + i + '"' + (answered ? " disabled" : "") + ">" +
+        '<span class="q-opt__num">' + (i + 1) + "</span>" +
+        '<span class="q-opt__text">' + esc(o.text) + "</span>" +
+        (answered && o.correct ? '<span class="q-opt__mark">' + icon("check") + "</span>" : "") +
+        (answered && i === item.chosen && !correct ? '<span class="q-opt__mark">' + icon("close") + "</span>" : "") +
+        "</button>"
+      );
+    }).join("");
+
+    var feedback = answered
+      ? '<div class="q-feedback ' + (correct ? "is-correct" : "is-wrong") + '" aria-live="polite">' +
+        '<p class="q-feedback__verdict">' + (correct ? "正解" : "不正解") + "</p>" + feedbackBody + "</div>"
+      : "";
+
+    var dock = answered
+      ? '<button class="btn btn--primary" data-action="quiz-next">' + (last ? "結果を見る" : "次の問題") + icon("arrow") + "</button>"
+      : '<p class="dock__status">5つの選択肢から1つ選んでください</p>';
+
+    return (
+      topbar(quiz.eyebrow, quiz.title, "quiz-quit") +
+      '<main class="content content--with-dock">' +
+      '<div class="progress"><div class="progress__text"><span>第' + (quiz.index + 1) + "問" + sub + "</span>" +
+      '<span class="progress__count"><b>' + (quiz.index + 1) + "</b> / " + n + "</span></div>" + bar(quiz.index + (answered ? 1 : 0), n) + "</div>" +
+      prompt +
+      '<div class="q-opts">' + options + "</div>" +
+      feedback +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
+  function renderQuizResult() {
+    var n = quiz.items.length;
+    var wrong = quiz.items.filter(function (it) { return !itemCorrect(it); });
+    var score = n - wrong.length;
+    var pct = Math.round((score / n) * 100);
+    if (!quiz.saved && quiz.full && quiz.kind === "theme") Store.saveQuizResult(quiz.themeId, score, n);
+    quiz.saved = true;
+
+    var list = wrong.map(function (it) {
+      if (it.kind === "exam") {
+        var q = examById[it.qid];
+        return (
+          '<div class="read-item read-item--static"><span class="read-item__def">' + esc(q.q) + "</span>" +
+          '<span class="read-item__term">正解：' + esc(q.c[q.a - 1]) + "</span>" +
+          '<span class="read-item__point">' + esc(q.exp) + "</span></div>"
+        );
+      }
+      var t = termById[it.termId].term;
+      return (
+        '<div class="read-item read-item--static"><span class="read-item__term">' + esc(t.term) + "</span>" +
+        '<span class="read-item__def">' + esc(t.definition) + "</span>" +
+        (t.point ? '<span class="read-item__point">' + esc(t.point) + "</span>" : "") + "</div>"
+      );
+    }).join("");
+
+    var sub = quiz.kind === "theme"
+      ? (quiz.full ? "全問に挑戦しました" : "間違えた問題の解き直し")
+      : wrong.length ? "正解した問題は「まだ正解していない」から外れます" : "すべて正解しました";
+
+    var buttons;
+    if (quiz.kind === "theme") {
+      buttons =
+        '<button class="btn btn--ghost" data-action="quiz-again">もう一度全問解く</button>' +
+        '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "基礎学習で見直す</button>" +
+        '<button class="btn btn--text" data-action="back-themes">テーマ一覧へ</button>';
+    } else if (quiz.kind === "exam") {
+      buttons =
+        '<button class="btn btn--ghost" data-action="quiz-again">同じ問題をもう一度解く</button>' +
+        '<button class="btn btn--text" data-action="' + quizBackAction() + '">' + (quiz.back === "review" ? "過去に間違えた問題へ戻る" : "過去問題の一覧へ") + "</button>";
+    } else {
+      buttons =
+        '<button class="btn btn--ghost" data-action="back-review">過去に間違えた問題へ戻る</button>' +
+        '<button class="btn btn--text" data-action="home">ホームに戻る</button>';
+    }
+
+    return (
+      topbar(quiz.eyebrow, quiz.title, quizBackAction()) +
+      '<main class="content">' +
+      '<section class="done-hero">' +
+      '<div class="score"><b>' + score + "</b><span>/ " + n + "</span></div>" +
+      '<h2 class="done-hero__title">' + (pct === 100 ? "全問正解" : "正答率 " + pct + "%") + "</h2>" +
+      '<p class="done-hero__sub">' + sub + "</p>" +
+      bar(score, n) + "</section>" +
+      (wrong.length
+        ? '<section class="section"><h2 class="section__label">間違えた問題（' + wrong.length + "）</h2>" +
+          '<div class="read-list">' + list + "</div></section>"
+        : "") +
+      '<div class="btn-stack">' +
+      (wrong.length ? '<button class="btn btn--primary" data-action="quiz-retry-wrong">' + icon("redo") + "間違えた問題を解き直す</button>" : "") +
+      buttons +
+      "</div></main>"
+    );
+  }
+
+  function renderQuiz() {
+    if (!quiz) return renderHome();
+    if (!quiz.items) return renderQuizSetup();
+    if (quiz.index >= quiz.items.length) return renderQuizResult();
+    return renderQuizQuestion();
+  }
+
+  /* ---------------- 過去問題 ---------------- */
+  function examIdsOf(fieldId) { return examsByField[fieldId] || []; }
+  function allExamIds() {
+    return DATA.fields.reduce(function (acc, f) { return acc.concat(examIdsOf(f.id)); }, []);
+  }
+
+  function renderExams() {
+    var all = allExamIds();
+    var allSt = Store.examStats(all);
+    var groups = DATA.areas.map(function (area) {
+      var rows = area.fields.map(function (id) {
+        var f = fieldById[id];
+        var qids = examIdsOf(id);
+        if (!f || !qids.length) return "";
+        var st = Store.examStats(qids);
+        return (
+          '<button class="row" data-action="exam-field" data-id="' + f.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
+          '<span class="row__sub">' + qids.length + "問" + (st.answered ? " ・ 解いた " + st.answered + "問" : "") + "</span>" +
+          bar(st.answered, qids.length) + "</span>" +
+          '<span class="row__aside">' + rateChip(st) + icon("chev", "row__chev") + "</span></button>"
+        );
+      }).join("");
+      return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
+    }).join("");
+
+    return (
+      topbar("国家試験形式", "過去問題", "home") +
+      '<main class="content">' +
+      '<div class="panel review-sum"><div><p class="stat__label">全科目 ' + all.length + "問</p>" +
+      '<p class="stat__value">' + (allSt.answered ? Math.round((allSt.correct / allSt.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
+      '<button class="btn btn--primary" data-action="exam-random">' + icon("quiz") + "ランダム20問</button></div>" +
+      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式のオリジナル問題です。実際の過去問は、社会福祉振興・試験センターが公開しています。</span></p>" +
+      groups +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 7. 過去に間違えた問題 ---------------- */
+  var REVIEW_MODES = {
+    open: { label: "まだ正解していない", test: function (a) { return a && a.last === false; } },
+    ever: { label: "一度でも間違えた", test: function (a) { return a && a.wrong > 0; } },
+  };
+
+  function wrongExamIds(qids) {
+    var mode = REVIEW_MODES[Store.getPref("reviewMode", "open")];
+    var ex = Store.getExamAnswers();
+    return qids.filter(function (id) { return mode.test(ex[id]); });
+  }
+
+  function wrongTermIds(termIds) {
+    var mode = REVIEW_MODES[Store.getPref("reviewMode", "open")];
+    var answers = Store.getAnswers();
+    return termIds.filter(function (id) { return mode.test(answers[id]); });
+  }
+
+  function renderReview() {
+    var modeKey = Store.getPref("reviewMode", "open");
+    var all = wrongTermIds(allTermIds());
+    var allExam = wrongExamIds(allExamIds());
+
+    var seg =
+      '<div class="seg" role="group" aria-label="対象の切り替え">' +
+      Object.keys(REVIEW_MODES).map(function (k) {
+        return '<button class="seg__btn" data-action="review-mode" data-mode="' + k + '" aria-pressed="' + (k === modeKey) + '">' + REVIEW_MODES[k].label + "</button>";
+      }).join("") + "</div>";
+
+    if (!all.length && !allExam.length) {
+      return (
+        topbar("復習", "過去に間違えた問題", "home") +
+        '<main class="content">' + seg +
+        '<div class="panel empty"><p class="empty__title">' +
+        (Store.answerStats(allTermIds()).answered || Store.examStats(allExamIds()).answered ? "対象の問題はありません" : "まだ問題を解いていません") + "</p>" +
+        '<p class="empty__text">基礎問題と過去問題で間違えた問題が、科目ごとにここへ自動で集まります。正解すると「まだ正解していない」から外れます。</p>' +
+        '<button class="btn btn--primary" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題を解く</button></div>" +
+        "</main>"
+      );
+    }
+
+    var sections = DATA.fields.map(function (f) {
+      var fWrong = wrongTermIds(fieldTermIds(f));
+      if (!fWrong.length) return "";
+      var rows = f.themes.map(function (t) {
+        var ids = wrongTermIds(themeTermIds(t));
+        if (!ids.length) return "";
+        var names = ids.slice(0, 3).map(function (id) { return termById[id].term.term; }).join("・") + (ids.length > 3 ? " ほか" : "");
+        return (
+          '<button class="row" data-action="review-theme" data-id="' + t.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(t.name) + "</span>" +
+          '<span class="row__sub">' + esc(names) + "</span></span>" +
+          '<span class="row__aside"><span class="chip chip--ng">' + ids.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+        );
+      }).join("");
+      return (
+        '<section class="section"><div class="section__head"><h2 class="section__label">' + esc(f.name) + "（" + fWrong.length + "）</h2>" +
+        '<button class="link-btn" data-action="review-field" data-id="' + f.id + '">まとめて解く</button></div>' +
+        '<div class="rows">' + rows + "</div></section>"
+      );
+    }).join("");
+
+    var examRows = DATA.fields.map(function (f) {
+      var qids = wrongExamIds(examIdsOf(f.id));
+      if (!qids.length) return "";
+      return (
+        '<button class="row" data-action="review-exam-field" data-id="' + f.id + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span></span>" +
+        '<span class="row__aside"><span class="chip chip--ng">' + qids.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+
+    return (
+      topbar("復習", "過去に間違えた問題", "home") +
+      '<main class="content">' + seg +
+      (examRows
+        ? '<section class="section"><h2 class="section__label">過去問題（' + allExam.length + "）</h2>" +
+          '<div class="rows">' + examRows + "</div></section>"
+        : "") +
+      (all.length
+        ? '<section class="section"><div class="section__head"><h2 class="section__label">基礎問題（' + all.length + "）</h2>" +
+          '<button class="link-btn" data-action="review-all">すべて解く</button></div></section>'
+        : "") +
+      sections +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 8. 苦手傾向分析 ---------------- */
+  var ANALYSIS_MIN = 10;
+
+  /** 用語の集合の、延べ解答数・正解数 */
+  function attemptStats(termIds, dir) {
+    var answers = Store.getAnswers();
+    var c = 0, w = 0, answered = 0;
+    termIds.forEach(function (id) {
+      var a = answers[id];
+      if (!a) return;
+      if (dir) {
+        var d = a.dirs && a.dirs[dir];
+        if (!d) return;
+        c += d.c; w += d.w;
+      } else {
+        c += a.correct; w += a.wrong;
+      }
+      answered++;
+    });
+    return { correct: c, wrong: w, total: c + w, answered: answered, rate: c + w ? Math.round((c / (c + w)) * 100) : null };
+  }
+
+  function meter(label, sub, rate) {
+    var cls = rate >= 80 ? " bar--done" : rate < 60 ? " bar--ng" : "";
+    return (
+      '<div class="meter"><div class="meter__head"><span class="meter__label">' + label + "</span>" +
+      '<span class="meter__value">' + rate + "%</span></div>" +
+      '<div class="bar' + cls + '"><div class="bar__fill" style="width:' + rate + '%"></div></div>' +
+      (sub ? '<p class="meter__sub">' + sub + "</p>" : "") + "</div>"
+    );
+  }
+
+  function renderAnalysis() {
+    var ids = allTermIds();
+    var answers = Store.getAnswers();
+    var overall = attemptStats(ids);
+
+    if (overall.answered < ANALYSIS_MIN) {
+      var rest = ANALYSIS_MIN - overall.answered;
+      return (
+        topbar("分析", "苦手傾向分析", "home") +
+        '<main class="content"><div class="panel empty">' +
+        '<p class="empty__title">あと ' + rest + " 問解くと分析できます</p>" +
+        '<p class="empty__text">基礎問題の解答記録から、間違えやすい科目・テーマ・用語と、重点的に勉強するポイントを自動でまとめます。</p>' +
+        bar(overall.answered, ANALYSIS_MIN) +
+        '<button class="btn btn--primary" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題を解く</button>" +
+        "</div></main>"
+      );
+    }
+
+    // 科目別
+    var fieldRows = [], untried = [];
+    DATA.fields.forEach(function (f) {
+      var st = attemptStats(fieldTermIds(f));
+      if (!st.total) untried.push(f.name);
+      else fieldRows.push({ field: f, st: st });
+    });
+    fieldRows.sort(function (a, b) { return a.st.rate - b.st.rate; });
+
+    // テーマ別：3語以上解いていて正答率80%未満を、正答率の低い順に
+    var themeRows = [];
+    readyThemes().forEach(function (t) {
+      var tIds = themeTermIds(t);
+      var st = attemptStats(tIds);
+      if (st.answered < 3 || st.rate >= 80) return;
+      var weakTerms = tIds.filter(function (id) { return answers[id] && answers[id].wrong > 0; })
+        .sort(function (a, b) { return answers[b].wrong - answers[a].wrong; });
+      themeRows.push({ theme: t, st: st, weakTerms: weakTerms });
+    });
+    themeRows.sort(function (a, b) { return a.st.rate - b.st.rate || b.st.wrong - a.st.wrong; });
+    var focus = themeRows.slice(0, 3);
+
+    // 過去問題の科目別
+    var examFieldRows = DATA.fields.map(function (f) {
+      return { field: f, st: Store.examStats(examIdsOf(f.id)) };
+    }).filter(function (r) { return r.st.attempts; }).sort(function (a, b) { return a.st.rate - b.st.rate; });
+    var examMeters = examFieldRows.length
+      ? '<section class="section"><h2 class="section__label">過去問題の科目別正答率（低い順）</h2><div class="panel meters">' +
+        examFieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "問・" + r.st.attempts + "回", r.st.rate); }).join("") +
+        "</div></section>"
+      : "";
+    if (examFieldRows.length && examFieldRows[0].st.rate < 70) {
+      var ef = examFieldRows[0];
+      var advExam = "過去問題では「" + ef.field.name + "」の正答率が低めです（" + ef.st.rate + "%）。基礎学習で用語を固めてから、もう一度解きましょう。";
+    }
+
+    // 形式別
+    var t2d = attemptStats(ids, "t2d");
+    var d2t = attemptStats(ids, "d2t");
+
+    // 繰り返し間違えている用語
+    var repeat = ids.filter(function (id) { return answers[id] && answers[id].wrong >= 2; })
+      .sort(function (a, b) { return answers[b].wrong - answers[a].wrong; }).slice(0, 8);
+
+    // アドバイス
+    var advice = [];
+    if (fieldRows.length && fieldRows[0].st.rate < 80) {
+      advice.push("最も正答率が低い科目は「" + fieldRows[0].field.name + "」（" + fieldRows[0].st.rate + "%）です。下の重点ポイントから取り組みましょう。");
+    }
+    if (t2d.total >= 5 && d2t.total >= 5 && t2d.rate - d2t.rate >= 10) {
+      advice.push("説明から用語を思い出す問題の正答率が低めです（" + d2t.rate + "%）。国家試験はこの形式が中心なので、基礎学習の「説明つきで読む」で説明と用語を結びつけましょう。");
+    } else if (t2d.total >= 5 && d2t.total >= 5 && d2t.rate - t2d.rate >= 10) {
+      advice.push("用語の意味を選ぶ問題の正答率が低めです（" + t2d.rate + "%）。カードを見て、説明を自分の言葉で言えるか確かめましょう。");
+    }
+    var notStudied = focus.filter(function (r) { return !Store.isThemeCompleted(r.theme.id); });
+    if (notStudied.length) {
+      advice.push("重点ポイントのうち " + notStudied.length + " テーマは、基礎学習がまだ完了していません。問題を解く前に、カードで一通り見ておくと効果的です。");
+    }
+    if (typeof advExam === "string") advice.push(advExam);
+    if (repeat.length) {
+      advice.push(repeat.length + " 語を2回以上間違えています。覚え違いをしている可能性があるので、説明とポイントを読み直しましょう。");
+    }
+    if (untried.length) {
+      advice.push("まだ基礎問題を解いていない科目が " + untried.length + " あります。苦手の判定には、全科目を一度ずつ解くのがおすすめです。");
+    }
+    if (!advice.length) advice.push("全体的によく覚えられています。時間をおいて、正答率の低い順に解き直しましょう。");
+
+    var focusHtml = focus.length
+      ? focus.map(function (r, i) {
+          var t = r.theme;
+          var studied = Store.isThemeCompleted(t.id);
+          var names = r.weakTerms.slice(0, 4).map(function (id) { return termById[id].term.term; });
+          return (
+            '<div class="focus">' +
+            '<div class="focus__head"><span class="focus__rank">' + (i + 1) + "</span>" +
+            '<div class="focus__titles"><p class="focus__meta">' + esc(fieldOfTheme[t.id].name) + "</p>" +
+            '<p class="focus__title">' + esc(t.name) + "</p></div>" +
+            '<span class="chip ' + (r.st.rate < 60 ? "chip--ng" : "chip--progress") + '">' + r.st.rate + "%</span></div>" +
+            (names.length ? '<p class="focus__terms"><span>間違えやすい用語</span>' + names.map(esc).join("・") + "</p>" : "") +
+            '<p class="focus__why">' + r.st.total + "回解いて " + r.st.wrong + "回不正解。" +
+            (studied ? "基礎学習は完了済みです。「説明つきで読む」で説明とポイントを読み直しましょう。" : "基礎学習がまだ完了していません。まずカードで一通り見ましょう。") + "</p>" +
+            '<div class="focus__actions">' +
+            '<button class="btn btn--ghost btn--sm" data-action="open-theme" data-id="' + t.id + '">' + icon("grid") + "カードで見直す</button>" +
+            (r.weakTerms.length ? '<button class="btn btn--primary btn--sm" data-action="review-theme-ever" data-id="' + t.id + '">' + icon("redo") + "解き直す</button>" : "") +
+            "</div></div>"
+          );
+        }).join("")
+      : '<p class="empty__text">正答率80%未満のテーマはありません。</p>';
+
+    var repeatHtml = repeat.map(function (id) {
+      var e = termById[id];
+      return (
+        '<div class="read-item read-item--static"><span class="read-item__head"><span class="read-item__term">' + esc(e.term.term) + "</span>" +
+        '<span class="chip chip--ng">' + answers[id].wrong + "回</span></span>" +
+        '<span class="read-item__reading">' + esc(fieldOfTheme[e.theme.id].name + " ・ " + e.theme.name) + "</span>" +
+        '<span class="read-item__def">' + esc(e.term.definition) + "</span>" +
+        (e.term.point ? '<span class="read-item__point">' + esc(e.term.point) + "</span>" : "") + "</div>"
+      );
+    }).join("");
+
+    return (
+      topbar("分析", "苦手傾向分析", "home") +
+      '<main class="content">' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">解いた用語</p><p class="stat__value">' + overall.answered + "<small>/ " + ids.length + "</small></p></div>" +
+      '<div><p class="stat__label">延べ解答数</p><p class="stat__value">' + overall.total + "<small>回</small></p></div>" +
+      '<div><p class="stat__label">正答率</p><p class="stat__value">' + overall.rate + "<small>%</small></p></div>" +
+      "</div>" +
+      '<section class="section"><h2 class="section__label">あなたの傾向</h2>' +
+      '<ul class="advice">' + advice.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul></section>" +
+      '<section class="section"><h2 class="section__label">重点的に勉強するポイント</h2>' + focusHtml + "</section>" +
+      '<section class="section"><h2 class="section__label">科目別の正答率（低い順）</h2><div class="panel meters">' +
+      fieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "語・" + r.st.total + "回", r.st.rate); }).join("") +
+      (untried.length ? '<p class="meter__sub">未挑戦：' + untried.map(esc).join("、") + "</p>" : "") +
+      "</div></section>" +
+      examMeters +
+      ((t2d.total || d2t.total)
+        ? '<section class="section"><h2 class="section__label">出題形式別の正答率</h2><div class="panel meters">' +
+          (t2d.total ? meter("用語を見て説明を選ぶ", t2d.total + "回", t2d.rate) : "") +
+          (d2t.total ? meter("説明を見て用語を選ぶ", d2t.total + "回", d2t.rate) : "") +
+          "</div></section>"
+        : "") +
+      (repeat.length
+        ? '<section class="section"><h2 class="section__label">繰り返し間違えている用語</h2><div class="read-list">' + repeatHtml + "</div></section>"
+        : "") +
+      '<p class="notice">基礎問題の解答記録から自動で集計しています。正答率は延べの解答回数で計算しています。</p>' +
+      "</main>"
+    );
+  }
+
+  /* ---------------- カードの文字サイズ自動調整 ---------------- */
+  /**
+   * 用語が数文字だけ次の行に落ちるのを防ぐ。
+   * 文字を小さくすると行数が減る場合、その行数になる最大のサイズを使う（下限 FIT_MIN）。
+   */
+  var FIT_MIN = 13;
+  function fitTermNames() {
+    var els = $app.querySelectorAll(".term__name");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      el.style.fontSize = "";
+      var base = parseFloat(getComputedStyle(el).fontSize);
+      var lines = function (size) {
+        el.style.fontSize = size + "px";
+        return Math.round(el.getBoundingClientRect().height / (size * 1.3));
+      };
+      var best = base;
+      var bestLines = lines(base);
+      for (var size = base - 0.5; bestLines > 1 && size >= FIT_MIN; size -= 0.5) {
+        var n = lines(size);
+        if (n < bestLines) { bestLines = n; best = size; }
+      }
+      el.style.fontSize = best + "px";
+    }
+  }
+  /**
+   * 説明つきで読む：まとめシート全体が、下のボタンの上までスクロールなしで収まる
+   * 最大の文字サイズを選ぶ（READ_MAX〜READ_MIN）。最小でも収まらなければ最小で表示する。
+   */
+  var READ_MAX = 14, READ_MIN = 10;
+  function fitReadSheet() {
+    var sheet = $app.querySelector(".read-sheet");
+    if (!sheet) return;
+    var dock = $app.querySelector(".dock");
+    var bottom = (dock ? dock.getBoundingClientRect().top : window.innerHeight) - 2;
+    var top = sheet.getBoundingClientRect().top + window.scrollY;
+    var room = bottom - top;
+    var size = READ_MAX;
+    for (; size > READ_MIN; size -= 0.5) {
+      sheet.style.fontSize = size + "px";
+      if (sheet.offsetHeight <= room) break;
+    }
+    sheet.style.fontSize = size + "px";
+  }
+  function fitAll() { fitTermNames(); fitReadSheet(); }
+  var fitTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitAll, 120);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+
+  /* ---------------- 描画 ---------------- */
+  function render() {
+    var html;
+    switch (view.name) {
+      case "fields": html = renderFields(); break;
+      case "themes": html = renderThemes(); break;
+      case "study": html = renderStudy(); break;
+      case "complete": html = renderComplete(); break;
+      case "quiz": html = renderQuiz(); break;
+      case "review": html = renderReview(); break;
+      case "exams": html = renderExams(); break;
+      case "analysis": html = renderAnalysis(); break;
+      default: html = renderHome();
+    }
+    $app.innerHTML = html;
+    fitAll();
+    justChecked = null;
+  }
+
+  /* ---------------- 操作 ---------------- */
+  var actions = {
+    home: function () { go({ name: "home" }); },
+    "open-fields": function (el) { go({ name: "fields", ctx: el.dataset.ctx }); },
+    fields: function () { go({ name: "fields", ctx: view.ctx || "study" }); },
+    "open-field": function (el) { go({ name: "themes", fieldId: el.dataset.id, ctx: view.ctx }); },
+    "open-quiz": function (el) { startQuiz(el.dataset.id); },
+    "quiz-dir": function (el) {
+      quiz.dir = el.dataset.dir;
+      quiz.items = buildItems(quiz.termIds, quiz.dir);
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-answer": function (el) {
+      var item = quiz.items[quiz.index];
+      if (item.chosen !== null) return;
+      item.chosen = parseInt(el.dataset.index, 10);
+      if (item.kind === "exam") Store.recordExam(item.qid, itemCorrect(item));
+      else Store.recordAnswer(item.termId, itemCorrect(item), item.dir);
+      render();
+      // 解説が下部のボタンに隠れないよう、見える位置までスクロール
+      var fb = $app.querySelector(".q-feedback");
+      var dock = $app.querySelector(".dock");
+      if (fb) {
+        var limit = window.innerHeight - (dock ? dock.offsetHeight : 0) - 12;
+        var over = fb.getBoundingClientRect().bottom - limit;
+        if (over > 0) window.scrollBy(0, over);
+      }
+    },
+    "quiz-next": function () {
+      quiz.index++;
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-quit": function () {
+      var q = quiz;
+      quiz = null;
+      if (q.kind === "theme") go({ name: "themes", fieldId: fieldOfTheme[q.themeId].id, ctx: "quiz" });
+      else if (q.kind === "exam" && q.back !== "review") go({ name: "exams" });
+      else go({ name: "review" });
+    },
+    "quiz-retry-wrong": function () {
+      var wrong = quiz.items.filter(function (it) { return !itemCorrect(it); });
+      if (quiz.kind === "exam") {
+        var qids = wrong.map(function (it) { return it.qid; });
+        quiz = Object.assign({}, quiz, { qids: qids, index: 0, items: buildExamItems(qids) });
+      } else {
+        var ids = wrong.map(function (it) { return it.termId; });
+        quiz = Object.assign({}, quiz, { termIds: ids, index: 0, saved: false, full: false, items: buildItems(ids, quiz.dir) });
+      }
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-again": function () {
+      if (quiz.kind === "exam") {
+        quiz = Object.assign({}, quiz, { index: 0, items: buildExamItems(quiz.qids) });
+        render();
+        window.scrollTo(0, 0);
+        return;
+      }
+      var ids = themeTermIds(themeById[quiz.themeId]);
+      quiz = Object.assign({}, quiz, { termIds: ids, index: 0, saved: false, full: true, items: buildItems(ids, quiz.dir) });
+      render();
+      window.scrollTo(0, 0);
+    },
+    "open-theme": function (el) { startTheme(el.dataset.id); },
+    resume: function () {
+      var last = Store.getLast();
+      if (!last || !themeById[last.themeId]) return;
+      var t = themeById[last.themeId];
+      var ids = themeTermIds(t);
+      // 全て確認済みなら最初のページから見直す
+      startTheme(t.id, Store.countChecked(ids) === ids.length ? 0 : last.pageIndex);
+    },
+    "back-themes": function () {
+      var ctx = view.name === "quiz" ? "quiz" : "study";
+      var themeId = view.name === "quiz" && quiz ? quiz.themeId : view.themeId;
+      if (ctx === "quiz") quiz = null;
+      go({ name: "themes", fieldId: fieldOfTheme[themeId].id, ctx: ctx });
+    },
+    "back-review": function () { quiz = null; go({ name: "review" }); },
+    "back-exams": function () { quiz = null; go({ name: "exams" }); },
+    "open-exams": function () { go({ name: "exams" }); },
+    "exam-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startExam(examIdsOf(f.id), f.name, "過去問題");
+    },
+    "exam-random": function () {
+      startExam(shuffle(allExamIds()).slice(0, 20), "ランダム20問", "過去問題");
+    },
+    "review-exam-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startExam(wrongExamIds(examIdsOf(f.id)), f.name, "過去に間違えた問題", "review");
+    },
+    "goto-page": function (el) {
+      var pi = parseInt(el.dataset.page, 10);
+      Store.setLast(view.themeId, pi);
+      go({ name: "study", themeId: view.themeId, pageIndex: pi });
+    },
+    "toggle-check": function (el) {
+      var id = el.dataset.id;
+      Store.setChecked(id, !Store.isChecked(id));
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
+    "open-review": function () { go({ name: "review" }); },
+    "open-analysis": function () { go({ name: "analysis" }); },
+    "review-mode": function (el) { Store.setPref("reviewMode", el.dataset.mode); render(); },
+    "review-theme": function (el) {
+      var t = themeById[el.dataset.id];
+      startReviewQuiz(wrongTermIds(themeTermIds(t)), t.name, "過去に間違えた問題");
+    },
+    "review-theme-ever": function (el) {
+      var t = themeById[el.dataset.id];
+      var answers = Store.getAnswers();
+      var ids = themeTermIds(t).filter(function (id) { return answers[id] && answers[id].wrong > 0; });
+      startReviewQuiz(ids, t.name, "苦手傾向分析");
+    },
+    "review-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startReviewQuiz(wrongTermIds(fieldTermIds(f)), f.name, "過去に間違えた問題");
+    },
+    "review-all": function () {
+      startReviewQuiz(wrongTermIds(allTermIds()), "すべての間違えた問題", "過去に間違えた問題");
+    },
+    "open-term": function (el) { openSheet(el.dataset.id, el); },
+    mode: function (el) {
+      Store.setPref("studyMode", el.dataset.mode);
+      render();
+    },
+    "close-sheet": function () { closeSheet(); },
+    check: function () {
+      var id = openTermId;
+      Store.setChecked(id, true);
+      justChecked = id;
+      closeSheet(true);
+      render();
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    },
+    uncheck: function () {
+      var id = openTermId;
+      Store.setChecked(id, false);
+      closeSheet(true);
+      render();
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    },
+    "next-page": function () {
+      var theme = themeById[view.themeId];
+      if (view.pageIndex < theme.pages.length - 1) {
+        var pi = view.pageIndex + 1;
+        Store.setLast(theme.id, pi);
+        go({ name: "study", themeId: theme.id, pageIndex: pi });
+      } else {
+        Store.completeTheme(theme.id);
+        go({ name: "complete", themeId: theme.id });
+      }
+    },
+    restart: function () {
+      var theme = themeById[view.themeId];
+      Store.resetTheme(theme.id, themeTermIds(theme));
+      startTheme(theme.id, 0);
+    },
+  };
+
+  function onClick(e) {
+    var el = e.target.closest("[data-action]");
+    if (!el || el.disabled) return;
+    var fn = actions[el.dataset.action];
+    if (fn) fn(el);
+  }
+  $app.addEventListener("click", onClick);
+  $sheet.addEventListener("click", onClick);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && openTermId) closeSheet();
+  });
+
+  render();
+})();

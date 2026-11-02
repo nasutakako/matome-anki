@@ -1,0 +1,4567 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>まとめ暗記 介護福祉士</title>
+<meta name="description" content="介護福祉士国家試験の重要用語を、カード一覧で繰り返し見て覚える学習アプリ">
+<meta name="theme-color" content="#1b5fb5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="まとめ暗記">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+html { color-scheme: light; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: 片手操作前提の1カラム。主要操作は画面下部、用語は2列タイルで位置を固定 */
+:root {
+  /* 白と青を基調。緑（確認済み・正解）と赤（不正解）は意味のある所だけに使う */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --tint: #f2f7fd;
+  --ink: #13243b;
+  --muted: #586a82;
+  --faint: #8797ad;
+  --line: #d9e4f2;
+  --accent: #1b5fb5;
+  --accent-ink: #ffffff;
+  --accent-soft: #e7f0fb;
+  --brand: #1b5fb5;
+  --brand-ink: #ffffff;
+  --brand-muted: #c9dcf5;
+  --ok: #1d8a52;
+  --ok-ink: #ffffff;
+  --ok-soft: #eaf6ef;
+  --ok-line: #9fd2b6;
+  --ng: #c2412d;
+  --ng-soft: #fcefec;
+  --ng-line: #eab4aa;
+  --scrim: rgba(13, 30, 56, 0.42);
+  --shadow: none;
+  --shadow-sheet: 0 -8px 28px rgba(13, 30, 56, 0.16);
+
+  --font: "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  --fs-xs: 11px;
+  --fs-sm: 12.5px;
+  --fs-md: 14px;
+  --fs-lg: 15.5px;
+  --fs-xl: 19px;
+  --radius: 12px;
+  --radius-sm: 9px;
+  --app-max: 480px;
+  --tap: 44px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1626;
+    --surface: #142036;
+    --tint: #18273f;
+    --ink: #e4ecf7;
+    --muted: #9db0c9;
+    --faint: #6f84a1;
+    --line: #243652;
+    --accent: #7fb0f0;
+    --accent-ink: #0b1a2f;
+    --accent-soft: #1a2d4a;
+    --brand: #163a6b;
+    --brand-ink: #ffffff;
+    --brand-muted: #a8c4ea;
+    --ok: #4ec58a;
+    --ok-ink: #0d1f15;
+    --ok-soft: #132b20;
+    --ok-line: #2e6a4a;
+    --ng: #f0806c;
+    --ng-soft: #2e1a17;
+    --ng-line: #6e3a31;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --shadow: none;
+    --shadow-sheet: 0 -8px 28px rgba(0, 0, 0, 0.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1626;
+  --surface: #142036;
+  --tint: #18273f;
+  --ink: #e4ecf7;
+  --muted: #9db0c9;
+  --faint: #6f84a1;
+  --line: #243652;
+  --accent: #7fb0f0;
+  --accent-ink: #0b1a2f;
+  --accent-soft: #1a2d4a;
+  --brand: #163a6b;
+  --brand-ink: #ffffff;
+  --brand-muted: #a8c4ea;
+  --ok: #4ec58a;
+  --ok-ink: #0d1f15;
+  --ok-soft: #132b20;
+  --ok-line: #2e6a4a;
+  --ng: #f0806c;
+  --ng-soft: #2e1a17;
+  --ng-line: #6e3a31;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --shadow: none;
+  --shadow-sheet: 0 -8px 28px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+body.is-locked { overflow: hidden; }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: var(--surface);
+}
+button { font: inherit; color: inherit; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.35; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  max-width: var(--app-max);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding-block: 8px 12px;
+  padding-left: max(8px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.topbar__titles { min-width: 0; flex: 1; }
+.topbar__eyebrow {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar__title { font-size: var(--fs-lg); font-weight: 700; }
+.icon-btn {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  cursor: pointer;
+}
+.icon-btn:active { background: var(--accent-soft); }
+.icon-btn svg { width: 24px; height: 24px; }
+
+.content {
+  flex: 1;
+  padding-block: 20px 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.content--with-dock { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+
+.section { display: flex; flex-direction: column; gap: 10px; }
+.section__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+/* ---------- Home ---------- */
+.home-head { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
+.home-head__eyebrow { font-size: var(--fs-sm); color: var(--muted); }
+.home-head__title { font-size: 26px; font-weight: 700; letter-spacing: 0.02em; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.stat__label { font-size: var(--fs-xs); color: var(--muted); }
+.stat__value {
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat__value small { font-size: var(--fs-sm); color: var(--muted); font-weight: 400; margin-left: 2px; }
+.stats .bar { grid-column: 1 / -1; }
+
+.resume {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-color: var(--accent-soft);
+  background: var(--surface);
+}
+.resume__meta { font-size: var(--fs-xs); color: var(--muted); }
+.resume__title { font-size: var(--fs-lg); font-weight: 700; }
+
+/* ---------- List rows ---------- */
+.rows {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.row {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 14px 12px 14px 16px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.row + .row { border-top: 1px solid var(--line); }
+.row:active:not(:disabled) { background: var(--accent-soft); }
+.row:disabled { cursor: default; }
+.row:disabled .row__title { color: var(--faint); }
+.row__icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+}
+.row:disabled .row__icon { background: var(--bg); color: var(--faint); }
+.row__icon svg { width: 20px; height: 20px; }
+.row__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.row__title { font-size: var(--fs-md); font-weight: 700; }
+.row__sub { font-size: var(--fs-xs); color: var(--muted); }
+.row__chev { flex: none; color: var(--faint); width: 20px; height: 20px; }
+.row__aside { flex: none; display: flex; align-items: center; gap: 4px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  background: var(--bg);
+  color: var(--muted);
+}
+.chip--progress { background: var(--accent-soft); color: var(--accent); }
+.chip--done { background: var(--ok-soft); color: var(--ok); }
+.chip svg { width: 12px; height: 12px; }
+
+/* ---------- Progress bar ---------- */
+.bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+.bar--done .bar__fill { background: var(--ok); }
+.row .bar { margin-top: 4px; height: 4px; }
+
+/* ---------- Study ---------- */
+.study-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.page-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.page-tag__num {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.page-tag__title { font-size: var(--fs-lg); font-weight: 700; }
+.page-tag__lead { font-size: var(--fs-xs); color: var(--muted); width: 100%; }
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.progress__text {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.progress__count { font-variant-numeric: tabular-nums; color: var(--ink); }
+.progress__count b { font-size: var(--fs-lg); }
+
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.term-grid > .term:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+.term {
+  position: relative;
+  min-height: 86px;
+  padding: 14px 14px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.1s;
+}
+.term:active { transform: scale(0.98); }
+.term__name {
+  font-size: var(--fs-term);
+  font-weight: 700;
+  line-height: 1.3;
+  padding-right: 22px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.term__reading { font-size: 11px; color: var(--faint); line-height: 1.3; }
+.term__check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: transparent;
+}
+.term__check svg { width: 14px; height: 14px; }
+.term.is-checked {
+  border-color: var(--ok-line);
+  background: var(--ok-soft);
+  box-shadow: none;
+}
+.term.is-checked .term__check {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: var(--ok-ink);
+}
+.term.is-checked .term__reading { color: var(--muted); }
+.term.just-checked .term__check { animation: pop 0.35s ease-out; }
+@keyframes pop {
+  0% { transform: scale(0.5); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.hint svg { flex: none; width: 14px; height: 14px; margin-top: 2px; color: var(--faint); }
+.notice {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+/* ---------- Bottom dock ---------- */
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding-block: 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.dock__inner {
+  max-width: calc(var(--app-max) - 32px);
+  margin: 0 auto;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dock__status { font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  min-height: 52px;
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0 20px;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.btn svg { width: 20px; height: 20px; }
+.btn--primary { background: var(--accent); color: var(--accent-ink); }
+.btn--ok { background: var(--ok); color: var(--ok-ink); }
+.btn--ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.btn--text {
+  background: none;
+  color: var(--muted);
+  min-height: 44px;
+  font-weight: 400;
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn:active { filter: brightness(0.94); }
+.btn-stack { display: flex; flex-direction: column; gap: 10px; }
+.dock .btn { animation: rise 0.25s ease-out; }
+@keyframes rise {
+  from { transform: translateY(8px); opacity: 0.4; }
+  to { transform: none; opacity: 1; }
+}
+
+/* ---------- Detail sheet ---------- */
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--scrim);
+  animation: fade 0.2s ease-out;
+}
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 41;
+  max-width: var(--app-max);
+  margin: 0 auto;
+  max-height: calc(100% - 48px - env(safe-area-inset-top, 0px));
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  animation: slide 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet__grip {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line);
+  margin: 8px auto 0;
+}
+.sheet__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-block: 12px 4px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(8px, env(safe-area-inset-right, 0px));
+}
+.sheet__titles { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding-top: 6px; }
+.sheet__meta { font-size: var(--fs-xs); color: var(--muted); }
+.sheet__term { font-size: 24px; font-weight: 700; }
+.sheet__reading { font-size: var(--fs-sm); color: var(--faint); }
+.sheet__body {
+  overflow-y: auto;
+  padding-block: 12px 16px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sheet__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.sheet__def { font-size: 16px; line-height: 1.85; }
+.sheet__example {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: var(--fs-sm);
+  line-height: 1.75;
+}
+.sheet__example .sheet__label { color: var(--muted); }
+.sheet__foot {
+  border-top: 1px solid var(--line);
+  padding-block: 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sheet__done {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--ok);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  padding-bottom: 6px;
+}
+.sheet__done svg { width: 16px; height: 16px; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes slide { from { transform: translateY(100%); } }
+
+/* ---------- Complete ---------- */
+.done-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding-top: 16px;
+}
+.done-hero__mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ok-soft);
+  color: var(--ok);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+.done-hero__mark svg { width: 32px; height: 32px; }
+.done-hero__title { font-size: var(--fs-xl); font-weight: 700; }
+.done-hero__sub { font-size: var(--fs-sm); color: var(--muted); }
+.review { display: flex; flex-direction: column; gap: 16px; }
+.review__group { display: flex; flex-direction: column; gap: 8px; }
+.review__title { font-size: var(--fs-xs); color: var(--muted); font-weight: 700; }
+.review__terms { display: flex; flex-wrap: wrap; gap: 6px; }
+.review__term {
+  font-size: var(--fs-sm);
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--ok-soft);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- 表示切り替え ---------- */
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--line);
+  border-radius: 12px;
+}
+.seg__btn {
+  min-height: 40px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+.seg__btn[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- 説明つきで読む ---------- */
+.read-list {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.read-item {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+.read-item + .read-item { border-top: 1px solid var(--line); }
+.read-item:active { background: var(--accent-soft); }
+.read-item__head { display: flex; align-items: flex-start; gap: 10px; }
+.read-item__term { flex: 1; min-width: 0; font-size: var(--fs-lg); font-weight: 700; line-height: 1.4; }
+.read-item .term__check { position: static; flex: none; margin-top: 2px; }
+.read-item.is-checked .term__check { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+.read-item__reading { font-size: 11px; color: var(--faint); }
+.read-item__def { font-size: var(--fs-md); line-height: 1.8; }
+.read-item__point {
+  margin-top: 4px;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+/* ---------- シートの追加要素 ---------- */
+.sheet__person {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.sheet__person span {
+  flex: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+.sheet__point {
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  font-weight: 700;
+}
+.done-hero__tip { font-size: var(--fs-xs); color: var(--muted); max-width: 28em; }
+.home-head__lead { font-size: var(--fs-sm); color: var(--muted); }
+
+/* ---------- コンパクト表示（1画面に8枚を収める） ---------- */
+.content--with-dock { gap: 14px; padding-top: 14px; }
+.study-head { gap: 8px; }
+.term-grid { gap: 8px; }
+.term { min-height: 68px; padding: 10px 12px 9px; gap: 2px; border-radius: 12px; }
+.term__name { font-size: clamp(16px, 4.4vw, 18px); padding-right: 0; }
+.term__reading { font-size: 10.5px; }
+.term__check { top: 8px; right: 8px; width: 20px; height: 20px; }
+.term__check svg { width: 12px; height: 12px; }
+.seg__btn { min-height: 36px; }
+.term__name { word-break: normal; line-break: strict; overflow-wrap: break-word; text-wrap: balance; line-height: 1.3; }
+/* チェック欄の余白は1行目だけに取る（2行目以降はカード幅いっぱいに使う） */
+.term__name::before { content: ""; float: right; width: 18px; height: 1em; }
+
+/* ---------- 基礎問題 ---------- */
+.stat__value { font-size: 22px; }
+.q-label { font-size: var(--fs-sm); color: var(--muted); font-weight: 700; }
+.q-prompt {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 16px;
+}
+.q-prompt--term { font-size: 24px; font-weight: 700; line-height: 1.35; display: flex; flex-direction: column; gap: 4px; }
+.q-prompt__reading { font-size: var(--fs-xs); color: var(--faint); font-weight: 400; }
+.q-prompt--def { font-size: var(--fs-md); line-height: 1.85; }
+.q-opts { display: flex; flex-direction: column; gap: 8px; }
+.q-opt {
+  width: 100%;
+  min-height: 52px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  padding: 12px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.45;
+}
+.q-opt--def { font-size: var(--fs-sm); font-weight: 400; line-height: 1.7; }
+.q-opt:active:not(:disabled) { background: var(--accent-soft); }
+.q-opt:disabled { cursor: default; }
+.q-opt__num {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.q-opt__text { flex: 1; min-width: 0; }
+.q-opt__mark { flex: none; width: 22px; height: 22px; }
+.q-opt__mark svg { width: 22px; height: 22px; }
+.q-opt.is-correct { border-color: var(--ok); background: var(--ok-soft); }
+.q-opt.is-correct .q-opt__num { background: var(--ok); color: var(--ok-ink); }
+.q-opt.is-correct .q-opt__mark { color: var(--ok); }
+.q-opt.is-wrong { border-color: var(--ng); background: var(--ng-soft); }
+.q-opt.is-wrong .q-opt__num { background: var(--ng); color: var(--surface); }
+.q-opt.is-wrong .q-opt__mark { color: var(--ng); }
+.q-opt.is-dim { opacity: 0.55; }
+.q-feedback {
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--ok-line);
+  background: var(--ok-soft);
+}
+.q-feedback.is-wrong { border-color: var(--ng-line); background: var(--ng-soft); }
+.q-feedback__verdict { font-size: var(--fs-sm); font-weight: 700; color: var(--ok); }
+.q-feedback.is-wrong .q-feedback__verdict { color: var(--ng); }
+.q-feedback__term { font-size: var(--fs-lg); font-weight: 700; }
+.q-feedback__def { font-size: var(--fs-sm); line-height: 1.75; }
+.q-feedback__point { font-size: var(--fs-sm); line-height: 1.7; color: var(--accent); font-weight: 700; }
+.score { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+.score b { font-size: 48px; line-height: 1; }
+.score span { font-size: var(--fs-lg); color: var(--muted); }
+.done-hero .bar { width: 100%; max-width: 280px; margin-top: 6px; }
+.read-item--static { cursor: default; }
+.read-item--static:active { background: none; }
+
+/* ---------- 過去に間違えた問題・苦手傾向分析 ---------- */
+.chip--ng { background: var(--ng-soft); color: var(--ng); }
+.bar--ng .bar__fill { background: var(--ng); }
+.section__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.link-btn {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  padding: 8px 0;
+  min-height: 40px;
+  cursor: pointer;
+}
+.review-sum { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.review-sum .btn { width: auto; }
+.empty { display: flex; flex-direction: column; gap: 12px; }
+.empty__title { font-size: var(--fs-lg); font-weight: 700; }
+.empty__text { font-size: var(--fs-sm); color: var(--muted); line-height: 1.75; }
+.advice {
+  margin: 0;
+  padding: 14px 16px 14px 32px;
+  background: var(--accent-soft);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  line-height: 1.75;
+}
+.focus {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.focus__head { display: flex; align-items: flex-start; gap: 10px; }
+.focus__rank {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.focus__titles { flex: 1; min-width: 0; }
+.focus__meta { font-size: var(--fs-xs); color: var(--muted); }
+.focus__title { font-size: var(--fs-lg); font-weight: 700; line-height: 1.4; }
+.focus__terms { font-size: var(--fs-sm); font-weight: 700; line-height: 1.7; }
+.focus__terms span {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ng);
+}
+.focus__why { font-size: var(--fs-sm); color: var(--muted); line-height: 1.7; }
+.focus__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btn--sm { min-height: 44px; font-size: var(--fs-sm); padding: 0 10px; gap: 6px; }
+.btn--sm svg { width: 16px; height: 16px; }
+.meters { display: flex; flex-direction: column; gap: 14px; }
+.meter { display: flex; flex-direction: column; gap: 6px; }
+.meter__head { display: flex; justify-content: space-between; gap: 12px; font-size: var(--fs-sm); }
+.meter__label { font-weight: 700; min-width: 0; }
+.meter__value { font-weight: 700; font-variant-numeric: tabular-nums; }
+.meter__sub { font-size: var(--fs-xs); color: var(--muted); }
+
+
+/* ==========================================================================
+   白と青のデザイン ・ コンパクト表示（スクロールを減らすための最終調整）
+   ========================================================================== */
+body { line-height: 1.55; }
+body::before { background: var(--brand); }
+
+/* 上部バー：青地に白文字 */
+.topbar {
+  background: var(--brand);
+  color: var(--brand-ink);
+  border-bottom: 0;
+  padding-block: 4px 6px;
+  min-height: 52px;
+}
+.topbar__eyebrow { color: var(--brand-muted); font-size: var(--fs-xs); }
+.topbar__title { font-size: var(--fs-lg); line-height: 1.3; }
+.topbar .icon-btn { color: var(--brand-ink); }
+.topbar .icon-btn:active { background: rgba(255, 255, 255, 0.16); }
+.icon-btn svg { width: 22px; height: 22px; }
+
+.content { padding-block: 12px 20px; gap: 14px; }
+.content--with-dock { padding-top: 10px; gap: 10px; padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+.section { gap: 6px; }
+.section__label { color: var(--accent); letter-spacing: 0.06em; }
+
+.panel { padding: 12px 14px; border-color: var(--line); }
+.stats { gap: 8px; }
+.stat__value { font-size: 20px; line-height: 1.3; }
+.resume { gap: 8px; background: var(--tint); border-color: var(--line); }
+.resume__title { font-size: var(--fs-md); }
+
+.rows { border-color: var(--line); }
+.row { min-height: 50px; padding: 9px 10px 9px 14px; gap: 10px; }
+.row__icon { width: 30px; height: 30px; border-radius: 8px; }
+.row__icon svg { width: 17px; height: 17px; }
+.row__body { gap: 2px; }
+.row__title { font-size: var(--fs-md); line-height: 1.4; }
+.row__sub { line-height: 1.5; }
+.row__chev { width: 18px; height: 18px; }
+.row:disabled .row__icon { background: var(--tint); }
+.row .bar { margin-top: 3px; height: 3px; }
+.chip { padding: 2px 7px; background: var(--tint); }
+
+.bar { height: 5px; background: var(--accent-soft); }
+
+.btn { min-height: 46px; font-size: var(--fs-md); border-radius: var(--radius-sm); gap: 6px; }
+.btn svg { width: 18px; height: 18px; }
+.btn--ghost { background: var(--surface); border-color: var(--line); color: var(--accent); }
+.btn--text { min-height: 36px; }
+.btn-stack { gap: 8px; }
+.btn--sm { min-height: 38px; }
+
+.hint { font-size: var(--fs-xs); }
+.notice { font-size: var(--fs-xs); padding-top: 8px; }
+
+/* 基礎学習 */
+.study-head { gap: 6px; }
+.page-tag { gap: 6px; row-gap: 0; }
+.page-tag__title { font-size: var(--fs-md); }
+.progress { gap: 4px; }
+.progress__text { font-size: var(--fs-xs); align-items: baseline; }
+.progress__count b { font-size: var(--fs-md); }
+.seg { padding: 3px; gap: 3px; background: var(--tint); border: 1px solid var(--line); border-radius: 10px; }
+.seg__btn { min-height: 32px; font-size: var(--fs-sm); border-radius: 7px; }
+.seg__btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); box-shadow: none; }
+.term-grid { gap: 7px; }
+.term { min-height: 60px; padding: 8px 10px 7px; border-width: 1.5px; border-color: var(--line); border-radius: 10px; }
+.term:not(.is-checked):active { border-color: var(--accent); background: var(--accent-soft); }
+.term__check { top: 7px; right: 7px; width: 18px; height: 18px; }
+.term__name::before { width: 16px; }
+.term__reading { font-size: 10px; }
+.dock { padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px)); border-top-color: var(--line); }
+.dock__inner { min-height: 46px; }
+.dock__status { font-size: var(--fs-xs); }
+
+.read-item { padding: 10px 14px 12px; gap: 3px; }
+.read-item__term { font-size: var(--fs-md); }
+.read-item__def { font-size: var(--fs-sm); line-height: 1.7; }
+.read-item__point { font-size: var(--fs-xs); padding: 6px 9px; margin-top: 2px; }
+
+/* 説明シート */
+.sheet__head { padding-block: 8px 0; }
+.sheet__term { font-size: 20px; }
+.sheet__body { padding-block: 8px 12px; gap: 12px; }
+.sheet__def { font-size: var(--fs-md); line-height: 1.8; }
+.sheet__point { padding: 10px 12px; font-size: var(--fs-sm); }
+.sheet__example { padding: 10px 12px; }
+.sheet__foot { padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px)); }
+
+/* 完了・結果 */
+.done-hero { padding-top: 4px; gap: 4px; }
+.done-hero__mark { width: 44px; height: 44px; margin-bottom: 0; }
+.done-hero__mark svg { width: 24px; height: 24px; }
+.done-hero__title { font-size: var(--fs-xl); }
+.score b { font-size: 40px; }
+.review { gap: 10px; }
+.review__term { font-size: var(--fs-xs); padding: 4px 8px; background: var(--tint); }
+
+/* 基礎問題 */
+.q-label { font-size: var(--fs-xs); }
+.q-prompt { padding: 12px 14px; border-color: var(--line); }
+.q-prompt--term { font-size: 20px; }
+.q-prompt--def { font-size: var(--fs-md); line-height: 1.75; }
+.q-opts { gap: 6px; }
+.q-opt { min-height: 44px; padding: 8px 10px; gap: 8px; font-size: var(--fs-md); border-color: var(--line); border-radius: 10px; }
+.q-opt--def { font-size: var(--fs-sm); line-height: 1.6; }
+.q-opt__num { width: 22px; height: 22px; background: var(--tint); color: var(--accent); }
+.q-opt__mark, .q-opt__mark svg { width: 20px; height: 20px; }
+.q-feedback { padding: 10px 12px; gap: 4px; }
+.q-feedback__term { font-size: var(--fs-md); }
+
+/* 分析・復習 */
+.advice { padding: 10px 12px 10px 28px; gap: 6px; font-size: var(--fs-sm); line-height: 1.65; background: var(--tint); border: 1px solid var(--line); }
+.focus { padding: 12px 14px; gap: 8px; }
+.focus__title { font-size: var(--fs-md); }
+.focus__rank { width: 22px; height: 22px; font-size: var(--fs-xs); }
+.meters { gap: 10px; }
+.empty { gap: 10px; }
+.empty__title { font-size: var(--fs-md); }
+.link-btn { min-height: 32px; padding: 4px 0; }
+
+/* ---------- 学習画面の見出し（1行にまとめる） ---------- */
+.study-head { gap: 5px; }
+.study-head__row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.study-head__row .page-tag__title { min-width: 0; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.study-head__row .progress__count { flex: none; font-size: var(--fs-xs); color: var(--muted); }
+.study-head__row .progress__count b { color: var(--ink); font-size: var(--fs-md); }
+.page-tag__lead { width: auto; }
+
+/* ---------- 説明つきで読む：1画面のまとめシート ---------- */
+.read-sheet {
+  font-size: 14px; /* JS が画面に収まるサイズに調整する */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+.rs-item {
+  position: relative;
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: inherit;
+  padding: 0.5em 0.75em 0.55em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  cursor: pointer;
+}
+.rs-item + .rs-item { border-top: 1px solid var(--line); }
+.rs-item:active { background: var(--accent-soft); }
+.rs-item.is-checked { background: var(--ok-soft); }
+.rs-item__text { line-height: 1.5; padding-right: 1.4em; }
+.rs-item__term {
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: 0.5em;
+}
+.rs-item.is-checked .rs-item__term { color: var(--ok); }
+.rs-item__point {
+  font-size: 0.9em;
+  line-height: 1.45;
+  color: var(--muted);
+  padding-left: 0.6em;
+  border-left: 2px solid var(--accent);
+}
+.rs-item__check {
+  position: absolute;
+  top: 0.55em;
+  right: 0.6em;
+  width: 1.15em;
+  height: 1.15em;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: transparent;
+}
+.rs-item__check svg { width: 0.75em; height: 0.75em; }
+.rs-item.is-checked .rs-item__check { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+/* まとめシートの余白をさらに詰める（小さい画面でも1画面に収める） */
+.rs-item { padding: 0.4em 0.65em 0.45em; gap: 0.1em; }
+.rs-item__text { line-height: 1.45; }
+.rs-item__point { line-height: 1.4; }
+.content--with-dock .seg__btn { min-height: 30px; }
+.content--read { gap: 7px; padding-top: 8px; }
+
+/* ---------- ページの切り替え ---------- */
+.page-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin-top: 2px; }
+.page-tabs::-webkit-scrollbar { display: none; }
+.page-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.page-tab svg { width: 12px; height: 12px; color: var(--ok); }
+.page-tab.is-current { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.page-tab.is-current svg { color: var(--accent-ink); }
+
+/* ---------- まとめシート：右の丸でチェック ---------- */
+.rs-item { flex-direction: row; align-items: stretch; gap: 0; padding: 0; cursor: default; }
+.rs-item:active { background: none; }
+.rs-item__body {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font-size: inherit;
+  color: inherit;
+  padding: 0.4em 0.2em 0.45em 0.65em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1em;
+  cursor: pointer;
+}
+.rs-item__body:active { background: var(--accent-soft); }
+.rs-item__text { padding-right: 0; }
+.rs-item__check {
+  position: static;
+  flex: none;
+  align-self: stretch;
+  width: 2.6em;
+  min-width: 36px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.45em;
+  cursor: pointer;
+  color: transparent;
+}
+.rs-item__check svg {
+  width: 1.25em;
+  height: 1.25em;
+  padding: 0.18em;
+  border-radius: 50%;
+  border: 1.5px solid var(--faint);
+  box-sizing: border-box;
+}
+.rs-item__check:active svg { border-color: var(--ok); }
+.rs-item.is-checked .rs-item__check { background: none; }
+.rs-item.is-checked .rs-item__check svg { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+
+/* ---------- 5択 ---------- */
+.q-feedback__trap { font-size: var(--fs-sm); font-weight: 700; color: var(--ng); }
+.rs-item__check { width: 2.1em; min-width: 30px; }
+.rs-item__body { padding-right: 0; }
+.study-head__row { align-items: center; }
+.study-head__row .page-tabs { flex: 1; min-width: 0; margin-top: 0; }
+.page-tab { min-height: 28px; padding: 0 9px; }
+
+</style>
+</head>
+<body>
+<div id="app" class="app" lang="ja"></div>
+<div id="sheet-root" lang="ja"></div>
+<script>
+/**
+ * 教材データの土台（画面のコードとは独立）
+ *
+ * 分野ごとの教材は src/data/fields/ に1ファイルずつ置き、defineField() で登録する。
+ * 構造: field → themes[] → pages[] → terms[]
+ *   - 1ページ = 基礎学習画面の1画面。スマホ1画面に収まる8語まで
+ *   - term.id は進捗・正答率の記録キー。省略すると「テーマID.用語」で自動生成される
+ *     （公開後に用語名を変えると記録が引き継がれない点に注意）
+ *   - pages が空のテーマは「準備中」として表示される
+ *
+ * 収録方針: 介護福祉士国家試験に出る・出やすい内容だけを入れる。
+ *   出ない／ほぼ出ない内容は、教科書に載っていても入れない。
+ *   人物は出題が多い人に絞り、その他の人名は手法の「提唱者（person）」欄で扱う。
+ *
+ * term は次のどちらの書き方でもよい
+ *   オブジェクト: { term, reading, definition, point, person, profile, example, id }
+ *   配列（短縮形）: ["用語", "よみ", "説明", "覚えるポイント", { person: "提唱者" など任意 }]
+ */
+window.KAIGO_DATA = {
+  version: 3,
+  updated: "2026-11",
+  disclaimer: "掲載内容は受験用テキスト・厚生労働省の資料・最新の法令と照合してご利用ください。",
+
+  /** 試験科目の順（領域ごと） */
+  areas: [
+    { name: "人間と社会", fields: ["dignity", "relations", "society"] },
+    { name: "介護", fields: ["care-basics", "comm-skills", "life-support", "care-process"] },
+    { name: "こころとからだのしくみ", fields: ["development", "dementia", "disability", "body"] },
+    { name: "医療的ケア", fields: ["medical"] },
+  ],
+
+  fields: [],
+};
+
+window.defineField = function (spec) {
+  var area = window.KAIGO_DATA.areas.filter(function (a) {
+    return a.fields.indexOf(spec.id) !== -1;
+  })[0];
+  spec.area = area ? area.name : "";
+
+  spec.themes.forEach(function (theme) {
+    theme.summary = theme.summary || "";
+    theme.pages = (theme.pages || []).map(function (page, pi) {
+      page.id = page.id || "p" + (pi + 1);
+      page.terms = page.terms.map(function (t) {
+        if (Array.isArray(t)) {
+          var extra = t[4] || {};
+          t = {
+            term: t[0],
+            reading: t[1] || "",
+            definition: t[2],
+            point: t[3] || "",
+            person: extra.person,
+            profile: extra.profile,
+            example: extra.example,
+          };
+        }
+        t.id = t.id || theme.id + "." + t.term;
+        return t;
+      });
+      return page;
+    });
+  });
+
+  window.KAIGO_DATA.fields.push(spec);
+};
+
+/** 全ファイル読み込み後に呼び、試験科目の順に並べる */
+window.finalizeData = function () {
+  var order = [];
+  window.KAIGO_DATA.areas.forEach(function (a) { order = order.concat(a.fields); });
+  window.KAIGO_DATA.fields.sort(function (a, b) {
+    return order.indexOf(a.id) - order.indexOf(b.id);
+  });
+};
+
+</script>
+<script>
+/* 人間の尊厳と自立 */
+defineField({
+  id: "dignity",
+  name: "人間の尊厳と自立",
+  description: "人権・尊厳の考え方、自立と自己決定",
+  themes: [
+    {
+      id: "dignity-rights",
+      name: "尊厳と人権",
+      summary: "憲法・ノーマライゼーション・権利擁護",
+      pages: [
+        {
+          title: "人権と尊厳の考え方",
+          lead: "法律の条文番号とキーワードをセットで覚える",
+          terms: [
+            ["日本国憲法第25条", "生存権", "すべて国民は、健康で文化的な最低限度の生活を営む権利を有する。", "生存権。社会保障・社会福祉と生活保護の根拠。朝日訴訟で争われた。"],
+            ["日本国憲法第13条", "幸福追求権", "すべて国民は個人として尊重され、生命・自由・幸福追求に対する権利が尊重される。", "個人の尊重（尊厳）と幸福追求権の根拠。"],
+            ["世界人権宣言", "せかいじんけんせんげん", "すべての人間は生まれながらに自由で、尊厳と権利について平等であることをうたった宣言。", "1948年に国際連合で採択。"],
+            ["ノーマライゼーション", "", "障害のある人も、ない人と同じように、地域で普通の生活を送ることができる社会をめざす考え方。", "デンマークのバンク-ミケルセンが提唱し、スウェーデンのニィリエが8つの原理に整理した。", { person: "バンク-ミケルセン（デンマーク）" }],
+            ["QOL", "生活の質", "身体の健康だけでなく、精神的な満足や人との関わりを含めた、その人らしい生活の豊かさ。", "ADL（日常生活動作）の自立だけでなく、QOLの向上をめざす。"],
+            ["アドボカシー", "権利擁護", "自分の意思や権利を主張することが難しい人に代わって、その権利を守り、意思を代弁すること。", ""],
+            ["エンパワメント", "", "利用者が本来持っている力に着目し、その力を引き出して、自分で問題を解決できるよう支援すること。", ""],
+            ["ストレングス", "", "利用者が持っている強み。能力・意欲・好み・周りの環境など。", "できないことより、できることや長所に着目する。"],
+          ],
+        },
+        {
+          title: "自立と自己決定",
+          lead: "「自立」は自分で決めることも含む",
+          terms: [
+            ["自立支援", "じりつしえん", "利用者が自分の能力を活かし、可能な限り自分らしく生活できるよう支援すること。", "介護保険法の基本理念。何でも代わりに行うことではない。"],
+            ["自己決定", "じこけってい", "自分の生き方や生活のしかたを、自分の意思で決めること。", "介護者は必要な情報を提供し、本人が選べるよう支援する。"],
+            ["インフォームド・コンセント", "説明と同意", "医療や介護について十分な説明を受け、理解・納得したうえで、本人が同意・選択すること。", ""],
+            ["IL運動", "自立生活運動", "1960年代にアメリカで始まった、障害のある人自身による自立生活をめざす運動。", "介助を受けながらでも、自分で決めて生活することが自立であると考えた。"],
+            ["身体的・精神的・社会的自立", "", "身の回りのことを自分で行う身体的自立、自分で判断し決める精神的自立、社会の中で役割を持って生活する社会的自立がある。", ""],
+            ["リハビリテーション", "", "障害のある人が、身体的・精神的・社会的に、その人らしく生きる権利を回復すること。", "キーワードは「全人間的復権」。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 人間関係とコミュニケーション */
+defineField({
+  id: "relations",
+  name: "人間関係とコミュニケーション",
+  description: "対人援助の基本、チームマネジメント",
+  themes: [
+    {
+      id: "relations-basics",
+      name: "対人援助の基本",
+      summary: "ラポール・自己覚知・バイステックの7原則",
+      pages: [
+        {
+          title: "援助関係をつくる",
+          lead: "信頼関係の土台になる考え方",
+          terms: [
+            ["ラポール", "", "援助者と利用者の間の、信頼に基づいた心の通い合う関係。", "支援の土台になる。"],
+            ["自己覚知", "じこかくち", "援助者が自分の価値観、感情、考え方の傾向を理解すること。", "自分の価値観を利用者に押しつけないために必要。"],
+            ["ジョハリの窓", "", "自己を「開放」「盲点」「秘密」「未知」の4つの窓に分けて理解するモデル。", "自己開示や他者からのフィードバックで「開放の窓」が広がる。"],
+            ["自己開示", "じこかいじ", "自分の考えや感情、情報を相手に伝えること。", "適切な自己開示は信頼関係づくりに役立つ。"],
+            ["バイステックの7原則", "", "援助関係の基本となる7つの原則。", "個別化／意図的な感情表出／統制された情緒的関与／受容／非審判的態度／利用者の自己決定／秘密保持", { person: "バイステック（アメリカ）" }],
+            ["受容", "じゅよう", "利用者の態度や行動を、善悪で判断せず、あるがままに受け止めること。", "何でも認める・従うという意味ではない。"],
+            ["共感", "きょうかん", "相手の感情を、相手の立場に立って、あたかも自分のことのように理解しようとすること。", "同情とは異なる。"],
+            ["非言語的コミュニケーション", "", "表情、視線、身振り、姿勢、声の調子、相手との距離など、言葉以外によるコミュニケーション。", "パーソナルスペース（他人に近づかれると不快に感じる空間）にも配慮する。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "relations-team",
+      name: "チームマネジメント",
+      summary: "PDCA・人材育成・BCP",
+      pages: [
+        {
+          title: "人材育成と組織",
+          lead: "研修の種類とスーパービジョンを区別する",
+          terms: [
+            ["PDCAサイクル", "", "Plan（計画）→ Do（実行）→ Check（評価）→ Action（改善）を繰り返し、業務の質を高める手法。", ""],
+            ["OJT", "職場内研修", "職場で、上司や先輩が実際の仕事を通して指導する教育方法。", ""],
+            ["Off-JT", "職場外研修", "職場を離れて行う研修。外部の研修会や講義など。", ""],
+            ["SDS", "自己啓発援助制度", "職員が自主的に行う自己啓発（資格取得や研修参加など）を、職場が費用や時間の面で支援すること。", ""],
+            ["スーパービジョン", "", "経験のある指導者（スーパーバイザー）が、援助者（スーパーバイジー）に助言・指導を行うこと。", "管理的機能・教育的機能・支持的機能がある。"],
+            ["コンサルテーション", "", "他の分野の専門家に相談し、助言を受けること。", "スーパービジョンと違い、指揮命令の関係はない。"],
+            ["報告・連絡・相談", "ほうれんそう", "チームで情報を共有するための基本。", "報告は結論を先に、事実と意見を分けて伝える。"],
+            ["BCP", "業務継続計画", "災害や感染症が発生しても、必要なサービスを継続・早期再開するための計画。", "2024年度から介護事業所での策定が義務化された。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 社会の理解 */
+defineField({
+  id: "society",
+  name: "社会の理解",
+  description: "社会保障・介護保険・障害者総合支援法・権利擁護",
+  themes: [
+    {
+      id: "society-security",
+      name: "社会保障と生活保護",
+      summary: "社会保障のしくみ・生活保護・地域福祉",
+      pages: [
+        {
+          title: "社会保障のしくみ",
+          lead: "社会保険の種類と、自助・互助・共助・公助",
+          terms: [
+            ["社会保険", "", "加入者が保険料を出し合い、病気や老齢などのときに給付を受けるしくみ。", "医療保険・年金保険・介護保険・雇用保険・労災保険の5種類。"],
+            ["公的扶助", "こうてきふじょ", "生活に困窮する人に、税金を財源として最低限度の生活を保障する制度。", "代表は生活保護。"],
+            ["国民皆保険・皆年金", "", "すべての国民が公的な医療保険と年金に加入するしくみ。", "1961年に実現した。"],
+            ["自助・互助・共助・公助", "", "自助＝自分で。互助＝住民同士の支え合い。共助＝社会保険など制度化された相互扶助。公助＝税による公的支援。", "介護保険は「共助」、生活保護は「公助」。"],
+            ["後期高齢者医療制度", "", "75歳以上の人が加入する医療保険制度。", "一定の障害がある65歳以上も対象。運営は都道府県ごとの後期高齢者医療広域連合。"],
+            ["国民年金", "", "20歳以上60歳未満の、日本国内に住むすべての人が加入する年金。", "老齢基礎年金は原則65歳から支給。"],
+            ["福祉六法", "", "生活保護法、児童福祉法、身体障害者福祉法、知的障害者福祉法、老人福祉法、母子及び父子並びに寡婦福祉法。", ""],
+            ["介護休業", "", "要介護状態の家族を介護するために取得できる休業。", "対象家族1人につき通算93日まで、3回まで分けて取得できる（育児・介護休業法）。"],
+          ],
+        },
+        {
+          title: "生活保護と地域福祉",
+          lead: "生活保護の原理と扶助、地域で支える人",
+          terms: [
+            ["生活保護の基本原理", "", "国家責任・無差別平等・最低生活保障・保護の補足性の4つ。", "補足性＝資産・能力・扶養・他の制度を活用しても足りない分を補う。根拠は憲法第25条。"],
+            ["生活保護の8つの扶助", "", "生活・教育・住宅・医療・介護・出産・生業・葬祭扶助。", "医療扶助と介護扶助は原則「現物給付」。"],
+            ["申請保護の原則", "", "保護は、本人・扶養義務者・同居の親族の申請に基づいて開始する。", "急迫した状況では申請がなくても保護できる。"],
+            ["福祉事務所", "", "生活保護の決定・実施などを行う行政機関。", "都道府県と市（特別区）に設置義務がある。町村は任意。"],
+            ["生活困窮者自立支援制度", "", "生活保護に至る前の段階で、生活に困っている人の自立を支援する制度。", "自立相談支援事業は必須事業。"],
+            ["民生委員", "みんせいいいん", "地域住民の立場から生活の相談に応じ、必要な支援につなぐ。", "厚生労働大臣が委嘱。任期3年、無報酬。児童委員を兼ねる。"],
+            ["社会福祉協議会", "", "地域福祉の推進を目的とする民間団体。", "ボランティアセンターの運営や日常生活自立支援事業などを行う。"],
+            ["地域共生社会", "", "制度や分野の縦割り、「支え手」「受け手」という関係を超えて、住民や多様な主体が参画し、地域をともにつくっていく社会。", ""],
+          ],
+        },
+      ],
+    },
+    {
+      id: "society-ltci",
+      name: "介護保険制度",
+      summary: "被保険者・要介護認定・サービスと事業",
+      pages: [
+        {
+          title: "介護保険のしくみ",
+          lead: "年齢・割合・流れを正確に覚える",
+          terms: [
+            ["介護保険の保険者", "", "市町村および特別区。", "保険者＝制度を運営する主体。"],
+            ["第1号被保険者", "", "65歳以上の人。原因を問わず、要介護・要支援状態になればサービスを利用できる。", "保険料は原則、年金から天引き（特別徴収）。"],
+            ["第2号被保険者", "", "40歳以上65歳未満の医療保険加入者。特定疾病が原因で要介護・要支援になった場合に利用できる。", "保険料は医療保険料と一緒に徴収。"],
+            ["特定疾病", "", "第2号被保険者がサービスを利用できる、加齢に関係する16の疾病。", "末期がん、関節リウマチ、ALS、初老期における認知症、脳血管疾患、パーキンソン病関連疾患など。"],
+            ["要介護認定", "", "介護が必要かどうか、どの程度必要かを市町村が判定するしくみ。", "申請 → 認定調査・主治医意見書 → 一次判定（コンピュータ）→ 二次判定（介護認定審査会）。"],
+            ["介護認定審査会", "", "保健・医療・福祉の専門家で構成され、要介護認定の二次判定を行う。", "市町村に設置される。"],
+            ["利用者負担", "", "サービス費用の原則1割。一定以上の所得がある人は2割または3割。", ""],
+            ["介護保険の財源", "", "保険料50％と公費（税金）50％でまかなわれる。", "居宅給付の公費は、国25％・都道府県12.5％・市町村12.5％。"],
+          ],
+        },
+        {
+          title: "サービスと地域の支援",
+          lead: "誰が・何をするかを覚える",
+          terms: [
+            ["介護支援専門員", "ケアマネジャー", "相談に応じてケアプランを作成し、サービス事業者との連絡調整を行う専門職。", ""],
+            ["ケアプラン", "居宅サービス計画", "希望や課題に基づき、どのサービスをいつ利用するかを定めた計画。", "利用者本人が作成することもできる。"],
+            ["地域包括支援センター", "", "総合相談、権利擁護、介護予防ケアマネジメント、包括的・継続的ケアマネジメント支援を行う。", "市町村が設置。保健師・社会福祉士・主任介護支援専門員を置く。"],
+            ["地域包括ケアシステム", "", "住まい・医療・介護・予防・生活支援を一体的に提供し、住み慣れた地域で暮らし続けられるしくみ。", "おおむね30分以内で必要なサービスが届く日常生活圏域（中学校区）が単位。"],
+            ["地域密着型サービス", "", "原則として、その市町村の住民だけが利用できるサービス。", "市町村が指定・監督。認知症グループホーム、小規模多機能型居宅介護など。"],
+            ["介護予防・日常生活支援総合事業", "", "市町村が行う介護予防と生活支援の事業。", "要支援者などへの訪問型・通所型サービスを含む。"],
+            ["地域ケア会議", "", "多職種で個別の事例を検討し、地域の課題を把握して地域づくりにつなげる会議。", "地域包括支援センターなどが開催する。"],
+            ["介護保険施設", "", "介護老人福祉施設（特養）、介護老人保健施設、介護医療院。", "特別養護老人ホームへの入所は原則、要介護3以上。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "society-disability",
+      name: "障害者総合支援法",
+      summary: "障害支援区分・給付とサービス",
+      pages: [
+        {
+          title: "障害者総合支援法のしくみ",
+          lead: "介護給付・訓練等給付・地域生活支援事業を区別する",
+          terms: [
+            ["障害者総合支援法", "", "障害のある人が、個人としての尊厳にふさわしい生活を送れるよう、障害福祉サービスなどを総合的に提供する法律。", "対象に難病の人も含まれる。"],
+            ["障害支援区分", "", "障害の特性や心身の状態に応じて必要とされる支援の度合い。", "区分1〜6の6段階で、6が最も支援が必要。市町村が認定する。"],
+            ["サービス等利用計画", "", "障害福祉サービスを利用するための計画。", "相談支援専門員（指定特定相談支援事業者）が作成する。"],
+            ["応能負担", "おうのうふたん", "所得に応じて負担額が決まるしくみ。", "障害福祉サービスの利用者負担は応能負担で、月ごとの上限額がある。"],
+            ["同行援護", "どうこうえんご", "視覚障害により移動が著しく困難な人に、外出時に同行して移動の援護や情報提供を行う。", "介護給付。"],
+            ["行動援護", "こうどうえんご", "知的障害・精神障害で行動上著しい困難がある人に、危険を回避するための援護や外出の支援を行う。", "介護給付。"],
+            ["地域生活支援事業", "", "市町村や都道府県が地域の実情に合わせて行う事業。", "移動支援、意思疎通支援、日常生活用具給付など。"],
+            ["就労継続支援", "", "一般企業での就労が難しい人に働く場を提供し、知識や能力向上のための訓練を行う。", "A型は雇用契約あり、B型は雇用契約なし。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "society-rights",
+      name: "権利擁護と虐待防止",
+      summary: "成年後見・個人情報・虐待防止法・差別解消法",
+      pages: [
+        {
+          title: "権利擁護のしくみ",
+          lead: "誰が・どこで手続きするかを覚える",
+          terms: [
+            ["成年後見制度", "", "判断能力が不十分な人の財産管理や契約などを、後見人などが支援する制度。", "法定後見（後見・保佐・補助）と任意後見がある。"],
+            ["法定後見", "", "すでに判断能力が不十分な人に、家庭裁判所が後見人・保佐人・補助人を選ぶ。", "申立ては本人、配偶者、4親等内の親族、市町村長など。"],
+            ["任意後見", "", "判断能力があるうちに、将来に備えて後見人と支援内容を自分で契約しておく。", "公正証書で契約する。"],
+            ["日常生活自立支援事業", "", "判断能力が不十分な人に、福祉サービスの利用援助や日常的な金銭管理を行う。", "実施主体は都道府県・指定都市の社会福祉協議会。本人との契約で利用する。"],
+            ["クーリング・オフ", "", "訪問販売などで契約した後、一定期間内なら無条件で契約を解除できる制度。", "訪問販売は8日間。書面または電磁的記録で通知する。"],
+            ["消費生活センター", "", "契約トラブルなど、消費生活に関する相談を受け付ける機関。", "消費者ホットラインは「188」。"],
+            ["個人情報保護法", "", "個人情報の利用目的の特定や、本人の同意のない第三者提供の禁止などを定めた法律。", "生命・身体の保護に必要で、本人の同意を得ることが難しい場合は例外。"],
+          ],
+        },
+        {
+          title: "虐待の防止と差別の解消",
+          lead: "虐待の種類と通報先",
+          terms: [
+            ["高齢者虐待防止法", "", "高齢者虐待の防止と、養護者（家族など）への支援を定めた法律。", "身体的虐待・介護等放棄（ネグレクト）・心理的虐待・性的虐待・経済的虐待の5類型。"],
+            ["虐待の通報", "", "虐待を受けたと思われる高齢者を発見した人は、市町村に通報する。", "生命・身体に重大な危険がある場合は通報義務。施設職員は発見したら通報義務がある。通報は守秘義務違反にならない。"],
+            ["養護者による虐待の傾向", "", "類型では身体的虐待が最も多い。虐待者の続柄では息子が最も多い。", "被虐待者は女性が多い。"],
+            ["障害者虐待防止法", "", "障害者虐待の防止と、養護者への支援を定めた法律。", "高齢者と同じ5類型。使用者（雇い主）による虐待も対象。"],
+            ["DV防止法", "配偶者暴力防止法", "配偶者からの暴力の防止と被害者の保護を定めた法律。", "配偶者暴力相談支援センターが相談・保護を行う。"],
+            ["障害者差別解消法", "", "障害を理由とする差別の解消を推進する法律。不当な差別的取扱いを禁止し、合理的配慮の提供を求める。", "2024年4月から民間事業者も合理的配慮の提供が義務化された。"],
+            ["合理的配慮", "ごうりてきはいりょ", "障害のある人から求めがあった場合に、負担が重すぎない範囲で、社会的障壁を取り除くための対応をすること。", ""],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 介護の基本 */
+defineField({
+  id: "care-basics",
+  name: "介護の基本",
+  description: "介護福祉士の義務、ICF、安全と感染予防",
+  themes: [
+    {
+      id: "care-basics-law",
+      name: "介護福祉士の義務と倫理",
+      summary: "社会福祉士及び介護福祉士法・倫理綱領",
+      pages: [
+        {
+          title: "社会福祉士及び介護福祉士法",
+          lead: "義務の名前と内容をセットで覚える",
+          terms: [
+            ["介護福祉士の定義", "", "専門的知識・技術をもって心身の状況に応じた介護を行い、利用者や介護者に介護に関する指導を行う者。", "喀痰吸引等も業務に含まれる。"],
+            ["名称独占", "めいしょうどくせん", "資格を持ち登録した人だけが、その名称を名乗ることができること。", "介護福祉士は名称独占の国家資格。業務独占ではない。"],
+            ["誠実義務", "せいじつぎむ", "個人の尊厳を保持し、自立した日常生活を営めるよう、常にその人の立場に立って誠実に業務を行う義務。", ""],
+            ["信用失墜行為の禁止", "しんようしっついこうい", "介護福祉士の信用を傷つけるような行為をしてはならない。", "違反すると登録の取消しなどの対象になる。"],
+            ["秘密保持義務", "", "正当な理由なく、業務上知り得た秘密を漏らしてはならない。", "介護福祉士でなくなった後も守る。違反には罰則がある。"],
+            ["連携", "", "福祉サービスや保健医療サービスが総合的・適切に提供されるよう、医師その他の関係者と連携を保つ。", "2007年の法改正で追加された。"],
+            ["資質向上の責務", "", "介護を取り巻く環境の変化に対応できるよう、知識・技能の向上に努める。", "2007年の法改正で追加された。"],
+            ["日本介護福祉士会倫理綱領", "", "日本介護福祉士会が1995年に定めた、介護福祉士の職業倫理の指針。", "利用者本位・自立支援、プライバシーの保護、利用者ニーズの代弁、地域福祉の推進、後継者の育成などを掲げる。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "care-basics-icf",
+      name: "自立に向けた介護",
+      summary: "ICF・ユニットケア・多職種連携",
+      pages: [
+        {
+          title: "ICFと生活を支える視点",
+          lead: "ICFの構成要素を区別する",
+          terms: [
+            ["ICF", "国際生活機能分類", "人の生活機能を「心身機能・身体構造」「活動」「参加」と、それに影響する「環境因子」「個人因子」の相互作用でとらえる考え方。", "2001年にWHOが採択。できること（プラス面）にも着目する。"],
+            ["活動と参加", "", "活動＝歩く・食べるなど個人が行う生活行為。参加＝家庭や社会で役割を持ち、関わること。", "「している活動」と「できる活動」を区別する。"],
+            ["環境因子と個人因子", "", "環境因子＝建物・福祉用具・家族・制度など外的な要因。個人因子＝年齢・性別・生活歴・価値観など。", ""],
+            ["ICIDH", "国際障害分類", "1980年にWHOが示した障害の分類。機能障害 → 能力障害 → 社会的不利と、一方向で障害をとらえた。", "マイナス面に着目していた点がICFとの違い。"],
+            ["ユニットケア", "", "施設の居室をいくつかのグループ（ユニット）に分け、少人数の家庭的な雰囲気の中で個別ケアを行う。", "1ユニットは原則おおむね10人以下。個室と共同生活室を備える。"],
+            ["リハビリテーション専門職", "", "理学療法士（PT）＝基本動作の訓練。作業療法士（OT）＝応用的動作・作業活動。言語聴覚士（ST）＝言語・聴覚・嚥下機能の訓練。", "嚥下訓練はST。"],
+            ["多職種連携", "", "医師・看護師・リハビリ職・介護支援専門員などが、情報を共有し協働して支援すること。", ""],
+            ["介護予防", "", "要介護状態になることをできる限り防ぎ、要介護状態になっても悪化を防ぐこと。", ""],
+          ],
+        },
+      ],
+    },
+    {
+      id: "care-basics-safety",
+      name: "安全と感染予防",
+      summary: "身体拘束・事故防止・感染症・健康管理",
+      pages: [
+        {
+          title: "事故防止と身体拘束",
+          lead: "3要件と1：29：300",
+          terms: [
+            ["身体拘束の禁止", "", "生命・身体を保護するため緊急やむを得ない場合を除き、身体拘束をしてはならない。", "3要件「切迫性・非代替性・一時性」をすべて満たし、手続きと記録が必要。"],
+            ["身体拘束の具体例", "", "ベッドを柵（サイドレール）で囲む、車いすにベルトで固定する、ミトン型手袋をつける、つなぎ服を着せる、向精神薬を過剰に使う、部屋に鍵をかけて閉じ込めるなど。", ""],
+            ["ヒヤリ・ハット", "", "事故には至らなかったが、ヒヤリとしたりハッとしたりした出来事。", "報告・分析して事故防止に活かす。報告は責任追及のためではない。"],
+            ["ハインリッヒの法則", "", "1件の重大事故の背景には29件の軽微な事故と、300件のヒヤリ・ハットがあるという法則。", "1：29：300"],
+            ["リスクマネジメント", "", "事故を未然に防ぎ、起きた場合には被害を最小限にするための組織的な取り組み。", ""],
+            ["バーンアウト", "燃え尽き症候群", "意欲的に働いていた人が、心身の疲労から急に意欲を失ってしまう状態。", "対人援助職に起こりやすい。"],
+          ],
+        },
+        {
+          title: "感染予防",
+          lead: "感染経路と消毒方法をセットで覚える",
+          terms: [
+            ["スタンダードプリコーション", "標準予防策", "すべての人の血液・体液・分泌物・排泄物・傷のある皮膚・粘膜は、感染の可能性があるものとして扱う予防策。", "手洗いが基本。手袋は1ケアごとに交換し、外した後も手洗いをする。"],
+            ["手洗い", "", "感染予防の基本。流水と石けんで、指先・指の間・親指・手首まで洗う。", "ノロウイルスなどアルコールが効きにくい病原体があるため、流水での手洗いが大切。"],
+            ["ノロウイルス", "", "冬に多い感染性胃腸炎の原因。嘔吐・下痢を起こし、感染力が強い。", "アルコールは効きにくい。嘔吐物は次亜塩素酸ナトリウムで処理する。"],
+            ["インフルエンザ", "", "飛沫感染・接触感染で広がる。急な高熱、関節痛などが起こる。", "マスク・手洗い・予防接種が有効。"],
+            ["結核", "けっかく", "結核菌による感染症。咳や痰が2週間以上続く。", "空気感染する。"],
+            ["疥癬", "かいせん", "ヒゼンダニが皮膚に寄生して起こる。強いかゆみがある。", "角化型（ノルウェー疥癬）は感染力が強く、一定期間の個室管理が必要。"],
+            ["MRSA", "メチシリン耐性黄色ブドウ球菌", "抗菌薬が効きにくい黄色ブドウ球菌。健康な人には害が少ないが、抵抗力が低い人に感染症を起こす。", "接触感染。手洗いの徹底が基本。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* コミュニケーション技術 */
+defineField({
+  id: "comm-skills",
+  name: "コミュニケーション技術",
+  description: "相談援助の技法、障害に応じた対応、記録",
+  themes: [
+    {
+      id: "comm-skills-techniques",
+      name: "相談援助の技法",
+      summary: "傾聴・質問の種類・応答の技法",
+      pages: [
+        {
+          title: "聴き方と質問のしかた",
+          lead: "技法の名前と、使う場面をセットで覚える",
+          terms: [
+            ["傾聴", "けいちょう", "相手の話に関心を持ち、言葉だけでなく気持ちにも耳を傾けて聴くこと。", "うなずき・あいづちで、聴いていることを伝える。"],
+            ["開かれた質問", "オープン・クエスチョン", "「どのように感じましたか」など、相手が自由に答えられる質問。", "話を広げ、思いを引き出すのに向く。"],
+            ["閉じられた質問", "クローズド・クエスチョン", "「はい」「いいえ」や一言で答えられる質問。", "事実の確認や、話すことが難しい人に向く。"],
+            ["繰り返し", "", "相手の言葉の一部をそのまま返すことで、聴いていることを伝える技法。", ""],
+            ["言い換え", "", "相手の話の内容を、援助者の言葉で言い直して返す技法。", ""],
+            ["要約", "ようやく", "相手の話の要点をまとめて返す技法。", "話が整理され、理解が正しいかを確認できる。"],
+            ["明確化", "めいかくか", "相手がうまく言葉にできない思いを、援助者が言葉にして確認する技法。", ""],
+            ["直面化", "ちょくめんか", "相手の言葉と行動の矛盾などに気づき、向き合えるよう働きかける技法。", ""],
+          ],
+        },
+      ],
+    },
+    {
+      id: "comm-skills-disability",
+      name: "障害に応じたコミュニケーション",
+      summary: "難聴・視覚障害・失語症・構音障害",
+      pages: [
+        {
+          title: "障害の特性に応じた伝え方",
+          lead: "障害ごとに有効な方法を覚える",
+          terms: [
+            ["老人性難聴", "ろうじんせいなんちょう", "加齢による感音性難聴。高い音から聞こえにくくなる。", "耳元で、低めの声で、ゆっくり、はっきり話す。大声はかえって聞き取りにくい。"],
+            ["伝音性難聴・感音性難聴", "", "伝音性＝外耳・中耳の障害で、音を大きくすると聞こえやすい。感音性＝内耳・聴神経の障害で、音がゆがんで聞こえる。", "補聴器は伝音性難聴で特に効果がある。老人性難聴は感音性。"],
+            ["視覚障害のある人への対応", "", "声をかけてから触れる。物の位置は時計の文字盤に例えて伝える（クロックポジション）。", "「あれ」「そこ」などの指示語は使わない。"],
+            ["運動性失語", "ブローカ失語", "言葉の理解は比較的保たれるが、話すことが難しい失語。", "「はい・いいえ」で答えられる閉じられた質問が有効。"],
+            ["感覚性失語", "ウェルニッケ失語", "流暢に話せるが、言葉の理解が難しい失語。言い間違いが多い。", "身振り、絵、実物などを使って伝える。"],
+            ["構音障害", "こうおんしょうがい", "発声・発音に関わる器官の障害で、言葉をうまく発音できない状態。言葉の理解や文字の読み書きは保たれる。", "五十音表、文字盤、筆談が有効。"],
+            ["うつ状態の人への対応", "", "安易に励まさず、話をじっくり聴き、気持ちを受け止める。", "「頑張って」などの励ましは避ける。"],
+            ["知的障害のある人への対応", "", "短い言葉で、具体的に、わかりやすく伝える。", "子ども扱いしない。絵や写真を活用する。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "comm-skills-records",
+      name: "記録と報告",
+      summary: "記録の原則・SOAP・会議",
+      pages: [
+        {
+          title: "チームで情報を共有する",
+          lead: "記録の書き方と報告のしかた",
+          terms: [
+            ["介護記録", "", "介護の内容や利用者の状態を書き残したもの。チームでの情報共有、サービスの質の向上、事故時の証拠になる。", "事実を客観的に、5W1Hで、その日のうちに書く。"],
+            ["主観的情報・客観的情報", "", "主観的情報＝利用者が話した内容。客観的情報＝観察や測定で得た事実。", "利用者の言葉は、そのまま「 」で記録する。"],
+            ["SOAP", "ソープ", "記録の形式の一つ。S＝主観的情報、O＝客観的情報、A＝アセスメント、P＝計画。", ""],
+            ["報告のしかた", "", "結論を先に、事実と推測を分けて伝える。", "事故や急変は、直ちに口頭で報告してから記録する。"],
+            ["記録の訂正", "", "誤りは二重線を引いて訂正し、訂正者がわかるようにする。", "修正液や塗りつぶしは使わない。"],
+            ["カンファレンス", "", "関係者が集まり、利用者の支援について情報を共有し、検討する会議。", ""],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 生活支援技術 */
+defineField({
+  id: "life-support",
+  name: "生活支援技術",
+  description: "住環境・移動・身じたく・食事・入浴・排泄・睡眠・終末期",
+  themes: [
+    {
+      id: "life-support-housing",
+      name: "居住環境",
+      summary: "住宅改修・福祉用具・安全な住まい",
+      pages: [
+        {
+          title: "安全で暮らしやすい住まい",
+          lead: "介護保険の住宅改修と福祉用具の上限額",
+          terms: [
+            ["バリアフリー", "", "高齢者や障害のある人の生活の妨げとなる障壁を取り除くこと。", ""],
+            ["ユニバーサルデザイン", "", "年齢や障害の有無にかかわらず、すべての人が使いやすいように最初から設計すること。", "ロナルド・メイスが提唱。"],
+            ["住宅改修", "じゅうたくかいしゅう", "介護保険で利用できる住宅の改修。手すりの取付け、段差の解消、滑り防止のための床材の変更、引き戸などへの扉の取替え、洋式便器への取替え。", "支給限度基準額は原則20万円。"],
+            ["特定福祉用具販売", "", "入浴や排泄に使うなど、肌に直接触れる用具は貸与ではなく購入の対象。腰掛便座、入浴補助用具、簡易浴槽など。", "購入の限度額は年間10万円。車いすや特殊寝台は貸与。"],
+            ["手すりの高さ", "", "廊下などの手すりは、大腿骨大転子の高さが目安。", ""],
+            ["扉の種類", "", "開閉時に体の移動が少ない引き戸が適している。", "開き戸は体を前後に動かす必要があり、転倒の原因になりやすい。"],
+            ["シックハウス症候群", "", "建材などから出る化学物質による室内空気の汚染で、頭痛・めまい・目やのどの刺激などが起こる。", "こまめな換気が予防になる。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-mobility",
+      name: "移動・移乗の介護",
+      summary: "ボディメカニクス・体位変換・移乗・杖歩行・車いす",
+      pages: [
+        {
+          title: "姿勢と体位変換",
+          lead: "体を小さくまとめ、てこの原理を使う",
+          terms: [
+            ["ボディメカニクス", "", "力学の原理を使い、介護者の負担を少なく、効率よく介護する技術。", "支持基底面を広く、重心を低く、利用者に近づく、大きな筋群を使う、水平に引く、てこの原理を使う、体をねじらない。"],
+            ["支持基底面", "しじきていめん", "体を支えている床面の範囲。広いほど体が安定する。", "介護者は足を前後・左右に開いて支持基底面を広くする。"],
+            ["体位の名前", "", "仰臥位＝あお向け。側臥位＝横向き。腹臥位＝うつ伏せ。端座位＝ベッドの端に腰かけ、足を床につけた姿勢。", "半座位（ファーラー位）＝上半身を約45度起こした姿勢。"],
+            ["体位変換", "仰臥位から側臥位へ", "向く側に立ち、利用者の腕を胸の上で組み、両膝を高く立てる。膝を手前に倒してから、肩を引いて横向きにする。", "体を小さくまとめると摩擦が減る。「膝 → 肩」の順（てこの原理）。褥瘡予防のため2時間ごとを目安に行う。"],
+            ["起き上がりの介助", "仰臥位から端座位へ", "側臥位にして両足をベッドから下ろし、首の下と膝を支え、お尻を支点に弧を描くように上半身を起こす。", "端座位では深く座り、足底を床につける。起き上がった直後はめまい（起立性低血圧）に注意する。"],
+          ],
+        },
+        {
+          title: "移乗・歩行・車いす",
+          lead: "片麻痺の人は「健側」を活かし、介助者は「患側」を守る",
+          terms: [
+            ["車いすへの移乗", "片麻痺のある人", "車いすを健側に、ベッドに対して20〜30度の角度で置き、ブレーキをかけてフットサポートを上げる。健側の手でアームサポートを持ち、健側の足を軸に回って座る。", "介護者は患側に立ち、膝折れを防ぐ。座ったら深く座り直し、足をフットサポートにのせる。"],
+            ["杖歩行", "", "杖は健側の手で持つ。三動作歩行は「杖 → 患側の足 → 健側の足」の順に出す。", "階段の上りは「杖 → 健側 → 患側」、下りは「杖 → 患側 → 健側」。杖の長さは大転子の高さが目安。"],
+            ["介助者の立ち位置", "", "歩行介助では、利用者の患側のやや後方に立つ。", "階段では上りは患側の後方、下りは患側の前方に立つ（いずれも利用者より一段下）。"],
+            ["視覚障害のある人の歩行介助", "", "介助者は半歩前に立ち、利用者に介助者の肘の少し上を軽く握ってもらう。", "狭い所は介助者が前の縦一列。段差や階段の手前で止まり、上りか下りかを伝える。いすは背もたれと座面に触れてもらう。"],
+            ["車いすの操作", "", "段差を上るときはティッピングレバーを踏んで前輪を上げる。段差を下りるときは後ろ向きで後輪から下ろす。", "急な下り坂は後ろ向きで、ゆっくり下りる。"],
+            ["車いすの安全", "", "止まるときは必ずブレーキをかける。立ち上がる前に足をフットサポートから下ろし、フットサポートを上げる。", "動かす前に声をかけ、足がフットサポートにのっているか確かめる。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-grooming",
+      name: "身じたくの介護",
+      summary: "着脱・口腔ケア・義歯・爪切り・ひげそり",
+      pages: [
+        {
+          title: "着脱と口腔ケア",
+          lead: "「脱健着患」と、誤嚥を防ぐ口腔ケアの姿勢",
+          terms: [
+            ["脱健着患", "だっけんちゃっかん", "衣服を脱ぐときは健側から、着るときは患側から行う。", "介護者は患側に立ち、転倒を防ぐ。"],
+            ["衣服の選び方", "", "伸縮性・吸湿性があり、ゆとりのある前開きの服が着脱しやすい。", "ボタンは大きめ、面ファスナーも有効。本人の好みや季節を尊重する。"],
+            ["口腔ケア", "こうくうケア", "口の中を清潔にし、誤嚥性肺炎の予防や、口腔機能の維持・向上を図る。", "口から食べていない人にも必要。"],
+            ["口腔ケアの方法", "", "座位で顎を引いた姿勢で行う。歯ブラシはペンを持つように持ち、小刻みに動かす。舌は奥から手前に向かって清掃する。", "ベッド上では健側を下にした側臥位で行う。片麻痺の人は麻痺側に食べかすが残りやすい。"],
+            ["義歯の扱い", "ぎし", "総義歯は、外すときは下顎から、入れるときは上顎から。", "流水と義歯用ブラシで洗う（歯磨き粉は傷がつくので使わない）。熱湯は変形するので使わない。乾燥しないよう水か義歯洗浄剤に入れて保管する。"],
+          ],
+        },
+        {
+          title: "爪切りと整容",
+          lead: "切り方・拭く方向・医療職に任せる場合",
+          terms: [
+            ["爪切り", "つめきり", "入浴後など爪が柔らかいときに、少しずつ切る。手の爪は指先の形に沿って丸く、足の爪はまっすぐ切って角を少し落とす（スクエアオフ）。", "足の爪の角を深く切ると巻き爪の原因になる。切った後はやすりで整える。爪や皮膚に異常がある場合、糖尿病などで専門的な管理が必要な場合は医療職に任せる。"],
+            ["ひげそり", "", "電気かみそりは皮膚を軽く伸ばし、ひげの流れと逆方向に当てる。", "そった後は蒸しタオルで拭き、クリームなどで保湿する。"],
+            ["目の清拭", "目やにの拭き取り", "清潔なガーゼやタオルで、目頭から目尻に向かって拭く。", "片目ずつ、拭く面を変える（感染予防）。固まった目やには、湿らせて柔らかくしてから拭く。"],
+            ["耳の清潔", "", "耳の入り口付近の汚れを、綿棒などで優しく拭き取る。", "奥まで入れない。耳垢が詰まって固まった状態（耳垢塞栓）の除去は医療職が行う。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-eating",
+      name: "食事の介護",
+      summary: "姿勢・介助の方法・誤嚥予防・病気に応じた食事",
+      pages: [
+        {
+          title: "安全な食事介助",
+          lead: "顎を引く姿勢と、目線を合わせた介助",
+          terms: [
+            ["食事の姿勢", "", "いすに深く座り、足底を床につけ、やや前傾姿勢で顎を引く。テーブルは肘をのせられる高さにする。", "顎が上がると誤嚥しやすい。ベッド上ではできるだけ上半身を起こし、顎を引く。"],
+            ["食事介助の基本", "", "介助者は利用者の横に座り、目線の高さを合わせる。スプーンは下から口に運び、一口量は少なめにする。", "飲み込んだのを確認してから次を入れる。立ったまま介助すると利用者の顎が上がり、誤嚥しやすい。"],
+            ["片麻痺のある人の食事介助", "", "健側から介助し、食べ物は健側の口に入れる。", "患側の頬の内側に食べ物が残りやすいので、食後に確認する。"],
+            ["誤嚥", "ごえん", "食べ物や飲み物、唾液が誤って気管に入ること。", "むせのない誤嚥（不顕性誤嚥）もある。誤嚥性肺炎の原因になる。"],
+            ["嚥下障害のある人の食事", "", "とろみをつける、ゼリー状にするなど、まとまりやすく飲み込みやすい形態にする。", "水やお茶などさらさらした液体、パサパサ・バラバラした食品（きざみ食・焼き魚など）はむせやすい。"],
+          ],
+        },
+        {
+          title: "状態に応じた食事",
+          lead: "脱水のサインと、病気ごとの制限",
+          terms: [
+            ["脱水", "だっすい", "体内の水分が不足した状態。高齢者はのどの渇きを感じにくく、脱水になりやすい。", "皮膚や口の乾燥、尿量の減少、微熱、ぼんやりするなどがみられる。こまめに水分をすすめる。"],
+            ["クロックポジション", "", "食器の位置を、時計の文字盤に例えて伝える方法。", "視覚障害のある人の食事で使う。「3時の方向に汁物があります」など。"],
+            ["腎臓病の食事", "", "たんぱく質・塩分・カリウムを制限することが多い。", "カリウムは生野菜や果物に多い。野菜はゆでこぼすと減らせる。"],
+            ["糖尿病の食事", "", "エネルギー量を適切にし、栄養バランスのとれた食事を規則正しくとる。", "低血糖（冷や汗、ふるえ、動悸）に注意し、症状があれば糖分をとる。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-bathing",
+      name: "入浴・清潔の介護",
+      summary: "入浴の注意・ヒートショック・足浴・洗髪・清拭",
+      pages: [
+        {
+          title: "入浴の介助",
+          lead: "温度・タイミング・健側の活用",
+          terms: [
+            ["入浴の注意", "", "湯温は38〜41℃程度。食事の直前・直後や空腹時は避け、入浴前に排泄を済ませ、体調を確認する。", "入浴後は水分補給をし、体を休める。"],
+            ["ヒートショック", "", "急激な温度変化で血圧が大きく変動し、脳卒中や心筋梗塞などを起こすこと。", "冬の入浴時に多い。脱衣所や浴室をあらかじめ暖め、居室との温度差を小さくする。"],
+            ["片麻痺のある人の入浴", "", "浴槽へは健側の足から入る。湯温は健側で確かめてもらう。", "シャワーチェア、浴槽台、手すりを使い、健側の手で手すりを持つ。"],
+            ["シャワー浴", "", "湯温は介護者が先に確かめてから、足元からかける。", "利用者にも健側で湯温を確かめてもらう。"],
+            ["胃ろう・ストーマのある人の入浴", "", "胃ろうは特別な保護をしなくても入浴できることが多い。ストーマもパウチを付けたまま入浴できる。", ""],
+          ],
+        },
+        {
+          title: "部分浴と清拭",
+          lead: "洗い方・拭き方の方向と順番",
+          terms: [
+            ["足浴", "そくよく", "足を湯につけて洗う部分浴。湯温は40℃前後で、指の間も丁寧に洗う。", "洗った後は指の間の水分をよく拭き取る（白癬の予防）。血行がよくなり、安眠にもつながる。"],
+            ["洗髪", "せんぱつ", "指の腹で頭皮をマッサージするように洗い、爪を立てない。", "ベッド上では洗髪器を使う。終わったらすぐに乾かす。"],
+            ["清拭", "せいしき", "入浴できない人の体を、温かいタオルで拭いて清潔にする。末梢から中枢に向かって拭く。", "拭いた直後に乾いたタオルで水分を拭き取る（気化熱で体が冷えるのを防ぐ）。不要な露出を避ける。"],
+            ["陰部洗浄", "いんぶせんじょう", "陰部をぬるま湯で洗い、清潔を保つ。", "女性は尿道口から肛門の方向（前から後ろ）に洗う。洗った後は水分を十分に拭き取る。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-toileting",
+      name: "排泄の介護",
+      summary: "尿失禁の種類・排泄の介助・便秘への対応",
+      pages: [
+        {
+          title: "尿失禁の種類",
+          lead: "原因と対応をセットで覚える",
+          terms: [
+            ["機能性尿失禁", "", "排尿機能に問題はないが、認知症や運動機能の低下で、トイレの場所がわからない・間に合わないために失禁する。", "排泄パターンの把握、トイレの表示、誘導が有効。"],
+            ["腹圧性尿失禁", "", "咳やくしゃみ、重い物を持つなど、お腹に力が入ったときに漏れる。女性に多い。", "骨盤底筋訓練が有効。"],
+            ["切迫性尿失禁", "", "急に強い尿意が起こり、トイレまで我慢できずに漏れる。", "早めのトイレ誘導、トイレに近い部屋や着脱しやすい衣服が有効。"],
+            ["溢流性尿失禁", "いつりゅうせいにょうしっきん", "尿が出にくいために膀胱に尿がたまり、あふれるように少しずつ漏れる。", "前立腺肥大症の男性に多い。"],
+          ],
+        },
+        {
+          title: "排泄の介助と便秘への対応",
+          lead: "姿勢・置き場所・腸の走行",
+          terms: [
+            ["排泄の姿勢", "", "座位でやや前傾姿勢になると、腹圧がかかり排泄しやすい。", "足底を床につける。"],
+            ["ポータブルトイレ", "", "ベッドの近くの健側に置き、ベッドと同じくらいの高さにする。", "羞恥心に配慮してカーテンなどで隠す。使用後は速やかに片付けて換気する。"],
+            ["おむつ交換", "", "側臥位にして汚れたおむつを内側に丸め込み、新しいおむつの中心を背骨に合わせて敷く。仰臥位に戻して当てる。", "陰部は前から後ろへ拭く。安易なおむつの使用は自尊心の低下や寝たきりにつながる。"],
+            ["便秘の予防", "", "水分と食物繊維を十分にとり、適度な運動をする。", "朝食後は便意が起こりやすい（胃・結腸反射）。便意を我慢しない。"],
+            ["腹部マッサージ", "ふくぶマッサージ", "便秘の解消のため、お腹を腸の走行に沿ってマッサージする。", "「の」の字を書くように、時計回り（右下腹部 → 上 → 左 → 左下腹部）に行う。"],
+            ["浣腸", "かんちょう", "市販のディスポーザブルグリセリン浣腸器を使った浣腸は、介護職も行える。", "左側臥位で行う（腸の走行に沿って薬液が入りやすい）。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-housework",
+      name: "家事の介護",
+      summary: "食中毒予防・洗濯・しみ抜き",
+      pages: [
+        {
+          title: "衛生的な家事",
+          lead: "食中毒の原因と予防法",
+          terms: [
+            ["食中毒予防の3原則", "", "菌をつけない・増やさない・やっつける（加熱）。", ""],
+            ["腸管出血性大腸菌（O157）", "", "少量でも感染し、腹痛や血便を起こす。", "中心部を75℃で1分以上加熱すると予防できる。"],
+            ["黄色ブドウ球菌", "", "手指の傷などから食品に付き、毒素をつくる。", "毒素は加熱しても壊れにくい。手に傷がある人は調理に注意する。"],
+            ["洗濯表示", "", "衣類の取扱いを記号で示したもの。", "おけ＝洗濯、三角＝漂白、四角＝乾燥、アイロン形＝アイロン、丸＝クリーニング。"],
+            ["しみ抜き", "", "しょうゆ・コーヒーなど水溶性のしみは水で、口紅・油性ボールペンなど油性のしみはベンジンなどの溶剤で落とす。", "しみの裏に布を当て、外側から内側に向かってたたく。"],
+            ["悪質商法", "", "高齢者は訪問販売や電話勧誘による契約トラブルに巻き込まれやすい。", "困ったときは消費生活センターに相談する。訪問販売のクーリング・オフは8日間。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "life-support-sleep",
+      name: "睡眠・終末期の介護",
+      summary: "安眠の支援・ACP・死の受容",
+      pages: [
+        {
+          title: "安眠への支援",
+          lead: "生活リズムを整えることが基本",
+          terms: [
+            ["安眠への支援", "", "日中の活動を増やし、生活リズムを整える。寝室の温度・湿度・明るさ・音を整える。", "就寝前のカフェイン・アルコール・喫煙を避ける。"],
+            ["概日リズム", "がいじつリズム", "約24時間周期の体内時計のリズム。", "朝、日光を浴びるとリズムが整う。"],
+            ["睡眠薬を飲んでいる人への注意", "", "ふらつきや転倒に注意する。", "夜間のトイレへの移動に特に注意する。"],
+            ["高齢者の睡眠の特徴", "", "眠りが浅くなり、夜中に目が覚める（中途覚醒）、朝早く目が覚める（早朝覚醒）ことが増える。", ""],
+          ],
+        },
+        {
+          title: "終末期の介護",
+          lead: "本人の意思を中心に、家族も支える",
+          terms: [
+            ["ターミナルケア", "終末期ケア", "死が近づいた人の苦痛を和らげ、その人らしく最期を迎えられるよう支える介護。", ""],
+            ["アドバンス・ケア・プランニング", "ACP・人生会議", "人生の最終段階で受けたい医療やケアについて、本人が家族や医療・介護職と繰り返し話し合い、共有する取り組み。", "一度決めても、気持ちが変われば何度でも話し合う。"],
+            ["死の受容の5段階", "", "否認 → 怒り → 取り引き → 抑うつ → 受容。", "キューブラー・ロスが示した。", { person: "キューブラー・ロス" }],
+            ["死が近づいたときの変化", "", "呼吸が不規則になる（チェーンストークス呼吸、下顎呼吸）、尿量が減る、手足が冷たくなる、チアノーゼなど。", "聴覚は最後まで保たれるといわれ、声をかけ続ける。"],
+            ["グリーフケア", "", "大切な人を亡くした家族などの悲嘆に寄り添い、支えること。", ""],
+            ["デスカンファレンス", "", "利用者が亡くなった後、関わった職員でケアを振り返り、今後に活かす会議。", ""],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 介護過程 */
+defineField({
+  id: "care-process",
+  name: "介護過程",
+  description: "アセスメントから評価までの流れ",
+  themes: [
+    {
+      id: "care-process-basics",
+      name: "介護過程の展開",
+      summary: "アセスメント・目標・計画・評価",
+      pages: [
+        {
+          title: "介護過程の流れ",
+          lead: "アセスメント → 計画 → 実施 → 評価",
+          terms: [
+            ["介護過程", "かいごかてい", "利用者の望む生活の実現に向けて、アセスメント → 計画の立案 → 実施 → 評価を繰り返す、客観的・科学的な思考過程。", "目的は利用者の自立支援とQOLの向上。"],
+            ["アセスメント", "", "情報を収集し、分析・解釈して、利用者の生活課題を明らかにすること。", "介護過程の最初の段階。"],
+            ["生活課題", "せいかつかだい", "利用者が望む生活を実現するために、解決すべき課題。", ""],
+            ["長期目標・短期目標", "", "長期目標＝最終的にめざす状態。短期目標＝長期目標を達成するための段階的な目標。", "目標の主語は利用者。具体的で、評価できる表現にする。"],
+            ["介護計画", "", "生活課題を解決するための目標と、具体的な支援内容・方法を示した計画。", "誰が行っても同じ支援ができるよう、具体的に書く。"],
+            ["評価", "", "目標の達成度や、支援内容が適切だったかを確かめること。", "評価日はあらかじめ計画で決めておく。"],
+            ["ケアプランと介護計画", "", "介護支援専門員が作るケアプランの方針に沿って、各サービス事業所が個別の介護計画を作る。", ""],
+            ["事例研究", "", "特定の事例を分析し、支援の改善やチームの学びにつなげること。", "発表時は個人が特定されないようにし、本人の同意を得る。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 発達と老化の理解 */
+defineField({
+  id: "development",
+  name: "発達と老化の理解",
+  description: "発達段階、老化と心理、高齢者に多い病気",
+  themes: [
+    {
+      id: "development-stages",
+      name: "人間の成長と発達",
+      summary: "発達理論・知能・乳幼児の発達",
+      pages: [
+        {
+          title: "発達の理論",
+          lead: "人物と理論はセットで出題される",
+          terms: [
+            ["エリクソンの発達段階", "", "人生を8つの段階に分け、各段階に発達課題（心理社会的危機）があるとした。", "老年期は「統合 対 絶望」。青年期は「アイデンティティ（自我同一性）の確立」。", { person: "エリクソン" }],
+            ["ピアジェの発達段階", "", "思考の発達を、感覚運動期 → 前操作期 → 具体的操作期 → 形式的操作期の4段階で示した。", "前操作期（2〜7歳）は自己中心性が特徴。", { person: "ピアジェ" }],
+            ["ハヴィガーストの発達課題", "", "各発達段階で達成すべき課題を示した。", "老年期：体力や健康の衰え、退職と収入の減少、配偶者の死への適応など。", { person: "ハヴィガースト" }],
+            ["流動性知能・結晶性知能", "", "流動性知能＝新しいことを学び、すばやく処理する力。結晶性知能＝経験や学習で積み重ねた知識や判断力。", "流動性知能は加齢で低下しやすく、結晶性知能は高齢になっても維持されやすい。"],
+            ["愛着", "アタッチメント", "乳幼児が特定の養育者との間に結ぶ、情緒的な絆。", "ボウルビィが提唱。"],
+            ["原始反射", "げんしはんしゃ", "新生児にみられ、成長とともに消える反射。", "モロー反射（驚いて抱きつくような動き）、吸啜反射、把握反射など。"],
+            ["スキャモンの発育曲線", "", "体の発育を、一般型・神経型・リンパ型・生殖型の4つの曲線で示した。", "神経型は乳幼児期に急速に発達する。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "development-aging",
+      name: "老化と心理",
+      summary: "老化の考え方・適応・フレイル",
+      pages: [
+        {
+          title: "老化の理解",
+          lead: "老年期の心理と、フレイル・サルコペニア",
+          terms: [
+            ["生理的老化と病的老化", "", "生理的老化＝誰にでも起こる加齢による変化。病的老化＝病気などにより老化が急速に進むこと。", ""],
+            ["ライチャードの人格類型", "", "引退後の高齢者の人格を、円熟型・安楽いす型・装甲型・憤慨型・自責型の5つに分けた。", "円熟型・安楽いす型・装甲型が適応型、憤慨型・自責型が不適応型。", { person: "ライチャード" }],
+            ["離脱理論・活動理論・継続性理論", "", "離脱理論＝社会から離れることが自然で幸福。活動理論＝活動を続けることが幸福。継続性理論＝それまでの生活や性格を保つことが適応につながる。", ""],
+            ["サクセスフル・エイジング", "", "病気や障害が少なく、心身の機能を保ち、社会と積極的に関わり続ける、幸福な老い方。", ""],
+            ["エイジズム", "", "年齢を理由とした偏見や差別。", "ロバート・バトラーが提唱。"],
+            ["喪失体験", "そうしつたいけん", "老年期には、健康、仕事や役割、収入、配偶者や友人など、さまざまなものを失う体験が重なる。", ""],
+            ["フレイル", "", "加齢により心身の活力が低下し、要介護の一歩手前にある状態。", "適切な対応で健康な状態に戻ることができる（可逆性）。"],
+            ["サルコペニア", "", "加齢により筋肉量が減り、筋力や身体機能が低下した状態。", ""],
+          ],
+        },
+      ],
+    },
+    {
+      id: "development-diseases",
+      name: "高齢者に多い症状と病気",
+      summary: "老年症候群・廃用症候群・骨粗鬆症",
+      pages: [
+        {
+          title: "高齢者の症状と病気の特徴",
+          lead: "症状が典型的に出にくいことを押さえる",
+          terms: [
+            ["老年症候群", "ろうねんしょうこうぐん", "高齢者に多くみられ、原因が複数あり、治療と介護の両方が必要な症状の総称。", "転倒、尿失禁、低栄養、せん妄、廃用症候群など。"],
+            ["廃用症候群", "生活不活発病", "体を動かさない状態が続くことで、心身の機能が低下すること。", "筋萎縮、関節拘縮、骨粗鬆症、褥瘡、起立性低血圧、うつなど。"],
+            ["骨粗鬆症", "こつそしょうしょう", "骨量が減り、骨がもろくなる病気。閉経後の女性に多い。", "骨折しやすい部位：大腿骨頸部、脊椎（圧迫骨折）、手首（橈骨遠位端）、上腕骨。"],
+            ["大腿骨頸部骨折", "だいたいこつけいぶこっせつ", "転倒により太ももの付け根を骨折すること。", "寝たきりの原因になりやすい。"],
+            ["変形性膝関節症", "へんけいせいしつかんせつしょう", "膝の軟骨がすり減り、痛みや変形が起こる。女性や肥満の人に多い。", "O脚になりやすい。"],
+            ["高齢者の肺炎", "", "発熱や咳などの典型的な症状が出にくく、食欲がない、元気がないなどで気づくことがある。", "誤嚥性肺炎が多い。"],
+            ["高齢者と薬", "", "肝臓・腎臓の働きが低下し、薬が体に残りやすく、副作用が出やすい。", "多くの薬を飲むことで有害な作用が出る状態をポリファーマシーという。"],
+            ["前立腺肥大症", "ぜんりつせんひだいしょう", "男性の前立腺が大きくなり、尿が出にくい、頻尿などが起こる。", "溢流性尿失禁の原因になる。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 認知症の理解 */
+defineField({
+  id: "dementia",
+  name: "認知症の理解",
+  description: "症状・原因疾患・ケアの考え方・制度",
+  themes: [
+    {
+      id: "dementia-basics",
+      name: "認知症の基礎知識",
+      summary: "定義・MCI・若年性認知症・検査・せん妄とうつ病",
+      pages: [
+        {
+          id: "definition",
+          title: "認知症の基本と検査",
+          lead: "定義・関連する状態・代表的な検査",
+          terms: [
+            {
+              id: "dementia-basics.definition.dementia",
+              term: "認知症",
+              reading: "にんちしょう",
+              definition: "いったん正常に発達した認知機能が、後天的な脳の障害によって持続的に低下し、日常生活や社会生活に支障をきたしている状態。",
+              point: "「後天的」「持続的に低下」「生活に支障」がキーワード。生まれつきの知的障害とは区別される。"
+            },
+            {
+              id: "dementia-basics.definition.aging",
+              term: "加齢によるもの忘れ",
+              reading: "かれいによるものわすれ",
+              definition: "体験の一部を忘れるもの忘れ。本人に自覚があり、ヒントで思い出せることが多く、ほとんど進行せず生活に大きな支障はない。",
+              point: "認知症のもの忘れは「体験全体を忘れる」「自覚に乏しい」「進行する」「生活に支障がある」。",
+              example: "朝食に何を食べたか思い出せない（加齢）／朝食を食べたこと自体を忘れる（認知症）。"
+            },
+            {
+              id: "dementia-basics.definition.mci",
+              term: "軽度認知障害（MCI）",
+              reading: "けいどにんちしょうがい",
+              definition: "記憶などの認知機能の低下があるが、日常生活はおおむね自立しており、認知症とはいえない状態。",
+              point: "認知症の前段階とされる。一部は認知症へ移行するが、正常な状態に戻る人もいる。"
+            },
+            {
+              id: "dementia-basics.definition.young",
+              term: "若年性認知症",
+              reading: "じゃくねんせいにんちしょう",
+              definition: "65歳未満で発症した認知症。働き盛りで発症することが多く、就労や経済面、子育てなどの問題が生じやすい。配偶者が介護者になることが多い。",
+              point: "「65歳未満で発症」。原因疾患はアルツハイマー型が最も多い。介護保険は40歳から利用できる（特定疾病）。"
+            },
+            {
+              id: "dementia-assessment.scales.hdsr",
+              term: "HDS-R",
+              reading: "改訂長谷川式簡易知能評価スケール",
+              definition: "年齢、日時や場所の見当識、言葉の記憶、計算、数字の逆唱などを質問して評価する。",
+              point: "9項目・30点満点で、20点以下は認知症の疑い。長谷川和夫が開発。"
+            },
+            {
+              id: "dementia-assessment.scales.mmse",
+              term: "MMSE",
+              reading: "ミニメンタルステート検査",
+              definition: "見当識、記憶、計算などの質問に加え、図形の模写や文章を書くなどの動作も含めて評価する。",
+              point: "30点満点で、23点以下は認知症の疑い。国際的に広く使われている。"
+            }
+          ]
+        },
+        {
+          id: "differential",
+          title: "認知症と区別したい状態",
+          lead: "認知症と間違えやすいが、原因や経過が異なる",
+          terms: [
+            {
+              id: "dementia-basics.differential.delirium",
+              term: "せん妄",
+              reading: "せんもう",
+              definition: "軽い意識障害を背景に、注意力の低下、幻覚、興奮などが急に現れる状態。脱水、発熱、感染症、薬の副作用、手術、環境の変化などが原因となる。",
+              point: "認知症との違いは「急に発症」「意識障害がある」「1日の中で症状が変動する」。夕方〜夜間に起こりやすい（夜間せん妄）。原因を取り除くと改善することが多い。"
+            },
+            {
+              id: "dementia-basics.differential.depression",
+              term: "老年期うつ病",
+              reading: "ろうねんきうつびょう",
+              definition: "高齢期に起こるうつ病。気分の落ち込みや意欲の低下に加え、頭痛・食欲不振・不眠など体の不調を強く訴えることが多い。",
+              point: "自殺の危険に注意する。安易に励まさず、話を受け止めて休養を促す。"
+            },
+            {
+              id: "dementia-basics.differential.pseudo",
+              term: "仮性認知症",
+              reading: "かせいにんちしょう",
+              definition: "うつ病などにより、認知機能が低下して認知症のようにみえる状態。うつ病の治療によって改善が期待できる。",
+              point: "本人がもの忘れを自覚し、強く訴えるのが特徴。認知症では自覚に乏しいことが多い。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dementia-symptoms",
+      name: "認知症の主な症状",
+      summary: "中核症状と行動・心理症状（BPSD）",
+      pages: [
+        {
+          id: "core",
+          title: "中核症状",
+          lead: "脳の障害によって直接起こり、多くの人にみられる症状",
+          terms: [
+            {
+              id: "dementia-symptoms.core.memory",
+              term: "記憶障害",
+              reading: "きおくしょうがい",
+              definition: "新しいことを覚えられなくなる障害。最近の出来事の記憶（近時記憶）から失われやすく、体験したこと自体を忘れてしまう。",
+              point: "昔の記憶（遠隔記憶）は比較的保たれる。",
+              example: "食事をしたこと自体を忘れ、「まだ食べていない」と言う。"
+            },
+            {
+              id: "dementia-symptoms.core.orientation",
+              term: "見当識障害",
+              reading: "けんとうしきしょうがい",
+              definition: "時間・場所・人物がわからなくなる障害。",
+              point: "「時間 → 場所 → 人物」の順に障害されやすい。",
+              example: "季節に合わない服を着る。自宅にいるのに「家に帰る」と言う。"
+            },
+            {
+              id: "dementia-symptoms.core.judgment",
+              term: "理解・判断力の障害",
+              reading: "りかい・はんだんりょくのしょうがい",
+              definition: "考える速さが落ち、物事を理解したり、状況に合った判断をしたりすることが難しくなる。",
+              point: "2つ以上のことが重なると処理できない。いつもと違う出来事で混乱しやすい。"
+            },
+            {
+              id: "dementia-symptoms.core.executive",
+              term: "実行機能障害",
+              reading: "じっこうきのうしょうがい",
+              definition: "計画を立て、手順どおりに物事を進めることができなくなる障害。",
+              example: "料理の段取りがわからず、手順どおりに作れない。"
+            },
+            {
+              id: "dementia-symptoms.core.attention",
+              term: "注意障害",
+              reading: "ちゅういしょうがい",
+              definition: "注意を集中したり、続けたり、複数のことに同時に注意を向けたりすることが難しくなる障害。",
+              point: "周りの音や動きに気を取られやすい。食事中に手が止まる、作業を途中でやめてしまうなどがみられる。"
+            },
+            {
+              id: "dementia-symptoms.core.aphasia",
+              term: "失語",
+              reading: "しつご",
+              definition: "話す・聞いて理解する・読む・書くといった言葉の働きが障害される。",
+              point: "発声器官（口・のど）の障害ではない。",
+              example: "物の名前が出てこない。言われたことが理解できない。"
+            },
+            {
+              id: "dementia-symptoms.core.apraxia",
+              term: "失行",
+              reading: "しっこう",
+              definition: "手足の運動機能に問題がないのに、目的に沿った動作ができなくなる。",
+              example: "服の着方がわからない（着衣失行）。"
+            },
+            {
+              id: "dementia-symptoms.core.agnosia",
+              term: "失認",
+              reading: "しつにん",
+              definition: "視覚や聴覚などの感覚に問題がないのに、見たもの・聞いたものなどが何かを認識できなくなる。",
+              example: "家族の顔を見ても誰かわからない（相貌失認）。"
+            }
+          ]
+        },
+        {
+          id: "bpsd",
+          title: "行動・心理症状（BPSD）",
+          lead: "中核症状に、性格・環境・体調・人間関係が影響して現れる",
+          terms: [
+            {
+              id: "dementia-symptoms.bpsd.wandering",
+              term: "徘徊",
+              reading: "はいかい",
+              definition: "道に迷うなどして歩き回ること。本人なりの目的や理由があることが多い。",
+              point: "近年は「ひとり歩き」とも表現される。理由を理解しようとすることが対応の基本。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.theft-delusion",
+              term: "物盗られ妄想",
+              reading: "ものとられもうそう",
+              definition: "しまった場所を忘れ、「盗まれた」と思い込むこと。身近な介護者が疑われやすい。",
+              point: "アルツハイマー型認知症の初期に多い。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.hallucination",
+              term: "幻覚",
+              reading: "げんかく",
+              definition: "実際にはないものを、あるように感じること。見える（幻視）、聞こえる（幻聴）などがある。",
+              point: "ありありとした幻視はレビー小体型認知症に特徴的。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.sundowning",
+              term: "夕暮れ症候群",
+              reading: "ゆうぐれしょうこうぐん",
+              definition: "夕方になると落ち着かなくなり、「家に帰る」と言って出て行こうとするなどの行動がみられること。",
+              point: "帰宅願望として現れることが多い。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.aggression",
+              term: "暴言・暴力",
+              reading: "ぼうげん・ぼうりょく",
+              definition: "大声で怒鳴る、たたくなどの行動。不安や不快、思いをうまく伝えられないことが背景にある。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.resistance",
+              term: "介護への抵抗",
+              reading: "かいごへのていこう",
+              definition: "入浴や着替えなどの介護を拒むこと。状況が理解できない不安や羞恥心が背景にあることが多い。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.depression",
+              term: "抑うつ",
+              reading: "よくうつ",
+              definition: "気分が落ち込み、意欲や活動性が低下した状態。認知症の初期にもよくみられる。"
+            },
+            {
+              id: "dementia-symptoms.bpsd.pica",
+              term: "異食",
+              reading: "いしょく",
+              definition: "食べ物ではないものを口に入れたり、食べたりすること。",
+              point: "誤飲・窒息の危険があるため、手の届く所に危険な物を置かない。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dementia-causes",
+      name: "認知症の原因疾患",
+      summary: "四大認知症・慢性硬膜下血腫・正常圧水頭症",
+      pages: [
+        {
+          id: "main",
+          title: "主な原因疾患",
+          lead: "四大認知症と、手術で改善が期待できる2つ",
+          terms: [
+            {
+              id: "dementia-causes.main.alzheimer",
+              term: "アルツハイマー型認知症",
+              reading: "あるつはいまーがたにんちしょう",
+              definition: "原因疾患として最も多い。脳の神経細胞が減り、海馬を中心に脳が萎縮する。記憶障害から始まり、ゆっくり進行する。",
+              point: "女性に多い。物盗られ妄想、取り繕い（できないことをごまかす）がみられる。"
+            },
+            {
+              id: "dementia-causes.main.vascular",
+              term: "血管性認知症",
+              reading: "けっかんせいにんちしょう",
+              definition: "脳梗塞や脳出血などの脳血管障害が原因。障害された部位によって、できることとできないことが混在する（まだら認知症）。",
+              point: "男性に多い。段階的に悪化する。感情失禁（感情のコントロールが難しい）がみられる。高血圧などの生活習慣病が危険因子。"
+            },
+            {
+              id: "dementia-causes.main.lewy",
+              term: "レビー小体型認知症",
+              reading: "れびーしょうたいがたにんちしょう",
+              definition: "レビー小体という物質が脳にたまって起こる。ありありとした幻視、パーキンソン症状、認知機能の日内変動が特徴。",
+              point: "レム睡眠行動障害（夢に合わせて大声や体の動きが出る）もみられる。歩行が不安定で転倒に注意。"
+            },
+            {
+              id: "dementia-causes.main.ftd",
+              term: "前頭側頭型認知症",
+              reading: "ぜんとうそくとうがたにんちしょう",
+              definition: "前頭葉・側頭葉の萎縮による。人格の変化、社会のルールを守れない行動（脱抑制）、同じ行動を繰り返す常同行動が特徴。",
+              point: "初期は記憶が比較的保たれる。若年での発症が多い。ピック病を含む。",
+              example: "毎日同じ時間に同じ道を歩く（周遊）。店の物を持ち帰ってしまう。"
+            },
+            {
+              id: "dementia-causes.others.subdural",
+              term: "慢性硬膜下血腫",
+              reading: "まんせいこうまくかけっしゅ",
+              definition: "頭を打った後、数週間から数か月かけて頭蓋骨の内側（硬膜の下）に血液がたまり、脳を圧迫する。もの忘れ、意欲低下、歩行障害などが現れる。",
+              point: "手術で血腫を取り除くと改善が期待できる。軽い打撲でも起こるため、転倒歴の確認が大切。"
+            },
+            {
+              id: "dementia-causes.others.nph",
+              term: "正常圧水頭症",
+              reading: "せいじょうあつすいとうしょう",
+              definition: "脳脊髄液が脳室にたまり、脳を圧迫して起こる。",
+              point: "三大症状は「歩行障害」「認知機能障害」「尿失禁」。シャント手術で改善が期待できる。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dementia-care-theory",
+      name: "認知症ケアの考え方",
+      summary: "パーソン・センタード・ケアと代表的な技法",
+      pages: [
+        {
+          id: "main",
+          title: "ケアの考え方と技法",
+          lead: "技法と提唱者をセットで覚える",
+          terms: [
+            {
+              id: "dementia-care-theory.people.kitwood",
+              term: "トム・キットウッド",
+              reading: "Tom Kitwood",
+              definition: "イギリスの心理学者。認知症の人を一人の「人」として尊重する「パーソン・センタード・ケア」を提唱した。",
+              point: "パーソン・センタード・ケア／認知症ケアマッピング（DCM）",
+              profile: "イギリス・心理学者"
+            },
+            {
+              id: "dementia-care-theory.pcc.pcc",
+              term: "パーソン・センタード・ケア",
+              reading: "Person-Centred Care",
+              definition: "認知症の人を一人の「人」として尊重し、その人の視点に立ってケアを行う考え方。",
+              point: "提唱者はトム・キットウッド。病気ではなく「その人」を中心に考える。",
+              person: "トム・キットウッド"
+            },
+            {
+              id: "dementia-care-theory.pcc.dcm",
+              term: "認知症ケアマッピング（DCM）",
+              reading: "Dementia Care Mapping",
+              definition: "認知症の人を一定時間観察し、行動や「よい状態・よくない状態」を記録して、ケアの質の改善に役立てる評価法。",
+              point: "パーソン・センタード・ケアを実践するための手法。",
+              person: "トム・キットウッドら"
+            },
+            {
+              id: "dementia-care-theory.approaches.validation",
+              term: "バリデーション",
+              reading: "Validation",
+              definition: "認知症の人の言動には意味があると考え、否定や訂正をせず、その感情に共感して受け入れるコミュニケーション法。",
+              point: "技法：リフレージング（言葉を繰り返す）、ミラーリング（動きや感情を合わせる）、レミニシング（思い出話）、タッチング。",
+              person: "ナオミ・フェイル"
+            },
+            {
+              id: "dementia-care-theory.approaches.humanitude",
+              term: "ユマニチュード",
+              reading: "Humanitude",
+              definition: "「あなたを大切に思っている」ことを相手に伝えるためのケア技法。",
+              point: "4つの柱は「見る・話す・触れる・立つ」。正面から、同じ高さで、近くで見る。",
+              person: "イヴ・ジネスト／ロゼット・マレスコッティ"
+            },
+            {
+              id: "dementia-care-theory.approaches.reminiscence",
+              term: "回想法",
+              reading: "かいそうほう",
+              definition: "昔の思い出を語ってもらい、それを受け止めて聴くことで、心の安定や自信の回復を図る方法。",
+              point: "個人回想法とグループ回想法がある。",
+              person: "ロバート・バトラー"
+            },
+            {
+              id: "dementia-care-theory.approaches.ro",
+              term: "リアリティ・オリエンテーション",
+              reading: "現実見当識訓練（RO）",
+              definition: "日付・場所・人物などの情報を繰り返し伝え、見当識を補う方法。",
+              point: "日常のかかわりの中で行う「24時間RO」と、少人数のグループで行う「クラスルームRO」がある。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dementia-care",
+      name: "認知症の人へのかかわり",
+      summary: "生活の場での対応と家族への支援",
+      pages: [
+        {
+          id: "daily",
+          title: "生活の場と家族への支援",
+          lead: "本人の安心と、介護する家族の負担軽減",
+          terms: [
+            {
+              id: "dementia-care.daily.communication",
+              term: "コミュニケーションの基本",
+              reading: "",
+              definition: "正面から目線を合わせ、ゆっくり、短い言葉で伝える。一度に伝えるのは一つ。言動を否定しない。",
+              point: "説得・訂正・叱責は不安を強める。表情など非言語の伝え方も大切。"
+            },
+            {
+              id: "dementia-care.daily.familiar",
+              term: "なじみの関係・なじみの環境",
+              reading: "",
+              definition: "顔なじみの人や、使い慣れた家具・生活用品は安心感を与える。",
+              point: "担当者や居室をむやみに変えない。自宅で使っていた物を持ち込む。"
+            },
+            {
+              id: "dementia-care.daily.relocation",
+              term: "リロケーションダメージ",
+              reading: "",
+              definition: "住み慣れた環境から急に移ることで、混乱や不安が強まり、BPSDが悪化すること。",
+              point: "入所時は、なじみの物を持ち込み変化を小さくする。"
+            },
+            {
+              id: "dementia-care.daily.theft",
+              term: "物盗られ妄想への対応",
+              reading: "",
+              definition: "否定や説得はせず、本人の困っている気持ちを受け止めて一緒に探す。",
+              point: "本人が自分で見つけられるよう、さりげなく促す。"
+            },
+            {
+              id: "dementia-care.daily.homing",
+              term: "帰宅願望への対応",
+              reading: "",
+              definition: "「帰りたい」気持ちを否定せず、理由を聴く。一緒に歩くなど、落ち着くまで寄り添う。",
+              point: "無理に引き止めたり、ごまかしたりしない。"
+            },
+            {
+              id: "dementia-care.daily.decision",
+              term: "意思決定支援",
+              reading: "",
+              definition: "認知症があっても本人には意思と意思決定能力があるという前提で、本人が自分で決められるよう支援すること。",
+              point: "厚生労働省のガイドラインでは「意思形成 → 意思表明 → 意思実現」の支援の3段階。"
+            },
+            {
+              id: "dementia-care.family.steps",
+              term: "家族の心理的ステップ",
+              reading: "",
+              definition: "介護する家族の気持ちが、時間とともに変化していく過程。",
+              point: "①とまどい・否定 → ②混乱・怒り・拒絶 → ③割り切り（あきらめ） → ④受容"
+            },
+            {
+              id: "dementia-care.family.respite",
+              term: "レスパイトケア",
+              reading: "",
+              definition: "家族が一時的に介護から離れて休息できるよう支援すること。",
+              point: "ショートステイ、デイサービスなどを活用する。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: "dementia-policy",
+      name: "認知症を支える制度",
+      summary: "認知症基本法・国の施策・地域の支援",
+      pages: [
+        {
+          id: "main",
+          title: "認知症を支える制度",
+          lead: "名前と「何をするか」をセットで覚える",
+          terms: [
+            {
+              id: "dementia-policy.law.basic-act",
+              term: "認知症基本法",
+              reading: "共生社会の実現を推進するための認知症基本法",
+              definition: "認知症の人が尊厳を保持し、希望を持って暮らせるよう施策を進める法律。",
+              point: "2023年成立・2024年1月施行。キーワードは「共生社会」。認知症の日は9月21日。"
+            },
+            {
+              id: "dementia-policy.law.outline",
+              term: "認知症施策推進大綱",
+              reading: "にんちしょうしさくすいしんたいこう",
+              definition: "2019年に国がまとめた認知症施策の方針。",
+              point: "「共生」と「予防」を車の両輪として施策を進める。"
+            },
+            {
+              id: "dementia-policy.law.new-orange",
+              term: "新オレンジプラン",
+              reading: "認知症施策推進総合戦略",
+              definition: "2015年策定の総合戦略。本人の意思が尊重され、住み慣れた地域で自分らしく暮らせる社会をめざした。",
+              point: "柱の一つは「認知症の人やその家族の視点の重視」。前身は2012年のオレンジプラン。"
+            },
+            {
+              id: "dementia-policy.local.initial-team",
+              term: "認知症初期集中支援チーム",
+              reading: "",
+              definition: "医療と介護の専門職が、認知症が疑われる人や家族を訪問し、初期の支援を集中的に行う。",
+              point: "対象は40歳以上の在宅の人。期間はおおむね6か月。地域包括支援センターなどに配置。"
+            },
+            {
+              id: "dementia-policy.local.medical-center",
+              term: "認知症疾患医療センター",
+              reading: "",
+              definition: "鑑別診断、専門医療相談、BPSD・身体合併症の急性期対応を行う専門医療機関。",
+              point: "都道府県・指定都市が指定。"
+            },
+            {
+              id: "dementia-policy.local.supporter",
+              term: "認知症サポーター",
+              reading: "",
+              definition: "養成講座を受け、地域で認知症の人や家族を温かく見守る応援者。",
+              point: "活動の義務はない。"
+            },
+            {
+              id: "dementia-policy.local.cafe",
+              term: "認知症カフェ",
+              reading: "",
+              definition: "認知症の人・家族・専門職・地域の人が集い、交流や情報交換をする場。",
+              point: "オレンジカフェとも呼ばれる。"
+            },
+            {
+              id: "dementia-policy.main.driving",
+              term: "高齢者の運転と認知機能検査",
+              reading: "",
+              definition: "75歳以上は免許更新時に認知機能検査を受ける。認知症と診断されると取消し・停止の対象。",
+              point: "自主返納すると「運転経歴証明書」を受けられる。返納後の移動手段にも配慮する。"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  area: "こころとからだのしくみ"
+});
+
+</script>
+<script>
+/* 障害の理解 */
+defineField({
+  id: "disability",
+  name: "障害の理解",
+  description: "障害の考え方、身体・知的・精神・発達障害",
+  themes: [
+    {
+      id: "disability-basics",
+      name: "障害の基礎的理解",
+      summary: "障害の考え方・障害受容・適応機制",
+      pages: [
+        {
+          title: "障害の考え方",
+          lead: "法律の定義とモデルの違い",
+          terms: [
+            ["障害者基本法の定義", "", "身体障害、知的障害、精神障害（発達障害を含む）その他の心身の機能の障害があり、障害や社会的障壁によって継続的に日常生活・社会生活に相当な制限を受ける状態にある人。", "社会的障壁（社会モデル）の考え方を取り入れている。"],
+            ["医学モデル・社会モデル", "", "医学モデル＝障害は個人の病気やけがによるもの。社会モデル＝障害は社会の側の障壁によって生じるもの。", ""],
+            ["障害者権利条約", "", "障害者の人権と基本的自由の享有を確保し、尊厳の尊重を促進するための国際条約。", "スローガンは「私たちのことを、私たち抜きに決めないで」。日本は2014年に批准。"],
+            ["障害受容の過程", "", "ショック期 → 否認期 → 混乱期 → 解決への努力期 → 受容期。", "行きつ戻りつしながら進むことがある。"],
+            ["障害者手帳", "", "身体障害者手帳、療育手帳（知的障害）、精神障害者保健福祉手帳の3種類。", "精神障害者保健福祉手帳は2年ごとに更新。療育手帳は法律ではなく通知に基づく。"],
+            ["ピアサポート", "", "同じ障害や経験を持つ人同士が支え合うこと。", ""],
+          ],
+        },
+        {
+          title: "適応機制",
+          lead: "不安から心を守る無意識の働き",
+          terms: [
+            ["抑圧", "よくあつ", "受け入れがたい感情や記憶を、無意識のうちに心の奥に押し込めること。", ""],
+            ["合理化", "ごうりか", "失敗などに、もっともらしい理由をつけて自分を正当化すること。", "例：届かなかったブドウを「すっぱいに違いない」と言う。"],
+            ["退行", "たいこう", "困難な状況で、発達の前の段階に戻ったような行動をとること。", "例：甘えが強くなる、子どものような振る舞いをする。"],
+            ["昇華", "しょうか", "満たされない欲求を、社会的に認められる別の形で満たすこと。", "例：攻撃的な気持ちをスポーツで発散する。"],
+            ["補償", "ほしょう", "劣っていると感じる面を、別の面で補おうとすること。", ""],
+            ["投影", "とうえい", "自分の受け入れがたい感情を、相手が持っているものと思うこと。", "例：自分が嫌っているのに「相手が自分を嫌っている」と思う。"],
+            ["置き換え", "おきかえ", "ある対象に向けた感情を、別の対象に向けること。", "例：上司への怒りを家族にぶつける。"],
+            ["同一化", "どういつか", "他人の優れた面を自分のことのように取り入れ、満足すること。", ""],
+          ],
+        },
+      ],
+    },
+    {
+      id: "disability-physical",
+      name: "身体障害",
+      summary: "肢体不自由・神経難病・内部障害・視覚障害",
+      pages: [
+        {
+          title: "肢体不自由と神経難病",
+          lead: "病気ごとの特徴的な症状",
+          terms: [
+            ["脳性麻痺", "のうせいまひ", "受胎から生後4週までに生じた脳の損傷による運動機能の障害。", "アテトーゼ型は不随意運動が特徴。"],
+            ["脊髄損傷", "せきずいそんしょう", "脊髄の損傷により、損傷部位から下の運動・感覚・自律神経が障害される。", "頸髄損傷では四肢麻痺になる。体温調節障害、起立性低血圧、褥瘡に注意する。"],
+            ["関節リウマチ", "", "自己免疫によって関節に炎症が起こり、痛みや変形が生じる。女性に多い。", "朝のこわばりが特徴。関節に負担をかけない自助具を使う。"],
+            ["パーキンソン病", "", "脳のドーパミンが不足して起こる。安静時振戦、筋固縮、無動、姿勢反射障害が四大症状。", "小刻み歩行、すくみ足、仮面様顔貌。重症度はホーエン・ヤール分類で表す。"],
+            ["ALS", "筋萎縮性側索硬化症", "運動神経が障害され、全身の筋力が低下していく難病。", "感覚や知能、眼球運動は保たれやすい。意思伝達装置を活用する。"],
+            ["脊髄小脳変性症", "せきずいしょうのうへんせいしょう", "小脳などの神経細胞が徐々に失われ、ふらつきや手の震えなどの運動失調が起こる難病。", "転倒に注意する。"],
+          ],
+        },
+        {
+          title: "内部障害",
+          lead: "日常生活での注意点を覚える",
+          terms: [
+            ["心臓機能障害", "", "心不全などで心臓の働きが低下し、動悸・息切れ・むくみが起こる。", "ペースメーカーを使う人は、強い電磁波を出す機器に注意する。"],
+            ["腎臓機能障害", "", "腎臓の働きが低下し、人工透析が必要になることがある。", "シャントのある腕で血圧を測らない、重い物を持たない。水分・塩分・カリウムを制限する。"],
+            ["呼吸器機能障害", "", "COPD（慢性閉塞性肺疾患）などで呼吸機能が低下する。", "口すぼめ呼吸が有効。在宅酸素療法中は火気を2m以内に近づけない。"],
+            ["ストーマ", "", "手術でお腹につくる排泄口。人工肛門（消化管ストーマ）と人工膀胱（尿路ストーマ）がある。", "パウチにたまった排泄物の処理は介護職も行える。"],
+            ["難病法", "", "原因が不明で治療法が確立していない希少な病気で、長期の療養が必要な人に医療費の助成などを行う法律。", ""],
+          ],
+        },
+        {
+          title: "視覚・聴覚の障害",
+          lead: "原因となる病気と見え方",
+          terms: [
+            ["緑内障", "りょくないしょう", "眼圧の上昇などで視神経が障害され、視野が狭くなる。", "中途視覚障害の原因の第1位。"],
+            ["白内障", "はくないしょう", "水晶体が白く濁り、かすんで見える。まぶしさを感じる。", "手術で改善が期待できる。"],
+            ["糖尿病性網膜症", "とうにょうびょうせいもうまくしょう", "糖尿病の合併症で網膜が障害され、視力が低下する。", "糖尿病の三大合併症の一つ（網膜症・腎症・神経障害）。"],
+            ["網膜色素変性症", "もうまくしきそへんせいしょう", "暗い所で見えにくい夜盲から始まり、視野が狭くなっていく病気。", ""],
+            ["盲ろう", "もうろう", "視覚と聴覚の両方に障害がある状態。", "触手話や指点字でコミュニケーションをとる。"],
+            ["中途失聴者", "ちゅうとしっちょうしゃ", "音声言語を身につけた後に聴力を失った人。", "手話を習得していないことが多く、筆談や要約筆記が有効。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "disability-mental",
+      name: "知的・精神・発達障害",
+      summary: "統合失調症・うつ病・発達障害・高次脳機能障害",
+      pages: [
+        {
+          title: "知的・精神・発達障害",
+          lead: "特徴と、かかわり方のポイント",
+          terms: [
+            ["知的障害", "ちてきしょうがい", "発達期（おおむね18歳まで）に知的機能の障害が現れ、日常生活に支障が生じている状態。", "ダウン症候群（染色体の異常）は原因の一つ。"],
+            ["統合失調症", "とうごうしっちょうしょう", "幻覚や妄想などの陽性症状と、意欲低下や感情の平板化などの陰性症状がみられる精神疾患。", "思春期から30歳代に発症しやすい。服薬の継続が大切。"],
+            ["双極性障害", "そうきょくせいしょうがい", "気分が高まる躁状態と、気分が落ち込むうつ状態を繰り返す。", ""],
+            ["自閉スペクトラム症", "ASD", "対人関係・コミュニケーションの困難と、こだわり（限られた興味や反復的な行動）が特徴の発達障害。", "予定の変更が苦手。絵や写真で見通しを示すと安心しやすい。"],
+            ["ADHD", "注意欠如・多動症", "不注意、多動性、衝動性が特徴の発達障害。", ""],
+            ["学習障害", "LD", "知的発達に遅れはないが、読む・書く・計算するなど特定の能力の習得が著しく難しい。", ""],
+            ["高次脳機能障害", "こうじのうきのうしょうがい", "脳卒中や事故などによる脳の損傷で、記憶障害、注意障害、遂行機能障害、社会的行動障害などが起こる。", "外見からわかりにくい。"],
+            ["半側空間無視", "はんそくくうかんむし", "視力に問題はないが、片側（主に左側）にある物や空間に気づかない障害。", "右脳の損傷で起こりやすい。気づきにくい側に物を置かない。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* こころとからだのしくみ */
+defineField({
+  id: "body",
+  name: "こころとからだのしくみ",
+  description: "欲求と記憶、からだの構造、生活行為のしくみ",
+  themes: [
+    {
+      id: "body-mind",
+      name: "こころのしくみ",
+      summary: "マズローの欲求階層・記憶の種類",
+      pages: [
+        {
+          title: "欲求と記憶",
+          lead: "記憶は加齢で低下しやすいものと保たれるものを区別する",
+          terms: [
+            ["マズローの欲求階層説", "", "人間の欲求を、生理的欲求 → 安全の欲求 → 所属・愛情の欲求 → 承認（自尊）の欲求 → 自己実現の欲求の5段階で示した。", "下位の欲求が満たされると上位の欲求が現れる。自己実現の欲求は成長欲求。", { person: "マズロー" }],
+            ["感覚記憶・短期記憶・長期記憶", "", "情報は感覚記憶 → 短期記憶 → 長期記憶の順に保持される。", "短期記憶は数十秒程度しか保たれない。"],
+            ["エピソード記憶", "", "いつ・どこで・何をしたかなど、個人の体験の記憶。", "加齢で低下しやすい。"],
+            ["意味記憶", "いみきおく", "言葉の意味や一般的な知識の記憶。", "加齢の影響を受けにくい。"],
+            ["手続き記憶", "てつづききおく", "自転車の乗り方など、体で覚えた技能の記憶。", "加齢や認知症でも保たれやすい。"],
+            ["ストレッサー", "", "ストレスの原因となる刺激。", "ストレッサーによる心身の反応をストレス反応という。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "body-structure",
+      name: "からだのしくみ",
+      summary: "骨と筋肉・神経・脳・バイタルサイン",
+      pages: [
+        {
+          title: "体の構造と機能",
+          lead: "部位と働きをセットで覚える",
+          terms: [
+            ["骨の働き", "", "体を支える、内臓を保護する、カルシウムを蓄える、血液をつくる（造血）。", ""],
+            ["大腿四頭筋", "だいたいしとうきん", "太ももの前側にあり、膝を伸ばす筋肉。", "立ち上がりや歩行に重要。"],
+            ["主な筋肉の働き", "", "大殿筋＝股関節を伸ばす。三角筋＝腕を横に上げる。上腕二頭筋＝肘を曲げる。下腿三頭筋＝つま先立ちをする。", ""],
+            ["交感神経・副交感神経", "", "交感神経＝活動時に働き、心拍数増加・血圧上昇・消化の抑制などが起こる。副交感神経＝休息時に働き、心拍数減少・消化の促進などが起こる。", "合わせて自律神経という。"],
+            ["脳の部位と働き", "", "大脳＝思考・記憶・感情。小脳＝運動の調整・平衡感覚。脳幹＝呼吸・循環など生命の維持。", "左脳の損傷で右片麻痺と失語症、右脳の損傷で左片麻痺と左半側空間無視が起こりやすい。"],
+            ["バイタルサイン", "", "体温、脈拍、呼吸、血圧、意識レベル。", "成人の脈拍は1分間に60〜100回程度。"],
+            ["体温", "", "腋窩（わきの下）で測ることが多い。", "1日の中では早朝が最も低く、夕方が高い。高齢者は体温が低めになりやすい。"],
+            ["血圧", "けつあつ", "心臓から送り出された血液が血管の壁を押す力。", "診察室で収縮期血圧140mmHg以上または拡張期血圧90mmHg以上が高血圧。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "body-daily",
+      name: "生活行為とからだ",
+      summary: "嚥下・排泄・睡眠・入浴・褥瘡",
+      pages: [
+        {
+          title: "食事・排泄・睡眠・入浴のしくみ",
+          lead: "生活の場面とからだの働きを結びつける",
+          terms: [
+            ["摂食・嚥下の5分類", "", "先行期（認知）→ 準備期（咀嚼）→ 口腔期 → 咽頭期 → 食道期。", "咽頭期に喉頭蓋が気管の入り口をふさぎ、誤嚥を防ぐ。"],
+            ["唾液", "だえき", "でんぷんの消化を助け（アミラーゼ）、口の中の自浄作用や粘膜の保護をする。", "高齢者は唾液の分泌が減り、口が乾きやすい。"],
+            ["消化と吸収", "", "栄養素の多くは小腸で吸収される。大腸では主に水分が吸収される。", ""],
+            ["排尿のしくみ", "", "腎臓でつくられた尿は膀胱にたまり、150〜300ml程度で尿意を感じる。", "成人の1日の尿量は1,000〜1,500ml程度。"],
+            ["便秘の種類", "", "弛緩性便秘＝腸の動きが弱い（高齢者に多い）。けいれん性便秘＝ストレスなど。直腸性便秘＝便意をがまんする習慣など。", ""],
+            ["褥瘡", "じょくそう", "長時間の圧迫で血流が悪くなり、皮膚や組織が壊死した状態。", "好発部位は仙骨部（仰臥位で最も多い）、大転子部（側臥位）、踵など。2時間ごとを目安に体位変換する。"],
+            ["レム睡眠・ノンレム睡眠", "", "レム睡眠＝体は休んでいるが脳は活動している浅い眠り。ノンレム睡眠＝脳も休んでいる深い眠り。約90分の周期で繰り返す。", "高齢者は深いノンレム睡眠が減る。"],
+            ["入浴の作用", "", "温熱作用＝血管が広がり血行がよくなる。静水圧作用＝水圧で心臓に負担がかかる。浮力作用＝体が軽くなり動かしやすい。", "心臓への負担を減らすには半身浴が有効。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/* 医療的ケア */
+defineField({
+  id: "medical",
+  name: "医療的ケア",
+  description: "喀痰吸引・経管栄養・救急蘇生",
+  themes: [
+    {
+      id: "medical-basics",
+      name: "医療的ケアの基礎",
+      summary: "介護職が行える範囲・医行為でない行為",
+      pages: [
+        {
+          title: "介護職が行える医療的ケア",
+          lead: "できること・できないことを区別する",
+          terms: [
+            ["喀痰吸引等を行う介護福祉士", "", "介護福祉士は、医師の指示のもとで喀痰吸引と経管栄養を行うことができる。", "2011年の法改正で可能になった。実地研修の修了と、事業所の登録が必要。"],
+            ["喀痰吸引の範囲", "", "口腔内・鼻腔内・気管カニューレ内部の吸引。", "口腔内・鼻腔内は咽頭の手前まで。気管カニューレはカニューレの内部まで。"],
+            ["経管栄養の種類", "", "胃ろう・腸ろう・経鼻経管栄養。", "胃ろう・腸ろうの状態や、経鼻経管栄養のチューブが胃に入っているかの確認は看護職が行う。"],
+            ["医行為ではない行為", "", "体温測定、自動血圧測定器での血圧測定、軽い傷の処置、軟膏の塗布（褥瘡を除く）、湿布、点眼、一包化された内服薬の介助、座薬の挿入、爪切り、口腔ケア、耳垢の除去、ストーマの排泄物の処理など。", "爪切りは爪や皮膚に異常がない場合など、条件付きのものがある。"],
+            ["パルスオキシメーター", "", "指先などにはさんで、動脈血の酸素飽和度（SpO2）を測る機器。", "正常値はおおむね96〜99％。"],
+            ["清潔と滅菌", "", "清潔＝病原体を減らした状態。滅菌＝すべての微生物を取り除いた状態。", "吸引カテーテルの先端など清潔に保つ部分には触れない。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "medical-procedures",
+      name: "喀痰吸引と経管栄養",
+      summary: "手順・観察・トラブル時の対応",
+      pages: [
+        {
+          title: "喀痰吸引",
+          lead: "時間・観察・中止の判断",
+          terms: [
+            ["吸引の時間", "", "1回の吸引はできるだけ短く、10〜15秒以内で行う。", "長くなると低酸素状態になる。"],
+            ["吸引圧", "", "医師の指示に従った吸引圧で行う。", ""],
+            ["吸引前後の観察", "", "顔色、呼吸の状態、痰の色・量・性状、SpO2などを観察する。", ""],
+            ["痰の性状", "", "通常は無色透明から白色。", "黄色や緑色は感染、赤色は出血の疑い。"],
+            ["吸引中の異常", "", "顔色が悪い、呼吸が苦しそう、出血があるなどの場合は、すぐに吸引を中止して看護職に連絡する。", ""],
+            ["気管カニューレ内の吸引", "", "滅菌された吸引カテーテルを使い、無菌的に行う。", "口腔・鼻腔の吸引より清潔な操作が求められる。"],
+          ],
+        },
+        {
+          title: "経管栄養",
+          lead: "姿勢・温度・速度とトラブル対応",
+          terms: [
+            ["経管栄養の姿勢", "", "上半身を30〜45度起こした姿勢で行う。", "注入後もしばらく上半身を起こしたままにし、逆流を防ぐ。"],
+            ["栄養剤の温度", "", "常温（人肌程度）で使う。", "冷たいと下痢の原因になる。"],
+            ["注入速度", "", "医師の指示に従う。", "速すぎると下痢や嘔吐の原因になる。"],
+            ["注入中の嘔吐", "", "直ちに注入を止め、顔を横に向けて誤嚥を防ぎ、看護職に連絡する。", ""],
+            ["半固形栄養剤", "はんこけいえいようざい", "液体の栄養剤より粘りがあり、逆流や下痢が起こりにくい。", "注入時間が短くてすむ。"],
+            ["経管栄養の人の口腔ケア", "", "口から食べていなくても口腔ケアが必要。", "唾液が減って細菌が増えやすく、誤嚥性肺炎の原因になる。"],
+          ],
+        },
+      ],
+    },
+    {
+      id: "medical-emergency",
+      name: "救急蘇生",
+      summary: "心肺蘇生・AED・窒息への対応",
+      pages: [
+        {
+          title: "急変時の対応",
+          lead: "数字とセットで覚える",
+          terms: [
+            ["心肺蘇生", "しんぱいそせい", "反応と呼吸がなければ、119番通報とAEDを依頼し、すぐに胸骨圧迫を行う。", "胸骨圧迫は1分間に100〜120回、深さ約5cm。人工呼吸ができる場合は30：2で行う。"],
+            ["AED", "自動体外式除細動器", "心室細動などで止まりかけた心臓に電気ショックを与え、正常なリズムに戻す機器。", "電源を入れ、音声の指示に従う。"],
+            ["気道確保", "きどうかくほ", "頭部後屈あご先挙上法で、空気の通り道を確保する。", ""],
+            ["窒息のサイン", "", "のどを両手でつかむしぐさ（チョークサイン）。", "背部叩打法や腹部突き上げ法で異物を出す。"],
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+</script>
+<script>
+/**
+ * 過去問題（国家試験形式のオリジナル問題）
+ *
+ * 実際の過去問は試験実施団体（社会福祉振興・試験センター）が作成したもののため収録せず、
+ * 国家試験と同じ「5つの選択肢から最も適切なものを1つ選ぶ」形式で、頻出事項を問う問題を作成している。
+ *
+ * 書き方: 科目ID → 問題の配列
+ *   q     問題文
+ *   c     選択肢（5つ）
+ *   a     正解の番号（1〜5）
+ *   exp   解説
+ *   terms 関連する用語名（同じ科目の基礎学習カードにリンクする）
+ *   case  事例問題なら true
+ * 問題IDは「exam.科目ID.番号」で自動生成される。記録を引き継ぐため、追加は各科目の末尾に行う。
+ */
+window.KAIGO_EXAMS = {
+  dignity: [
+    { q: "ノーマライゼーションの考え方として、最も適切なものを1つ選びなさい。",
+      c: ["障害のある人を専門の施設に集め、保護する。", "障害のある人も、地域で普通の生活を送れる社会をめざす。", "介護者の負担を減らすことを最優先する。", "障害を医学的に治療することを目的とする。", "高齢者が社会から引退するのは自然なことだと考える。"],
+      a: 2, exp: "ノーマライゼーションはデンマークのバンク-ミケルセンが提唱した。障害のある人もない人と同じように、地域で普通の生活を送れる社会をめざす。", terms: ["ノーマライゼーション"] },
+    { q: "日本国憲法第25条に規定されている権利として、正しいものを1つ選びなさい。",
+      c: ["幸福追求権", "生存権", "職業選択の自由", "法の下の平等", "財産権"],
+      a: 2, exp: "第25条は「健康で文化的な最低限度の生活を営む権利」（生存権）。幸福追求権は第13条、法の下の平等は第14条。", terms: ["日本国憲法第25条", "日本国憲法第13条"] },
+    { q: "エンパワメントの説明として、最も適切なものを1つ選びなさい。",
+      c: ["利用者に代わって、その権利を主張すること。", "利用者が本来持っている力を引き出し、自分で問題を解決できるよう支援すること。", "利用者の弱みを見つけ出し、改善を指示すること。", "専門職が利用者の生活を管理すること。", "支援の内容を家族に決めてもらうこと。"],
+      a: 2, exp: "エンパワメントは利用者の力に着目し、それを引き出す支援。利用者に代わって権利を主張するのはアドボカシー（権利擁護）。", terms: ["エンパワメント", "アドボカシー"] },
+    { q: "Aさん（80歳、女性）は施設に入所している。毎朝、自分で着る服を選びたいと希望しているが、選ぶのに時間がかかる。Aさんへの介護福祉職の対応として、最も適切なものを1つ選びなさい。",
+      c: ["時間を短くするため、介護福祉職が服を選ぶ。", "Aさんが選びやすいように服を並べ、決めるまで待つ。", "家族に服を決めてもらう。", "毎日同じ服を着てもらう。", "前日の夜のうちに着替えを済ませておく。"],
+      a: 2, exp: "自己決定の尊重が基本。本人が選べるよう環境を整えて支援する。", terms: ["自己決定", "自立支援"], case: true },
+    { q: "IL運動（自立生活運動）に関する説明として、最も適切なものを1つ選びなさい。",
+      c: ["1960年代のアメリカで、障害のある人自身によって始まった。", "イギリスの救貧法の改正を求めて始まった。", "日本で、大規模施設の建設を求めて始まった。", "介助を受けずにすべて自分で行うことを自立とした。", "専門職が中心となって進めた運動である。"],
+      a: 1, exp: "IL運動は障害のある人自身が始めた運動で、介助を受けながらでも自分で決めて生活することを自立と考えた。", terms: ["IL運動"] },
+  ],
+
+  relations: [
+    { q: "バイステックの7原則の「非審判的態度」の説明として、最も適切なものを1つ選びなさい。",
+      c: ["利用者の言動を、善悪で判断しない。", "利用者から聞いた秘密を守る。", "利用者が感情を自由に表現できるようにする。", "援助者が自分の感情を自覚してかかわる。", "利用者を一人の個人としてとらえる。"],
+      a: 1, exp: "非審判的態度＝善悪で判断しない。秘密保持、意図的な感情表出、統制された情緒的関与、個別化はそれぞれ別の原則。", terms: ["バイステックの7原則", "受容"] },
+    { q: "自己覚知の説明として、最も適切なものを1つ選びなさい。",
+      c: ["援助者が、自分の価値観や感情の傾向を理解すること。", "利用者が、自分の障害を受け入れること。", "利用者が、自分のことを相手に話すこと。", "援助者が、利用者の気持ちを理解しようとすること。", "チームで情報を共有すること。"],
+      a: 1, exp: "自己覚知は援助者自身が自分を知ること。自分の価値観を利用者に押しつけないために必要。", terms: ["自己覚知"] },
+    { q: "ジョハリの窓で「開放の窓」を広げる方法として、最も適切なものを1つ選びなさい。",
+      c: ["自己開示をし、他者からのフィードバックを受ける。", "自分の秘密を増やす。", "他者とのかかわりを減らす。", "自分の感情を表に出さないようにする。", "相手の話をさえぎって自分の意見を言う。"],
+      a: 1, exp: "自己開示で「秘密の窓」が、フィードバックで「盲点の窓」が小さくなり、「開放の窓」が広がる。", terms: ["ジョハリの窓", "自己開示"] },
+    { q: "OJTの説明として、最も適切なものを1つ選びなさい。",
+      c: ["職場で上司や先輩が、実際の仕事を通して指導する。", "職場を離れて外部の研修を受ける。", "職員の自己啓発を職場が支援する。", "他分野の専門家に相談し、助言を受ける。", "資格取得のために休職する。"],
+      a: 1, exp: "OJT＝職場内研修。Off-JT＝職場外研修、SDS＝自己啓発援助制度、コンサルテーション＝他分野の専門家からの助言。", terms: ["OJT", "Off-JT", "SDS"] },
+    { q: "介護事業所のBCP（業務継続計画）の説明として、最も適切なものを1つ選びなさい。",
+      c: ["災害や感染症が発生しても、サービスを継続・早期再開するための計画である。", "利用者一人ひとりの介護計画である。", "職員の年間研修計画である。", "苦情を受け付けたときの対応手順である。", "施設を建て替えるための計画である。"],
+      a: 1, exp: "BCPは2024年度から介護事業所での策定が義務化された。", terms: ["BCP"] },
+  ],
+
+  society: [
+    { q: "介護保険制度の第2号被保険者として、正しいものを1つ選びなさい。",
+      c: ["65歳以上の人", "40歳以上65歳未満の医療保険加入者", "20歳以上40歳未満の人", "75歳以上の人", "18歳以上の障害のある人"],
+      a: 2, exp: "第1号は65歳以上、第2号は40歳以上65歳未満の医療保険加入者。第2号は特定疾病が原因の場合に利用できる。", terms: ["第2号被保険者", "第1号被保険者", "特定疾病"] },
+    { q: "介護保険制度の保険者として、正しいものを1つ選びなさい。",
+      c: ["国", "都道府県", "市町村及び特別区", "国民健康保険団体連合会", "社会福祉協議会"],
+      a: 3, exp: "保険者（制度を運営する主体）は市町村及び特別区。", terms: ["介護保険の保険者"] },
+    { q: "要介護認定の二次判定を行う機関として、正しいものを1つ選びなさい。",
+      c: ["介護支援専門員", "主治医", "介護認定審査会", "地域包括支援センター", "都道府県知事"],
+      a: 3, exp: "一次判定はコンピュータ、二次判定は市町村に置かれる介護認定審査会が行う。", terms: ["要介護認定", "介護認定審査会"] },
+    { q: "地域包括支援センターに配置される職種の組合せとして、正しいものを1つ選びなさい。",
+      c: ["保健師・社会福祉士・主任介護支援専門員", "医師・看護師・薬剤師", "介護福祉士・理学療法士・作業療法士", "精神保健福祉士・公認心理師・保育士", "民生委員・児童委員・保護司"],
+      a: 1, exp: "地域包括支援センターは市町村が設置し、保健師・社会福祉士・主任介護支援専門員を置く。", terms: ["地域包括支援センター"] },
+    { q: "成年後見制度に関する記述として、最も適切なものを1つ選びなさい。",
+      c: ["法定後見の後見人等は、家庭裁判所が選ぶ。", "任意後見は、判断能力が低下してから契約する。", "後見開始の申立ては、本人しかできない。", "保佐は、判断能力が最も不十分な人が対象である。", "任意後見の契約は、口頭で結ぶことができる。"],
+      a: 1, exp: "任意後見は判断能力があるうちに公正証書で契約する。申立ては本人・配偶者・4親等内の親族・市町村長など。最も判断能力が不十分な人は「後見」。", terms: ["成年後見制度", "法定後見", "任意後見"] },
+    { q: "養護者による高齢者虐待で、最も多い類型として、正しいものを1つ選びなさい。",
+      c: ["身体的虐待", "経済的虐待", "性的虐待", "心理的虐待", "介護等放棄"],
+      a: 1, exp: "類型では身体的虐待が最も多い。虐待者の続柄では息子が最も多い。", terms: ["養護者による虐待の傾向", "高齢者虐待防止法"] },
+    { q: "生活保護の扶助のうち、原則として現物給付で行われるものを1つ選びなさい。",
+      c: ["生活扶助", "住宅扶助", "医療扶助", "教育扶助", "葬祭扶助"],
+      a: 3, exp: "医療扶助と介護扶助は原則として現物給付。そのほかの扶助は原則として金銭給付。", terms: ["生活保護の8つの扶助"] },
+  ],
+
+  "care-basics": [
+    { q: "介護福祉士の資格の性格として、正しいものを1つ選びなさい。",
+      c: ["名称独占の国家資格", "業務独占の国家資格", "都道府県知事が認定する資格", "民間団体が認定する資格", "5年ごとに更新が必要な資格"],
+      a: 1, exp: "介護福祉士は名称独占。登録した人だけが介護福祉士を名乗れる。", terms: ["名称独占", "介護福祉士の定義"] },
+    { q: "社会福祉士及び介護福祉士法に規定されている介護福祉士の義務等として、正しいものを1つ選びなさい。",
+      c: ["誠実義務", "秘密保持義務は在職中に限られる", "業務独占", "介護報酬を定める義務", "利用者の財産を管理する義務"],
+      a: 1, exp: "誠実義務、信用失墜行為の禁止、秘密保持義務（資格を失った後も）、連携、資質向上の責務が規定されている。", terms: ["誠実義務", "秘密保持義務", "信用失墜行為の禁止"] },
+    { q: "身体拘束が例外的に認められる3要件として、正しいものを1つ選びなさい。",
+      c: ["切迫性・非代替性・一時性", "緊急性・必要性・安全性", "切迫性・継続性・代替性", "同意・説明・記録", "安全性・効率性・一時性"],
+      a: 1, exp: "3要件をすべて満たし、手続きと記録を行う必要がある。", terms: ["身体拘束の禁止"] },
+    { q: "ハインリッヒの法則が示す比率として、正しいものを1つ選びなさい。",
+      c: ["1：29：300", "1：10：100", "1：30：300", "1：29：100", "1：3：30"],
+      a: 1, exp: "重大事故1件の背景に、軽微な事故29件、ヒヤリ・ハット300件がある。", terms: ["ハインリッヒの法則", "ヒヤリ・ハット"] },
+    { q: "ICF（国際生活機能分類）の「参加」にあたるものとして、最も適切なものを1つ選びなさい。",
+      c: ["地域の老人クラブで役員を務めている。", "自分で歩いてトイレに行ける。", "膝の関節が曲がりにくい。", "自宅の玄関に段差がある。", "几帳面な性格である。"],
+      a: 1, exp: "参加＝社会や家庭での役割。歩く＝活動、関節＝心身機能・身体構造、段差＝環境因子、性格＝個人因子。", terms: ["ICF", "活動と参加", "環境因子と個人因子"] },
+    { q: "ノロウイルスによる嘔吐物の処理に用いる消毒薬として、最も適切なものを1つ選びなさい。",
+      c: ["次亜塩素酸ナトリウム", "消毒用エタノール", "逆性石けん", "クロルヘキシジン", "水拭きのみで十分"],
+      a: 1, exp: "ノロウイルスにはアルコールが効きにくい。次亜塩素酸ナトリウムで消毒する。", terms: ["ノロウイルス"] },
+  ],
+
+  "comm-skills": [
+    { q: "開かれた質問として、最も適切なものを1つ選びなさい。",
+      c: ["「今日はどんな一日でしたか」", "「お茶にしますか」", "「痛いですか」", "「昨日は眠れましたか」", "「お風呂に入りますか」"],
+      a: 1, exp: "開かれた質問は相手が自由に答えられる質問。ほかは「はい・いいえ」で答えられる閉じられた質問。", terms: ["開かれた質問", "閉じられた質問"] },
+    { q: "運動性失語（ブローカ失語）のある人とのコミュニケーションとして、最も適切なものを1つ選びなさい。",
+      c: ["「はい」「いいえ」で答えられる質問をする。", "長い文章で詳しく説明する。", "早口で話しかける。", "答えを急がせる。", "自由に話してもらう質問を中心にする。"],
+      a: 1, exp: "運動性失語は理解は比較的保たれるが、話すことが難しい。閉じられた質問が有効。", terms: ["運動性失語", "感覚性失語"] },
+    { q: "老人性難聴のある人への話し方として、最も適切なものを1つ選びなさい。",
+      c: ["耳元で、低めの声で、ゆっくり話す。", "高い声で、大きな声を出す。", "できるだけ早口で話す。", "後ろから話しかける。", "補聴器を外してもらってから話す。"],
+      a: 1, exp: "老人性難聴は高い音から聞こえにくくなる感音性難聴。大声はかえって聞き取りにくい。", terms: ["老人性難聴"] },
+    { q: "相談援助の技法の「要約」の説明として、最も適切なものを1つ選びなさい。",
+      c: ["相手の話の要点をまとめて返す。", "相手の言葉の一部をそのまま返す。", "相手がうまく言葉にできない思いを言葉にする。", "相手の言葉と行動の矛盾に向き合えるよう働きかける。", "相手の話を援助者の言葉で言い直す。"],
+      a: 1, exp: "要約＝要点をまとめる。繰り返し、明確化、直面化、言い換えとの違いが問われる。", terms: ["要約", "繰り返し", "言い換え", "明確化", "直面化"] },
+    { q: "介護記録の書き方として、最も適切なものを1つ選びなさい。",
+      c: ["利用者の言葉は、そのまま「 」で記録する。", "推測したことも事実として書く。", "数日分をまとめて後日記録する。", "誤りは修正液で消して書き直す。", "介護福祉職の感想を中心に書く。"],
+      a: 1, exp: "記録は事実を客観的に、その日のうちに書く。誤りは二重線で訂正する。", terms: ["介護記録", "主観的情報・客観的情報", "記録の訂正"] },
+  ],
+
+  "life-support": [
+    { q: "足の爪の切り方として、最も適切なものを1つ選びなさい。",
+      c: ["まっすぐ切り、角を少し落とす。", "指先の形に合わせて丸く深く切る。", "角を深く切り込む。", "入浴前の乾いた状態で一度に切る。", "糖尿病で専門的な管理が必要な人も、介護福祉職が切る。"],
+      a: 1, exp: "足の爪はスクエアオフ。角を深く切ると巻き爪の原因になる。入浴後の柔らかいときに少しずつ切る。", terms: ["爪切り"] },
+    { q: "右片麻痺のある人が、ベッドから車いすへ移乗するときの車いすの位置として、最も適切なものを1つ選びなさい。",
+      c: ["左側に、ベッドに対して20〜30度の角度で置く。", "右側に、ベッドに対して20〜30度の角度で置く。", "左側に、ベッドに対して90度の角度で置く。", "右側に、ベッドと平行に置く。", "利用者の正面に置く。"],
+      a: 1, exp: "右片麻痺なら健側は左。車いすは健側に20〜30度の角度で置き、ブレーキをかける。", terms: ["車いすへの移乗"] },
+    { q: "片麻痺のある人の杖を使った三動作歩行の順序として、正しいものを1つ選びなさい。",
+      c: ["杖 → 患側の足 → 健側の足", "杖 → 健側の足 → 患側の足", "患側の足 → 杖 → 健側の足", "健側の足 → 杖 → 患側の足", "杖と患側の足を同時 → 健側の足"],
+      a: 1, exp: "杖は健側の手で持ち、「杖 → 患側 → 健側」の順。杖と患側を同時に出すのは二動作歩行。", terms: ["杖歩行"] },
+    { q: "総義歯の取扱いとして、最も適切なものを1つ選びなさい。",
+      c: ["外すときは下顎の義歯から外す。", "外すときは上顎の義歯から外す。", "熱湯で消毒する。", "歯磨き粉をつけて磨く。", "乾燥させて保管する。"],
+      a: 1, exp: "外すときは下顎から、入れるときは上顎から。流水と義歯用ブラシで洗い、水か洗浄剤に入れて保管する。", terms: ["義歯の扱い"] },
+    { q: "嚥下障害のある人がむせやすい食品として、最も適切なものを1つ選びなさい。",
+      c: ["さらさらした水", "ゼリー", "とろみをつけたお茶", "プリン", "全粥"],
+      a: 1, exp: "さらさらした液体は咽頭を速く流れ、むせやすい。とろみをつけるとまとまりやすくなる。", terms: ["嚥下障害のある人の食事", "誤嚥"] },
+    { q: "便秘のある人への腹部マッサージの方法として、最も適切なものを1つ選びなさい。",
+      c: ["腸の走行に沿って「の」の字を書くように時計回りに行う。", "反時計回りに行う。", "左下腹部から右下腹部に向かって行う。", "上腹部を強く押し続ける。", "食後すぐに強く行う。"],
+      a: 1, exp: "腸の走行（右下腹部 → 上 → 左 → 左下腹部）に沿って、時計回りに行う。", terms: ["腹部マッサージ", "便秘の予防"] },
+    { q: "ヒートショックの予防として、最も適切なものを1つ選びなさい。",
+      c: ["入浴前に脱衣所や浴室を暖めておく。", "42℃以上の熱い湯に入る。", "食事の直後に入浴する。", "冬は寒い脱衣所で手早く服を脱ぐ。", "長時間、肩まで湯につかる。"],
+      a: 1, exp: "急激な温度変化で血圧が大きく変動して起こる。居室との温度差を小さくする。", terms: ["ヒートショック", "入浴の注意"] },
+    { q: "清拭の方法として、最も適切なものを1つ選びなさい。",
+      c: ["末梢から中枢に向かって拭き、すぐに乾いたタオルで水分を拭き取る。", "中枢から末梢に向かって拭く。", "拭いた後は自然に乾かす。", "冷たいタオルで拭く。", "全身を露出したまま行う。"],
+      a: 1, exp: "末梢から中枢へ拭く。水分が残ると気化熱で体が冷えるため、すぐに拭き取る。", terms: ["清拭"] },
+    { q: "認知症や運動機能の低下により、トイレの場所がわからずに起こる尿失禁として、正しいものを1つ選びなさい。",
+      c: ["機能性尿失禁", "腹圧性尿失禁", "切迫性尿失禁", "溢流性尿失禁", "反射性尿失禁"],
+      a: 1, exp: "排尿機能に問題がなく、トイレの場所がわからない・間に合わないことによる失禁は機能性尿失禁。", terms: ["機能性尿失禁", "腹圧性尿失禁", "切迫性尿失禁", "溢流性尿失禁"] },
+  ],
+
+  "care-process": [
+    { q: "介護過程の最初の段階として、正しいものを1つ選びなさい。",
+      c: ["アセスメント", "介護計画の立案", "実施", "評価", "カンファレンス"],
+      a: 1, exp: "介護過程は「アセスメント → 計画の立案 → 実施 → 評価」を繰り返す。", terms: ["介護過程", "アセスメント"] },
+    { q: "介護計画の目標の設定として、最も適切なものを1つ選びなさい。",
+      c: ["目標の主語は利用者にする。", "目標の主語は介護福祉職にする。", "抽象的な表現にする。", "評価する日は決めない。", "長期目標だけを設定する。"],
+      a: 1, exp: "目標の主語は利用者。具体的で評価できる表現にし、評価日もあらかじめ決める。", terms: ["長期目標・短期目標", "評価"] },
+    { q: "アセスメントの説明として、最も適切なものを1つ選びなさい。",
+      c: ["情報を収集・分析し、生活課題を明らかにすること", "介護計画に沿って支援を行うこと", "目標の達成度を確かめること", "介護計画を家族に説明すること", "記録を整理して保管すること"],
+      a: 1, exp: "アセスメントは情報の収集と分析・解釈によって生活課題を明らかにする段階。", terms: ["アセスメント", "生活課題"] },
+    { q: "ケアプランと介護計画の関係として、最も適切なものを1つ選びなさい。",
+      c: ["ケアプランの方針に沿って、各事業所が個別の介護計画を作成する。", "介護計画をもとに、介護支援専門員がケアプランを作成する。", "ケアプランと介護計画は無関係に作成する。", "介護計画は利用者の家族が作成する。", "ケアプランがあれば介護計画は不要である。"],
+      a: 1, exp: "介護支援専門員が作るケアプランが全体の方針。各サービス事業所はそれに沿って個別の介護計画を作る。", terms: ["ケアプランと介護計画"] },
+  ],
+
+  development: [
+    { q: "エリクソンの発達段階で、老年期の発達課題（心理社会的危機）として、正しいものを1つ選びなさい。",
+      c: ["統合 対 絶望", "生殖性 対 停滞", "親密性 対 孤立", "同一性 対 同一性拡散", "勤勉性 対 劣等感"],
+      a: 1, exp: "老年期は「統合 対 絶望」。生殖性 対 停滞は成人期、同一性 対 同一性拡散は青年期。", terms: ["エリクソンの発達段階"] },
+    { q: "結晶性知能の説明として、最も適切なものを1つ選びなさい。",
+      c: ["経験や学習で積み重ねた知識や判断力で、高齢になっても維持されやすい。", "新しいことをすばやく処理する力で、高齢になっても維持されやすい。", "経験や学習で積み重ねた知識で、加齢とともに急速に低下する。", "生まれつきの能力で、学習の影響を受けない。", "乳幼児期に最も高く、その後は低下し続ける。"],
+      a: 1, exp: "結晶性知能は維持されやすく、流動性知能（新しいことをすばやく処理する力）は加齢で低下しやすい。", terms: ["流動性知能・結晶性知能"] },
+    { q: "フレイルの説明として、最も適切なものを1つ選びなさい。",
+      c: ["加齢により心身の活力が低下した、要介護の一歩手前の状態で、健康な状態に戻ることができる。", "加齢により筋肉量が減った状態のことだけをいう。", "骨量が減り、骨がもろくなった状態である。", "一度なると健康な状態には戻らない。", "若年者に多くみられる状態である。"],
+      a: 1, exp: "フレイルは可逆性があるのが特徴。筋肉量の減少はサルコペニア。", terms: ["フレイル", "サルコペニア"] },
+    { q: "高齢者が転倒によって骨折し、寝たきりの原因になりやすい部位として、最も適切なものを1つ選びなさい。",
+      c: ["大腿骨頸部", "鎖骨", "肋骨", "手指", "頭蓋骨"],
+      a: 1, exp: "骨粗鬆症の高齢者は大腿骨頸部、脊椎、手首、上腕骨を骨折しやすい。大腿骨頸部骨折は寝たきりの原因になりやすい。", terms: ["大腿骨頸部骨折", "骨粗鬆症"] },
+    { q: "廃用症候群でみられる症状として、最も適切なものを1つ選びなさい。",
+      c: ["起立性低血圧", "白内障", "前立腺肥大症", "緑内障", "糖尿病"],
+      a: 1, exp: "廃用症候群（生活不活発病）では、筋萎縮、関節拘縮、骨粗鬆症、褥瘡、起立性低血圧、うつなどがみられる。", terms: ["廃用症候群"] },
+  ],
+
+  dementia: [
+    { q: "見当識障害が進むときに、障害されやすい順序として、正しいものを1つ選びなさい。",
+      c: ["時間 → 場所 → 人物", "人物 → 場所 → 時間", "場所 → 時間 → 人物", "人物 → 時間 → 場所", "場所 → 人物 → 時間"],
+      a: 1, exp: "一般に「時間 → 場所 → 人物」の順に障害されやすい。", terms: ["見当識障害"] },
+    { q: "レビー小体型認知症の特徴として、最も適切なものを1つ選びなさい。",
+      c: ["ありありとした幻視がみられる。", "できることとできないことが混在する、まだら認知症がみられる。", "同じ行動を繰り返す常同行動が目立つ。", "手術で改善が期待できる。", "急速に進行し、ミオクローヌスがみられる。"],
+      a: 1, exp: "レビー小体型は幻視、パーキンソン症状、日内変動が特徴。まだら認知症は血管性、常同行動は前頭側頭型。", terms: ["レビー小体型認知症", "血管性認知症", "前頭側頭型認知症"] },
+    { q: "正常圧水頭症の三大症状の組合せとして、正しいものを1つ選びなさい。",
+      c: ["歩行障害・認知機能障害・尿失禁", "幻視・パーキンソン症状・日内変動", "人格変化・脱抑制・常同行動", "頭痛・嘔吐・発熱", "振戦・筋固縮・無動"],
+      a: 1, exp: "正常圧水頭症はシャント手術で改善が期待できる。", terms: ["正常圧水頭症"] },
+    { q: "若年性認知症の定義として、正しいものを1つ選びなさい。",
+      c: ["65歳未満で発症した認知症", "40歳未満で発症した認知症", "50歳未満で発症した認知症", "18歳未満で発症した認知症", "75歳未満で発症した認知症"],
+      a: 1, exp: "65歳未満で発症した認知症。介護保険は40歳から利用できる（特定疾病）。", terms: ["若年性認知症"] },
+    { q: "Bさん（82歳、女性、アルツハイマー型認知症）は「財布を嫁に盗られた」と訴えている。介護福祉職の対応として、最も適切なものを1つ選びなさい。",
+      c: ["否定せずに困っている気持ちを受け止め、一緒に財布を探す。", "「誰も盗っていません」と説明して納得してもらう。", "財布を介護福祉職が預かり、隠しておく。", "訴えを聞かなかったことにする。", "家族を呼んで謝ってもらう。"],
+      a: 1, exp: "物盗られ妄想には否定・説得をせず、一緒に探す。本人が自分で見つけられるよう、さりげなく促す。", terms: ["物盗られ妄想への対応", "物盗られ妄想"], case: true },
+    { q: "パーソン・センタード・ケアを提唱した人物として、正しいものを1つ選びなさい。",
+      c: ["トム・キットウッド", "ナオミ・フェイル", "ロバート・バトラー", "キューブラー・ロス", "バイステック"],
+      a: 1, exp: "フェイルはバリデーション、バトラーは回想法、キューブラー・ロスは死の受容の5段階。", terms: ["トム・キットウッド", "パーソン・センタード・ケア"] },
+    { q: "認知症初期集中支援チームに関する記述として、最も適切なものを1つ選びなさい。",
+      c: ["40歳以上の在宅で、認知症が疑われる人などを訪問し、おおむね6か月支援する。", "65歳以上の施設入所者だけを対象とする。", "支援期間はおおむね3年である。", "都道府県が指定する専門医療機関である。", "介護福祉職だけで構成される。"],
+      a: 1, exp: "医療と介護の専門職で構成され、地域包括支援センターなどに置かれる。専門医療機関は認知症疾患医療センター。", terms: ["認知症初期集中支援チーム", "認知症疾患医療センター"] },
+    { q: "せん妄の特徴として、最も適切なものを1つ選びなさい。",
+      c: ["急に発症し、意識障害を伴い、1日の中で症状が変動する。", "ゆっくり発症し、意識ははっきりしている。", "原因を取り除いても改善しない。", "本人がもの忘れを強く訴えるのが特徴である。", "若年者にしか起こらない。"],
+      a: 1, exp: "せん妄は原因（脱水、発熱、薬など）を取り除くと改善することが多い。もの忘れを強く訴えるのは仮性認知症の特徴。", terms: ["せん妄", "仮性認知症"] },
+  ],
+
+  disability: [
+    { q: "障害受容の過程の順序として、正しいものを1つ選びなさい。",
+      c: ["ショック期 → 否認期 → 混乱期 → 解決への努力期 → 受容期", "否認期 → ショック期 → 混乱期 → 受容期 → 解決への努力期", "混乱期 → ショック期 → 否認期 → 解決への努力期 → 受容期", "ショック期 → 混乱期 → 否認期 → 受容期 → 解決への努力期", "否認期 → 混乱期 → ショック期 → 解決への努力期 → 受容期"],
+      a: 1, exp: "行きつ戻りつしながら進むこともある。", terms: ["障害受容の過程"] },
+    { q: "適応機制の「合理化」の説明として、最も適切なものを1つ選びなさい。",
+      c: ["失敗などに、もっともらしい理由をつけて自分を正当化する。", "発達の前の段階に戻ったような行動をとる。", "満たされない欲求を、社会的に認められる形で満たす。", "ある対象に向けた感情を、別の対象に向ける。", "自分の受け入れがたい感情を、相手が持っていると思う。"],
+      a: 1, exp: "退行、昇華、置き換え、投影との違いが問われる。", terms: ["合理化", "退行", "昇華", "置き換え", "投影"] },
+    { q: "パーキンソン病の症状として、最も適切なものを1つ選びなさい。",
+      c: ["安静時振戦", "夜盲", "朝のこわばり", "感覚性失語", "視野の中心が見えにくくなる"],
+      a: 1, exp: "四大症状は安静時振戦、筋固縮、無動、姿勢反射障害。朝のこわばりは関節リウマチ、夜盲は網膜色素変性症。", terms: ["パーキンソン病"] },
+    { q: "在宅酸素療法を行っている人の生活上の注意として、最も適切なものを1つ選びなさい。",
+      c: ["火気を2m以内に近づけない。", "酸素の流量は本人の判断で自由に変えてよい。", "入浴は禁止である。", "外出は禁止である。", "息苦しいときは早く浅い呼吸をする。"],
+      a: 1, exp: "火気厳禁。息苦しいときは口すぼめ呼吸が有効。", terms: ["呼吸器機能障害"] },
+    { q: "ALS（筋萎縮性側索硬化症）で、進行しても保たれやすい機能として、最も適切なものを1つ選びなさい。",
+      c: ["眼球運動", "全身の筋力", "嚥下機能", "呼吸機能", "発語"],
+      a: 1, exp: "感覚や知能、眼球運動は保たれやすく、意思伝達装置の活用が有効。", terms: ["ALS"] },
+    { q: "自閉スペクトラム症のある人への支援として、最も適切なものを1つ選びなさい。",
+      c: ["絵や写真を使って、予定の見通しを示す。", "予定をこまめに変更する。", "抽象的な言葉で説明する。", "大勢が集まる騒がしい場所で活動する。", "こだわりをすぐにやめさせる。"],
+      a: 1, exp: "予定の変更が苦手なため、見通しを示すと安心しやすい。", terms: ["自閉スペクトラム症"] },
+  ],
+
+  body: [
+    { q: "マズローの欲求階層説で、最も上位にある欲求として、正しいものを1つ選びなさい。",
+      c: ["自己実現の欲求", "承認（自尊）の欲求", "所属・愛情の欲求", "安全の欲求", "生理的欲求"],
+      a: 1, exp: "生理的 → 安全 → 所属・愛情 → 承認 → 自己実現の順。", terms: ["マズローの欲求階層説"] },
+    { q: "仰臥位で褥瘡が最もできやすい部位として、正しいものを1つ選びなさい。",
+      c: ["仙骨部", "大転子部", "耳介部", "肩峰部", "腸骨部"],
+      a: 1, exp: "仰臥位では仙骨部、側臥位では大転子部にできやすい。2時間ごとを目安に体位変換する。", terms: ["褥瘡"] },
+    { q: "交感神経が優位になったときの体の反応として、最も適切なものを1つ選びなさい。",
+      c: ["心拍数が増加する。", "消化が促進される。", "血圧が低下する。", "気管支が収縮する。", "瞳孔が縮小する。"],
+      a: 1, exp: "交感神経は活動時に働き、心拍数増加・血圧上昇・消化の抑制などが起こる。", terms: ["交感神経・副交感神経"] },
+    { q: "摂食・嚥下の5分類で、喉頭蓋が気管の入り口をふさぐ時期として、正しいものを1つ選びなさい。",
+      c: ["咽頭期", "先行期", "準備期", "口腔期", "食道期"],
+      a: 1, exp: "先行期 → 準備期 → 口腔期 → 咽頭期 → 食道期。咽頭期に誤嚥を防ぐしくみが働く。", terms: ["摂食・嚥下の5分類"] },
+    { q: "加齢や認知症の影響を受けにくく、保たれやすい記憶として、最も適切なものを1つ選びなさい。",
+      c: ["手続き記憶", "エピソード記憶", "短期記憶", "近時記憶", "作業記憶"],
+      a: 1, exp: "体で覚えた手続き記憶は保たれやすい。エピソード記憶は加齢で低下しやすい。", terms: ["手続き記憶", "エピソード記憶"] },
+    { q: "入浴の作用のうち、静水圧作用の説明として、最も適切なものを1つ選びなさい。",
+      c: ["水圧によって心臓に負担がかかる。", "体が軽くなり、動かしやすくなる。", "血管が広がり、血行がよくなる。", "皮膚の汚れが落ちる。", "眠気が覚める。"],
+      a: 1, exp: "浮力作用＝体が軽くなる。温熱作用＝血管が広がる。", terms: ["入浴の作用"] },
+  ],
+
+  medical: [
+    { q: "介護福祉士が行うことができる喀痰吸引の範囲として、正しいものを1つ選びなさい。",
+      c: ["口腔内・鼻腔内・気管カニューレ内部", "口腔内・鼻腔内・気管カニューレの先端より奥", "口腔内の咽頭より奥", "口腔内のみ", "鼻腔内のみ"],
+      a: 1, exp: "口腔内・鼻腔内は咽頭の手前まで、気管カニューレはカニューレの内部まで。", terms: ["喀痰吸引の範囲"] },
+    { q: "1回の喀痰吸引の時間として、最も適切なものを1つ選びなさい。",
+      c: ["10〜15秒以内", "30秒程度", "1分程度", "3分程度", "痰が取り切れるまで"],
+      a: 1, exp: "長くなると低酸素状態になる。", terms: ["吸引の時間"] },
+    { q: "経管栄養を行うときの姿勢として、最も適切なものを1つ選びなさい。",
+      c: ["上半身を30〜45度起こす。", "仰臥位で水平にする。", "腹臥位にする。", "頭を足より低くする。", "注入後はすぐに水平に戻す。"],
+      a: 1, exp: "注入後もしばらく上半身を起こしたままにして逆流を防ぐ。", terms: ["経管栄養の姿勢"] },
+    { q: "経管栄養の注入中に利用者が嘔吐したときの対応として、最も適切なものを1つ選びなさい。",
+      c: ["直ちに注入を止め、顔を横に向けて看護職に連絡する。", "注入速度を上げて早く終わらせる。", "そのまま注入を続け、終了後に報告する。", "上半身を水平にして休ませる。", "水を飲ませて落ち着かせる。"],
+      a: 1, exp: "誤嚥を防ぐため顔を横に向け、看護職に連絡する。", terms: ["注入中の嘔吐"] },
+    { q: "医行為ではないとされ、介護福祉職が行える行為として、最も適切なものを1つ選びなさい。",
+      c: ["一包化された内服薬の服薬介助", "褥瘡への軟膏の塗布", "インスリンの注射", "摘便", "耳垢塞栓の除去"],
+      a: 1, exp: "軟膏の塗布は褥瘡を除く。耳垢の除去は耳垢塞栓を除く。", terms: ["医行為ではない行為"] },
+    { q: "成人の心肺蘇生での胸骨圧迫の方法として、最も適切なものを1つ選びなさい。",
+      c: ["1分間に100〜120回、深さ約5cm", "1分間に60回、深さ約5cm", "1分間に100〜120回、深さ約2cm", "1分間に30回、深さ約10cm", "1分間に200回、深さ約1cm"],
+      a: 1, exp: "人工呼吸ができる場合は30：2で行う。", terms: ["心肺蘇生"] },
+  ],
+};
+
+</script>
+<script>
+/**
+ * 学習進捗ストア（端末内の localStorage に保存）
+ *
+ * 将来のバックエンド移行・機能追加を想定し、画面からはこの API だけを使う。
+ *   - checked:   用語ごとの「確認した」日時
+ *   - themes:    テーマごとの完了日時・完了回数
+ *   - last:      続きから学習するための位置
+ *   - history:   学習イベントの記録（学習履歴・苦手分析の元データ）
+ */
+window.KaigoStore = (function () {
+  var KEY = "kaigo-study.progress.v1";
+  var HISTORY_LIMIT = 500;
+
+  function empty() {
+    return { version: 1, checked: {}, themes: {}, last: null, history: [] };
+  }
+
+  function read() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (!raw) return empty();
+      var parsed = JSON.parse(raw);
+      return Object.assign(empty(), parsed);
+    } catch (e) {
+      return empty();
+    }
+  }
+
+  var state = read();
+
+  function save() {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (e) {
+      /* 保存できない環境でもメモリ上で動作を続ける */
+    }
+  }
+
+  function log(type, payload) {
+    state.history.push(Object.assign({ type: type, at: Date.now() }, payload));
+    if (state.history.length > HISTORY_LIMIT) {
+      state.history.splice(0, state.history.length - HISTORY_LIMIT);
+    }
+  }
+
+  return {
+    isChecked: function (termId) {
+      return Boolean(state.checked[termId]);
+    },
+
+    setChecked: function (termId, value) {
+      if (value) state.checked[termId] = Date.now();
+      else delete state.checked[termId];
+      log(value ? "term_checked" : "term_unchecked", { termId: termId });
+      save();
+    },
+
+    countChecked: function (termIds) {
+      var n = 0;
+      for (var i = 0; i < termIds.length; i++) if (state.checked[termIds[i]]) n++;
+      return n;
+    },
+
+    completeTheme: function (themeId) {
+      var t = state.themes[themeId] || { completedCount: 0 };
+      t.completedAt = Date.now();
+      t.completedCount = (t.completedCount || 0) + 1;
+      state.themes[themeId] = t;
+      log("theme_completed", { themeId: themeId });
+      save();
+    },
+
+    isThemeCompleted: function (themeId) {
+      return Boolean(state.themes[themeId] && state.themes[themeId].completedAt);
+    },
+
+    /** テーマの確認状態を消して最初から学習し直す（完了履歴は残す） */
+    resetTheme: function (themeId, termIds) {
+      termIds.forEach(function (id) {
+        delete state.checked[id];
+      });
+      log("theme_reset", { themeId: themeId });
+      save();
+    },
+
+    setLast: function (themeId, pageIndex) {
+      state.last = { themeId: themeId, pageIndex: pageIndex, at: Date.now() };
+      save();
+    },
+
+    getLast: function () {
+      return state.last;
+    },
+
+    getCompletedCount: function (themeId) {
+      return (state.themes[themeId] && state.themes[themeId].completedCount) || 0;
+    },
+
+    /* ---------- 基礎問題 ---------- */
+
+    /** 1問ごとの解答を記録（苦手問題・正答率の元データ） */
+    recordAnswer: function (termId, correct, dir) {
+      state.answers = state.answers || {};
+      var a = state.answers[termId] || { correct: 0, wrong: 0 };
+      if (correct) a.correct++;
+      else a.wrong++;
+      a.last = correct;
+      a.at = Date.now();
+      if (dir) {
+        a.dirs = a.dirs || {};
+        var d = a.dirs[dir] || { c: 0, w: 0 };
+        if (correct) d.c++;
+        else d.w++;
+        a.dirs[dir] = d;
+      }
+      state.answers[termId] = a;
+      log("answer", { termId: termId, correct: correct, dir: dir });
+      save();
+    },
+
+    /** 用語の集合について、解答済みの数と最後の解答が正解だった数 */
+    answerStats: function (termIds) {
+      var answers = state.answers || {};
+      var answered = 0, correct = 0;
+      termIds.forEach(function (id) {
+        var a = answers[id];
+        if (!a) return;
+        answered++;
+        if (a.last) correct++;
+      });
+      return { answered: answered, correct: correct };
+    },
+
+    /** 用語ID → { correct, wrong, last, at, dirs } */
+    getAnswers: function () {
+      return state.answers || {};
+    },
+
+    /* ---------- 過去問題 ---------- */
+    recordExam: function (qid, correct) {
+      state.exams = state.exams || {};
+      var a = state.exams[qid] || { correct: 0, wrong: 0 };
+      if (correct) a.correct++;
+      else a.wrong++;
+      a.last = correct;
+      a.at = Date.now();
+      state.exams[qid] = a;
+      log("exam_answer", { qid: qid, correct: correct });
+      save();
+    },
+
+    getExamAnswers: function () {
+      return state.exams || {};
+    },
+
+    /** 問題の集合について、解いた数・最後の解答が正解だった数・延べの正誤 */
+    examStats: function (qids) {
+      var ex = state.exams || {};
+      var answered = 0, correct = 0, c = 0, w = 0;
+      qids.forEach(function (id) {
+        var a = ex[id];
+        if (!a) return;
+        answered++;
+        if (a.last) correct++;
+        c += a.correct; w += a.wrong;
+      });
+      return { answered: answered, correct: correct, attempts: c + w, rate: c + w ? Math.round((c / (c + w)) * 100) : null };
+    },
+
+    saveQuizResult: function (themeId, score, total) {
+      state.quiz = state.quiz || {};
+      var q = state.quiz[themeId] || { count: 0, best: 0 };
+      q.count++;
+      q.last = score;
+      q.total = total;
+      q.best = Math.max(q.best || 0, Math.round((score / total) * 100));
+      q.at = Date.now();
+      state.quiz[themeId] = q;
+      log("quiz_finished", { themeId: themeId, score: score, total: total });
+      save();
+    },
+
+    getQuizResult: function (themeId) {
+      return (state.quiz && state.quiz[themeId]) || null;
+    },
+
+    /** 表示モードなど、利用者ごとの設定 */
+    getPref: function (key, fallback) {
+      var prefs = state.prefs || {};
+      return key in prefs ? prefs[key] : fallback;
+    },
+
+    setPref: function (key, value) {
+      state.prefs = state.prefs || {};
+      state.prefs[key] = value;
+      save();
+    },
+
+    getHistory: function () {
+      return state.history.slice();
+    },
+  };
+})();
+
+</script>
+<script>
+/**
+ * 画面（ビュー）とナビゲーション
+ * 教材は window.KAIGO_DATA、進捗は window.KaigoStore からのみ読み書きする。
+ */
+(function () {
+  "use strict";
+
+  if (window.finalizeData) window.finalizeData();
+  var DATA = window.KAIGO_DATA;
+  var Store = window.KaigoStore;
+  var $app = document.getElementById("app");
+  var $sheet = document.getElementById("sheet-root");
+
+  /* ---------------- 学習メニュー（将来の機能はここに追加） ---------------- */
+  var MENU = [
+    { id: "study", title: "基礎学習", sub: "テーマごとに重要用語を一覧で覚える", icon: "grid", ready: true },
+    { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
+    { id: "past-exams", title: "過去問題", sub: "国家試験と同じ5択形式で、科目ごとに解く", icon: "doc", ready: true, action: "open-exams" },
+    { id: "review", title: "過去に間違えた問題", sub: "間違えた問題を科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
+    { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis" },
+  ];
+  var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題" };
+
+  /* ---------------- アイコン ---------------- */
+  var ICONS = {
+    back: '<path d="M15 18l-6-6 6-6"/>',
+    chev: '<path d="M9 6l6 6-6 6"/>',
+    close: '<path d="M6 6l12 12M18 6L6 18"/>',
+    check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    quiz: '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 014.8.9c0 1.7-2.4 2.2-2.4 3.6M12 17h.01"/>',
+    layers: '<path d="M12 4l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 16l8 4 8-4"/>',
+    doc: '<path d="M7 3.5h7l4 4V20a.5.5 0 01-.5.5h-10A.5.5 0 017 20V3.5z"/><path d="M14 3.5V8h4M9.5 12.5h5M9.5 16h5"/>',
+    flag: '<path d="M6 21V4M6 4h11l-2 4 2 4H6"/>',
+    book: '<path d="M4 5.5A1.5 1.5 0 015.5 4H11v16H5.5A1.5 1.5 0 014 18.5v-13zM20 5.5A1.5 1.5 0 0018.5 4H13v16h5.5a1.5 1.5 0 001.5-1.5v-13z"/>',
+    info: '<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>',
+    arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+    redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
+    chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+  };
+  function icon(name, cls) {
+    return (
+      '<svg class="' + (cls || "") + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + "</svg>"
+    );
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  /* ---------------- 教材インデックス ---------------- */
+  var fieldById = {};
+  var themeById = {};
+  var fieldOfTheme = {};
+  var termById = {};
+
+  DATA.fields.forEach(function (f) {
+    fieldById[f.id] = f;
+    f.themes.forEach(function (t) {
+      themeById[t.id] = t;
+      fieldOfTheme[t.id] = f;
+      t.pages.forEach(function (p, pi) {
+        p.terms.forEach(function (term) {
+          termById[term.id] = { term: term, theme: t, page: p, pageIndex: pi };
+        });
+      });
+    });
+  });
+
+  /* 過去問題の索引（関連用語は同じ科目のカードから名前で探す） */
+  var examById = {};
+  var examsByField = {};
+  var EXAMS = window.KAIGO_EXAMS || {};
+  Object.keys(EXAMS).forEach(function (fid) {
+    var field = fieldById[fid];
+    if (!field) return;
+    examsByField[fid] = EXAMS[fid].map(function (q, i) {
+      var id = "exam." + fid + "." + (i + 1);
+      q.id = id;
+      q.field = fid;
+      q.termIds = (q.terms || []).map(function (name) {
+        var hit = null;
+        field.themes.forEach(function (t) {
+          t.pages.forEach(function (p) { p.terms.forEach(function (x) { if (!hit && x.term === name) hit = x.id; }); });
+        });
+        return hit;
+      }).filter(Boolean);
+      examById[id] = q;
+      return id;
+    });
+  });
+
+  function isReady(theme) { return theme.pages.length > 0; }
+  function pageTermIds(page) { return page.terms.map(function (t) { return t.id; }); }
+  function themeTermIds(theme) {
+    return theme.pages.reduce(function (acc, p) { return acc.concat(pageTermIds(p)); }, []);
+  }
+  function fieldTermIds(field) {
+    return field.themes.reduce(function (acc, t) { return acc.concat(themeTermIds(t)); }, []);
+  }
+  function allTermIds() {
+    return DATA.fields.reduce(function (acc, f) { return acc.concat(fieldTermIds(f)); }, []);
+  }
+  function readyThemes() {
+    var list = [];
+    DATA.fields.forEach(function (f) { f.themes.forEach(function (t) { if (isReady(t)) list.push(t); }); });
+    return list;
+  }
+  /** 未確認の用語が残っている最初のページ（全て確認済みなら 0） */
+  function firstOpenPage(theme) {
+    for (var i = 0; i < theme.pages.length; i++) {
+      var ids = pageTermIds(theme.pages[i]);
+      if (Store.countChecked(ids) < ids.length) return i;
+    }
+    return 0;
+  }
+
+  /* ---------------- 状態とナビゲーション ---------------- */
+  var view = { name: "home" };
+  var openTermId = null;
+  var lastTrigger = null;
+  var justChecked = null;
+
+  function go(next) {
+    view = next;
+    closeSheet(true);
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function startTheme(themeId, pageIndex) {
+    var theme = themeById[themeId];
+    var pi = typeof pageIndex === "number" ? pageIndex : firstOpenPage(theme);
+    Store.setLast(themeId, pi);
+    go({ name: "study", themeId: themeId, pageIndex: pi });
+  }
+
+  /* ---------------- 共通パーツ ---------------- */
+  function topbar(eyebrow, title, backAction) {
+    return (
+      '<header class="topbar">' +
+      (backAction
+        ? '<button class="icon-btn" data-action="' + backAction + '" aria-label="戻る">' + icon("back") + "</button>"
+        : '<span style="width:8px"></span>') +
+      '<div class="topbar__titles">' +
+      (eyebrow ? '<p class="topbar__eyebrow">' + esc(eyebrow) + "</p>" : "") +
+      '<h1 class="topbar__title">' + esc(title) + "</h1>" +
+      "</div></header>"
+    );
+  }
+
+  function bar(done, total) {
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    return (
+      '<div class="bar' + (total && done === total ? " bar--done" : "") + '" role="progressbar" aria-valuemin="0" aria-valuemax="' +
+      total + '" aria-valuenow="' + done + '"><div class="bar__fill" style="width:' + pct + '%"></div></div>'
+    );
+  }
+
+  function themeStatusChip(theme) {
+    if (!isReady(theme)) return '<span class="chip">準備中</span>';
+    var ids = themeTermIds(theme);
+    var n = Store.countChecked(ids);
+    if (n === ids.length) return '<span class="chip chip--done">' + icon("check") + "完了</span>";
+    if (n > 0) return '<span class="chip chip--progress">' + n + " / " + ids.length + "</span>";
+    if (Store.isThemeCompleted(theme.id)) return '<span class="chip chip--done">' + icon("check") + "完了済み</span>";
+    return '<span class="chip">未学習</span>';
+  }
+
+  /* ---------------- 1. ホーム ---------------- */
+  function renderHome() {
+    var ids = allTermIds();
+    var checked = Store.countChecked(ids);
+    var themes = readyThemes();
+    var doneThemes = themes.filter(function (t) { return Store.isThemeCompleted(t.id); }).length;
+    var last = Store.getLast();
+    var lastTheme = last && themeById[last.themeId];
+
+    var resume = "";
+    if (lastTheme && isReady(lastTheme)) {
+      var lIds = themeTermIds(lastTheme);
+      var lDone = Store.countChecked(lIds);
+      var finished = lDone === lIds.length;
+      resume =
+        '<section class="section"><h2 class="section__label">' + (finished ? "前回の学習" : "続きから") + "</h2>" +
+        '<div class="panel resume">' +
+        '<div><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + "</p>" +
+        '<p class="resume__title">' + esc(lastTheme.name) + "</p></div>" +
+        '<div class="progress"><div class="progress__text"><span>確認済み</span><span class="progress__count">' +
+        lDone + " / " + lIds.length + "</span></div>" + bar(lDone, lIds.length) + "</div>" +
+        '<button class="btn btn--primary" data-action="resume">' +
+        (finished ? "もう一度見る" : "続きから学習する") + icon("arrow") + "</button>" +
+        "</div></section>";
+    }
+
+    var quizStats = Store.answerStats(ids);
+    var menu = MENU.map(function (m) {
+      return (
+        '<button class="row" ' + (m.ready ? 'data-action="' + (m.action || "open-fields") + '" data-ctx="' + m.id + '"' : "disabled") + ">" +
+        '<span class="row__icon">' + icon(m.icon) + "</span>" +
+        '<span class="row__body"><span class="row__title">' + esc(m.title) + "</span>" +
+        '<span class="row__sub">' + esc(m.sub) + "</span></span>" +
+        (m.ready ? icon("chev", "row__chev") : '<span class="chip">準備中</span>') +
+        "</button>"
+      );
+    }).join("");
+
+    return (
+      topbar("介護福祉士国家試験", "まとめ暗記", null) +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">確認した用語</p><p class="stat__value">' + checked + "<small>/ " + ids.length + "語</small></p></div>" +
+      '<div><p class="stat__label">完了したテーマ</p><p class="stat__value">' + doneThemes + "<small>/ " + themes.length + "</small></p></div>" +
+      '<div><p class="stat__label">問題の正答率</p><p class="stat__value">' +
+      (quizStats.answered ? Math.round((quizStats.correct / quizStats.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
+      bar(checked, ids.length) +
+      "</div></section>" +
+      resume +
+      '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
+      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 2. 分野一覧 ---------------- */
+  function rateChip(stats) {
+    if (!stats.answered) return '<span class="chip">未挑戦</span>';
+    var pct = Math.round((stats.correct / stats.answered) * 100);
+    return '<span class="chip ' + (pct >= 80 ? "chip--done" : "chip--progress") + '">' + pct + "%</span>";
+  }
+
+  function renderFields() {
+    var ctx = view.ctx;
+    var groups = DATA.areas.map(function (area) {
+      var rows = area.fields.map(function (id) {
+        var f = fieldById[id];
+        if (!f) return "";
+        var ids = fieldTermIds(f);
+        var aside, extra = "";
+        if (ctx === "quiz") {
+          var st = Store.answerStats(ids);
+          aside = rateChip(st);
+          extra = bar(st.answered, ids.length);
+        } else {
+          var n = Store.countChecked(ids);
+          aside = '<span class="chip' + (n ? " chip--progress" : "") + '">' + n + " / " + ids.length + "</span>";
+          extra = bar(n, ids.length);
+        }
+        return (
+          '<button class="row" data-action="open-field" data-id="' + f.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
+          '<span class="row__sub">' + esc(f.description) + " ・ " + ids.length + "語</span>" + extra + "</span>" +
+          '<span class="row__aside">' + aside + icon("chev", "row__chev") + "</span>" +
+          "</button>"
+        );
+      }).join("");
+      return '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>";
+    }).join("");
+
+    return (
+      topbar(CTX_LABEL[ctx], "分野を選ぶ", "home") +
+      '<main class="content">' +
+      (ctx === "quiz" ? '<p class="hint">' + icon("info") + "<span>正答率は、各用語の最後の解答で計算しています。バーは解いたことのある用語の割合です。</span></p>" : "") +
+      groups + "</main>"
+    );
+  }
+
+  /* ---------------- 3. テーマ一覧 ---------------- */
+  function renderThemes() {
+    var f = fieldById[view.fieldId];
+    var ctx = view.ctx;
+    var rows = f.themes.map(function (t) {
+      var ready = isReady(t);
+      var count = themeTermIds(t).length;
+      var sub, chip, action;
+      if (ctx === "quiz") {
+        var q = Store.getQuizResult(t.id);
+        sub = (t.summary ? esc(t.summary) + "<br>" : "") + count + "問" + (q ? " ・ 最高 " + q.best + "% ・ " + q.count + "回" : "");
+        chip = q ? '<span class="chip ' + (q.best >= 80 ? "chip--done" : "chip--progress") + '">前回 ' + q.last + "/" + q.total + "</span>" : '<span class="chip">未挑戦</span>';
+        action = "open-quiz";
+      } else {
+        var laps = Store.getCompletedCount(t.id);
+        sub = (t.summary ? esc(t.summary) + "<br>" : "") + count + "語" + (t.pages.length > 1 ? " ・ " + t.pages.length + "ページ" : "") +
+          (laps ? " ・ " + laps + "周完了" : "");
+        chip = themeStatusChip(t);
+        action = "open-theme";
+      }
+      if (!ready) { sub = "教材を準備しています"; chip = '<span class="chip">準備中</span>'; }
+      return (
+        '<button class="row" ' + (ready ? 'data-action="' + action + '" data-id="' + t.id + '"' : "disabled") + ">" +
+        '<span class="row__body"><span class="row__title">' + esc(t.name) + "</span>" +
+        '<span class="row__sub">' + sub + "</span></span>" +
+        '<span class="row__aside">' + chip + (ready ? icon("chev", "row__chev") : "") + "</span>" +
+        "</button>"
+      );
+    }).join("");
+
+    return (
+      topbar(CTX_LABEL[ctx], f.name, "fields") +
+      '<main class="content"><div class="rows">' + rows + "</div></main>"
+    );
+  }
+
+  /* ---------------- 4. 基礎学習 ---------------- */
+  function renderStudy() {
+    var theme = themeById[view.themeId];
+    var field = fieldOfTheme[theme.id];
+    var page = theme.pages[view.pageIndex];
+    var ids = pageTermIds(page);
+    var done = Store.countChecked(ids);
+    var total = ids.length;
+    var allDone = done === total;
+    var multi = theme.pages.length > 1;
+    var isLastPage = view.pageIndex === theme.pages.length - 1;
+
+    var mode = Store.getPref("studyMode", "cards");
+
+    // 説明つきで読む：用語・説明・ポイントを1画面に収めた「まとめシート」
+    var list = page.terms.map(function (t) {
+      var on = Store.isChecked(t.id);
+      return (
+        '<div class="rs-item' + (on ? " is-checked" : "") + '">' +
+        '<button class="rs-item__body" data-action="open-term" data-id="' + t.id + '">' +
+        '<span class="rs-item__text"><b class="rs-item__term">' + esc(t.term) + "</b>" + esc(t.definition) + "</span>" +
+        (t.point ? '<span class="rs-item__point">' + esc(t.point) + "</span>" : "") +
+        "</button>" +
+        '<button class="rs-item__check" data-action="toggle-check" data-id="' + t.id + '" aria-pressed="' + on + '" aria-label="' +
+        esc(t.term) + (on ? "の確認を外す" : "を確認済みにする") + '">' + icon("check") + "</button>" +
+        "</div>"
+      );
+    }).join("");
+
+    var cards = page.terms.map(function (t) {
+      var on = Store.isChecked(t.id);
+      return (
+        '<button class="term' + (on ? " is-checked" : "") + (justChecked === t.id ? " just-checked" : "") +
+        '" data-action="open-term" data-id="' + t.id + '" aria-label="' + esc(t.term) + (on ? "（確認済み）" : "") + '">' +
+        '<span class="term__check">' + icon("check") + "</span>" +
+        '<span class="term__name">' + esc(t.term) + "</span>" +
+        (t.reading ? '<span class="term__reading">' + esc(t.reading) + "</span>" : "") +
+        "</button>"
+      );
+    }).join("");
+
+    var dock = allDone
+      ? '<button class="btn btn--primary" data-action="next-page">' +
+        (isLastPage ? "学習を完了する" : "次のページへ") + icon("arrow") + "</button>"
+      : '<p class="dock__status">すべて確認すると次へ進めます（あと ' + (total - done) + " 語）</p>";
+
+    return (
+      topbar(field.name, theme.name, "back-themes") +
+      '<main class="content content--with-dock' + (mode === "list" ? " content--read" : "") + '">' +
+      '<div class="study-head">' +
+      '<div class="study-head__row">' +
+      (multi
+        ? '<div class="page-tabs" role="tablist" aria-label="ページ">' + theme.pages.map(function (p, i) {
+            var pIds = pageTermIds(p);
+            var pDone = Store.countChecked(pIds) === pIds.length;
+            return '<button class="page-tab' + (i === view.pageIndex ? " is-current" : "") + (pDone ? " is-done" : "") +
+              '" role="tab" aria-selected="' + (i === view.pageIndex) + '" data-action="goto-page" data-page="' + i + '">' +
+              (pDone ? icon("check") : "") + "<span>" + (i + 1) + ". " + esc(p.title) + "</span></button>";
+          }).join("") + "</div>"
+        : '<h2 class="page-tag__title">' + esc(page.title) + "</h2>") +
+      '<span class="progress__count" aria-live="polite">確認済み <b>' + done + "</b> / " + total + "</span></div>" +
+      bar(done, total) +
+      (page.lead && mode !== "list" ? '<p class="page-tag__lead">' + esc(page.lead) + "</p>" : "") +
+      "</div>" +
+      '<div class="seg" role="group" aria-label="表示の切り替え">' +
+      '<button class="seg__btn" data-action="mode" data-mode="cards" aria-pressed="' + (mode === "cards") + '">カードで覚える</button>' +
+      '<button class="seg__btn" data-action="mode" data-mode="list" aria-pressed="' + (mode === "list") + '">説明つきで読む</button>' +
+      "</div>" +
+      (mode === "list"
+        ? '<div class="read-sheet">' + list + "</div>" +
+          '<p class="hint">' + icon("info") + "<span>1画面のまとめとして、配置ごと目で覚えましょう。用語をタップすると確認画面が開きます。</span></p>"
+        : '<div class="term-grid">' + cards + "</div>" +
+          '<p class="hint">' + icon("info") + "<span>用語を見て意味を思い出してから、カードをタップして説明を確認しましょう。</span></p>") +
+      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
+  /* ---------------- 説明シート ---------------- */
+  function openSheet(termId, trigger) {
+    openTermId = termId;
+    lastTrigger = trigger || null;
+    renderSheet();
+    document.body.classList.add("is-locked");
+    var btn = $sheet.querySelector("[data-autofocus]");
+    if (btn) btn.focus({ preventScroll: true });
+  }
+
+  function closeSheet(silent) {
+    if (!openTermId) return;
+    var id = openTermId;
+    openTermId = null;
+    $sheet.innerHTML = "";
+    document.body.classList.remove("is-locked");
+    if (!silent) {
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    }
+  }
+
+  function renderSheet() {
+    var entry = termById[openTermId];
+    if (!entry) return;
+    var t = entry.term;
+    var on = Store.isChecked(t.id);
+    var foot = on
+      ? '<p class="sheet__done">' + icon("check") + "確認済み</p>" +
+        '<button class="btn btn--ghost" data-action="close-sheet" data-autofocus>一覧に戻る</button>' +
+        '<button class="btn btn--text" data-action="uncheck">未確認に戻す</button>'
+      : '<button class="btn btn--ok" data-action="check" data-autofocus>' + icon("check") + "確認した</button>";
+
+    $sheet.innerHTML =
+      '<div class="sheet-scrim" data-action="close-sheet"></div>' +
+      '<section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-term">' +
+      '<div class="sheet__grip"></div>' +
+      '<div class="sheet__head"><div class="sheet__titles">' +
+      '<p class="sheet__meta">' + esc(entry.theme.name) + " ・ " + esc(entry.page.title) + "</p>" +
+      '<h2 class="sheet__term" id="sheet-term">' + esc(t.term) + "</h2>" +
+      (t.reading ? '<p class="sheet__reading">' + esc(t.reading) + "</p>" : "") +
+      "</div>" +
+      '<button class="icon-btn" data-action="close-sheet" aria-label="閉じる">' + icon("close") + "</button></div>" +
+      '<div class="sheet__body">' +
+      (t.profile ? '<p class="sheet__person"><span>人物</span>' + esc(t.profile) + "</p>" : "") +
+      (t.person ? '<p class="sheet__person"><span>提唱・開発</span>' + esc(t.person) + "</p>" : "") +
+      '<div><p class="sheet__label">説明</p><p class="sheet__def">' + esc(t.definition) + "</p></div>" +
+      (t.point ? '<div class="sheet__point"><p class="sheet__label">覚えるポイント</p><p>' + esc(t.point) + "</p></div>" : "") +
+      (t.example ? '<div class="sheet__example"><p class="sheet__label">例</p><p>' + esc(t.example) + "</p></div>" : "") +
+      "</div>" +
+      '<div class="sheet__foot">' + foot + "</div>" +
+      "</section>";
+  }
+
+  /* ---------------- 5. 学習完了 ---------------- */
+  function renderComplete() {
+    var theme = themeById[view.themeId];
+    var field = fieldOfTheme[theme.id];
+    var total = themeTermIds(theme).length;
+    var themes = readyThemes();
+    var idx = themes.indexOf(theme);
+    var next = null;
+    for (var i = 1; i < themes.length; i++) {
+      var cand = themes[(idx + i) % themes.length];
+      if (!Store.isThemeCompleted(cand.id)) { next = cand; break; }
+    }
+
+    var groups = theme.pages.map(function (p) {
+      return (
+        '<div class="review__group"><p class="review__title">' + esc(p.title) + "</p>" +
+        '<div class="review__terms">' +
+        p.terms.map(function (t) { return '<span class="review__term">' + esc(t.term) + "</span>"; }).join("") +
+        "</div></div>"
+      );
+    }).join("");
+
+    return (
+      topbar(field.name, theme.name, "back-themes") +
+      '<main class="content">' +
+      '<section class="done-hero"><div class="done-hero__mark">' + icon("check") + "</div>" +
+      '<h2 class="done-hero__title">' + Store.getCompletedCount(theme.id) + "周目 完了</h2>" +
+      '<p class="done-hero__sub">' + total + "語すべて確認しました" + (theme.pages.length > 1 ? "（" + theme.pages.length + "ページ）" : "") + "</p>" +
+      '<p class="done-hero__tip">繰り返し見るほど、配置ごと記憶に残ります。時間をおいてもう一周しましょう。</p></section>' +
+      '<section class="section"><h2 class="section__label">このテーマで覚えた用語</h2>' +
+      '<div class="panel review">' + groups + "</div></section>" +
+      '<div class="btn-stack">' +
+      (next
+        ? '<button class="btn btn--primary" data-action="open-theme" data-id="' + next.id + '">次のテーマ：' + esc(next.name) + icon("arrow") + "</button>"
+        : "") +
+      '<button class="btn btn--ghost" data-action="restart">' + icon("redo") + "もう一度学習する</button>" +
+      '<button class="btn btn--ghost" data-action="back-themes">テーマ一覧へ</button>' +
+      '<button class="btn btn--text" data-action="home">ホームに戻る</button>' +
+      "</div></main>"
+    );
+  }
+
+  /* ---------------- 6. 基礎問題・過去問題（5択） ---------------- */
+  var quiz = null;
+  var CHOICES = 5;
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  /* ----- 紛らわしい選択肢づくり ----- */
+
+  /** 2文字ずつの重なりで、用語名がどれくらい似ているか（0〜1） */
+  function bigrams(s) {
+    var set = {};
+    for (var i = 0; i < s.length - 1; i++) set[s.substr(i, 2)] = true;
+    return set;
+  }
+  function similarity(a, b) {
+    var A = bigrams(a), B = bigrams(b), inter = 0, union = 0, k;
+    for (k in A) { union++; if (B[k]) inter++; }
+    for (k in B) if (!A[k]) union++;
+    return union ? inter / union : 0;
+  }
+
+  /**
+   * 正解に近い順に誤答の用語を選ぶ。
+   * 用語名が似ているもの（例：腹圧性尿失禁と切迫性尿失禁）、同じページ・同じテーマのものを優先する。
+   */
+  function pickDistractors(termId, dir, count) {
+    var entry = termById[termId];
+    var field = fieldOfTheme[entry.theme.id];
+    var key = dir === "t2d" ? "definition" : "term";
+    var seen = {};
+    seen[entry.term[key]] = true;
+    var scored = fieldTermIds(field).filter(function (id) { return id !== termId; }).map(function (id) {
+      var e = termById[id];
+      var s = similarity(entry.term.term, e.term.term) * 2;
+      if (e.page === entry.page) s += 0.6;
+      else if (e.theme === entry.theme) s += 0.35;
+      return { id: id, s: s + Math.random() * 0.25 };
+    }).sort(function (a, b) { return b.s - a.s; });
+    var picked = [];
+    scored.forEach(function (x) {
+      if (picked.length >= count) return;
+      var v = termById[x.id].term[key];
+      if (seen[v]) return;
+      seen[v] = true;
+      picked.push(x.id);
+    });
+    return picked;
+  }
+
+  /**
+   * 正しい説明の一部だけを入れ替えた「ひっかけ」の説明をつくる（2択で迷わせる選択肢）。
+   * 入れ替えられる語がなければ null。
+   */
+  var SWAP_PAIRS = [
+    ["健側", "患側"], ["上顎", "下顎", /顎呼吸/], ["末梢", "中枢"], ["目頭", "目尻"], ["時計回り", "反時計回り"],
+    ["副交感神経", "交感神経"], ["小腸", "大腸"], ["左側臥位", "右側臥位"], ["仰臥位", "側臥位"],
+    ["増加", "減少"], ["高い", "低い"], ["浅い", "深い"], ["多い", "少ない"],
+    ["以上", "以下"], ["早朝", "夕方"], ["前傾", "後傾"], ["内側", "外側"], ["下から", "上から"],
+    ["急に", "徐々に"], ["市町村", "都道府県"], ["貸与", "購入"], ["名称独占", "業務独占"],
+    ["共助", "公助"], ["陽性症状", "陰性症状"], ["流動性知能", "結晶性知能"], ["引き戸", "開き戸"],
+    ["前から後ろ", "後ろから前"], ["近時記憶", "遠隔記憶"], ["保たれる", "失われる"],
+  ];
+  var NUM_UNITS = "歳|℃|万円|日間|日|回|時間|割|年|分|秒|%|％|cm|ml|か月|段階|項目|点|人";
+  function makeFake(text) {
+    var pairs = shuffle(SWAP_PAIRS);
+    for (var i = 0; i < pairs.length; i++) {
+      var a = pairs[i][0], b = pairs[i][1], skip = pairs[i][2];
+      if (skip && skip.test(text)) continue;
+      var alt = a.length >= b.length ? a + "|" + b : b + "|" + a;
+      var first = text.match(new RegExp(alt));
+      if (!first) continue;
+      // 「市町村や都道府県」のように並べて書かれている場合は、入れ替えても意味が同じになるので使わない
+      if (new RegExp("(" + alt + ")[や・、と]|及び|および").test(text) &&
+          text.indexOf(a) !== -1 && text.indexOf(b) !== -1 &&
+          new RegExp("(" + a + "[や・、と]" + b + ")|(" + b + "[や・、と]" + a + ")").test(text)) continue;
+      // 両方の語をまとめて入れ替える（例：外すときは下顎、入れるときは上顎 → 逆にする）
+      var swapped = text.replace(new RegExp(alt, "g"), function (m) { return m === a ? b : a; });
+      if (swapped === text) continue;
+      var to = first[0] === a ? b : a;
+      return { text: swapped, from: first[0], to: to };
+    }
+    // 数字を変える（範囲「〜」の一部や「1960年代」「1回の」は変えない）
+    var numRe = new RegExp("(^|[^0-9〜.])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の)");
+    var nm = text.match(numRe);
+    if (nm) {
+      var n = parseInt(nm[2], 10);
+      var alt2 = n >= 1900 ? n - 2 : n >= 100 ? n + Math.round(n * 0.2) : n >= 10 ? n + (n % 10 === 0 ? 10 : 5) : n + 1;
+      var at = nm.index + nm[1].length;
+      return { text: text.slice(0, at) + alt2 + text.slice(at + nm[2].length), from: nm[2] + nm[3], to: alt2 + nm[3] };
+    }
+    return null;
+  }
+
+  /** 用語の5択（基礎問題） */
+  function buildTermItem(termId, dir) {
+    var t = termById[termId].term;
+    var options = [{ text: dir === "t2d" ? t.definition : t.term, correct: true, termId: termId }];
+    var fake = dir === "t2d" ? makeFake(t.definition) : null;
+    if (fake) options.push({ text: fake.text, correct: false, fake: fake });
+    pickDistractors(termId, dir, CHOICES - options.length).forEach(function (id) {
+      var o = termById[id].term;
+      options.push({ text: dir === "t2d" ? o.definition : o.term, correct: false, termId: id });
+    });
+    return { kind: "term", termId: termId, dir: dir, options: shuffle(options), chosen: null };
+  }
+
+  function buildItems(termIds, dir) {
+    return shuffle(termIds).map(function (id, i) {
+      return buildTermItem(id, dir === "mix" ? (i % 2 ? "d2t" : "t2d") : dir);
+    });
+  }
+
+  /** 過去問題の5択 */
+  function buildExamItems(qids) {
+    return shuffle(qids).map(function (qid) {
+      var q = examById[qid];
+      var options = q.c.map(function (text, i) { return { text: text, correct: i === q.a - 1 }; });
+      return { kind: "exam", qid: qid, options: shuffle(options), chosen: null };
+    });
+  }
+
+  function itemCorrect(item) {
+    return item.chosen !== null && item.options[item.chosen].correct;
+  }
+
+  /**
+   * quiz の種類
+   *   theme  : テーマの全問（基礎問題）。結果をテーマの成績として保存する
+   *   review : 過去に間違えた用語など、任意の用語の集合
+   *   exam   : 過去問題（科目ごと・まとめて・間違えた問題）
+   */
+  function startQuiz(themeId) {
+    var theme = themeById[themeId];
+    quiz = {
+      kind: "theme", themeId: themeId, termIds: themeTermIds(theme),
+      title: theme.name, eyebrow: fieldOfTheme[themeId].name,
+      dir: null, items: null, index: 0, saved: false, full: true,
+    };
+    go({ name: "quiz", themeId: themeId, ctx: "quiz" });
+  }
+
+  function startReviewQuiz(termIds, title, eyebrow) {
+    quiz = {
+      kind: "review", termIds: termIds, title: title, eyebrow: eyebrow,
+      dir: null, items: null, index: 0, saved: false, full: false,
+    };
+    go({ name: "quiz", ctx: "review" });
+  }
+
+  function startExam(qids, title, eyebrow, back) {
+    quiz = {
+      kind: "exam", qids: qids, title: title, eyebrow: eyebrow, back: back || "exams",
+      items: buildExamItems(qids), index: 0, saved: false, full: false,
+    };
+    go({ name: "quiz", ctx: "exam" });
+  }
+
+  function quizBackAction() {
+    if (quiz.kind === "theme") return "back-themes";
+    if (quiz.kind === "exam") return quiz.back === "review" ? "back-review" : "back-exams";
+    return "back-review";
+  }
+
+  function renderQuizSetup() {
+    var total = quiz.termIds.length;
+    var q = quiz.kind === "theme" ? Store.getQuizResult(quiz.themeId) : null;
+    var opt = function (dir, title, sub) {
+      return (
+        '<button class="row" data-action="quiz-dir" data-dir="' + dir + '">' +
+        '<span class="row__body"><span class="row__title">' + title + "</span>" +
+        '<span class="row__sub">' + sub + "</span></span>" + icon("chev", "row__chev") + "</button>"
+      );
+    };
+    return (
+      topbar(quiz.eyebrow, quiz.title, quizBackAction()) +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">' +
+      (quiz.kind === "theme" ? "基礎問題" : "間違えた問題") + " ・ 全" + total + "問 ・ 5択</h2>" +
+      (q ? '<p class="hint">' + icon("info") + "<span>前回 " + q.last + " / " + q.total + " 問正解 ・ 最高 " + q.best + "%</span></p>" : "") +
+      '<div class="rows">' +
+      opt("t2d", "用語を見て、説明を選ぶ", "一語だけ違う「ひっかけ」の説明が混ざります") +
+      opt("d2t", "説明を見て、用語を選ぶ", "国家試験と同じく、説明から用語を思い出す") +
+      opt("mix", "ミックス", "2つの形式を交互に出題") +
+      "</div></section>" +
+      (quiz.kind === "theme"
+        ? '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "先に基礎学習で見る</button>"
+        : "") +
+      "</main>"
+    );
+  }
+
+  function renderQuizQuestion() {
+    var item = quiz.items[quiz.index];
+    var answered = item.chosen !== null;
+    var correct = itemCorrect(item);
+    var n = quiz.items.length;
+    var last = quiz.index === n - 1;
+    var prompt, feedbackBody, sub = "";
+
+    if (item.kind === "exam") {
+      var q = examById[item.qid];
+      sub = " ・ " + esc(fieldById[q.field].name) + (q.case ? " ・ 事例" : "");
+      prompt = '<div class="q-prompt q-prompt--def">' + esc(q.q) + "</div>";
+      var related = (q.termIds || []).map(function (id) { return termById[id].term.term; });
+      feedbackBody =
+        '<p class="q-feedback__term">正解：' + esc(q.c[q.a - 1]) + "</p>" +
+        '<p class="q-feedback__def">' + esc(q.exp) + "</p>" +
+        (related.length ? '<p class="q-feedback__point">関連する用語：' + related.map(esc).join("・") + "</p>" : "");
+    } else {
+      var entry = termById[item.termId];
+      var t = entry.term;
+      if (quiz.kind === "review") sub = " ・ " + esc(entry.theme.name);
+      prompt = item.dir === "t2d"
+        ? '<p class="q-label">この用語の説明として正しいものは？</p><div class="q-prompt q-prompt--term">' + esc(t.term) +
+          (t.reading ? '<span class="q-prompt__reading">' + esc(t.reading) + "</span>" : "") + "</div>"
+        : '<p class="q-label">この説明に当てはまる用語は？</p><div class="q-prompt q-prompt--def">' + esc(t.definition) + "</div>";
+      var chosen = answered ? item.options[item.chosen] : null;
+      feedbackBody =
+        (chosen && chosen.fake
+          ? '<p class="q-feedback__trap">ひっかけ：「' + esc(chosen.fake.to) + "」ではなく「" + esc(chosen.fake.from) + "」</p>"
+          : "") +
+        '<p class="q-feedback__term">' + esc(t.term) + "</p>" +
+        (item.dir === "d2t" ? "" : '<p class="q-feedback__def">' + esc(t.definition) + "</p>") +
+        (t.point ? '<p class="q-feedback__point">' + esc(t.point) + "</p>" : "");
+    }
+
+    var longText = item.kind === "exam" || item.dir === "t2d";
+    var options = item.options.map(function (o, i) {
+      var cls = "q-opt" + (longText ? " q-opt--def" : "");
+      if (answered) {
+        if (o.correct) cls += " is-correct";
+        else if (i === item.chosen) cls += " is-wrong";
+        else cls += " is-dim";
+      }
+      return (
+        '<button class="' + cls + '" data-action="quiz-answer" data-index="' + i + '"' + (answered ? " disabled" : "") + ">" +
+        '<span class="q-opt__num">' + (i + 1) + "</span>" +
+        '<span class="q-opt__text">' + esc(o.text) + "</span>" +
+        (answered && o.correct ? '<span class="q-opt__mark">' + icon("check") + "</span>" : "") +
+        (answered && i === item.chosen && !correct ? '<span class="q-opt__mark">' + icon("close") + "</span>" : "") +
+        "</button>"
+      );
+    }).join("");
+
+    var feedback = answered
+      ? '<div class="q-feedback ' + (correct ? "is-correct" : "is-wrong") + '" aria-live="polite">' +
+        '<p class="q-feedback__verdict">' + (correct ? "正解" : "不正解") + "</p>" + feedbackBody + "</div>"
+      : "";
+
+    var dock = answered
+      ? '<button class="btn btn--primary" data-action="quiz-next">' + (last ? "結果を見る" : "次の問題") + icon("arrow") + "</button>"
+      : '<p class="dock__status">5つの選択肢から1つ選んでください</p>';
+
+    return (
+      topbar(quiz.eyebrow, quiz.title, "quiz-quit") +
+      '<main class="content content--with-dock">' +
+      '<div class="progress"><div class="progress__text"><span>第' + (quiz.index + 1) + "問" + sub + "</span>" +
+      '<span class="progress__count"><b>' + (quiz.index + 1) + "</b> / " + n + "</span></div>" + bar(quiz.index + (answered ? 1 : 0), n) + "</div>" +
+      prompt +
+      '<div class="q-opts">' + options + "</div>" +
+      feedback +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
+  function renderQuizResult() {
+    var n = quiz.items.length;
+    var wrong = quiz.items.filter(function (it) { return !itemCorrect(it); });
+    var score = n - wrong.length;
+    var pct = Math.round((score / n) * 100);
+    if (!quiz.saved && quiz.full && quiz.kind === "theme") Store.saveQuizResult(quiz.themeId, score, n);
+    quiz.saved = true;
+
+    var list = wrong.map(function (it) {
+      if (it.kind === "exam") {
+        var q = examById[it.qid];
+        return (
+          '<div class="read-item read-item--static"><span class="read-item__def">' + esc(q.q) + "</span>" +
+          '<span class="read-item__term">正解：' + esc(q.c[q.a - 1]) + "</span>" +
+          '<span class="read-item__point">' + esc(q.exp) + "</span></div>"
+        );
+      }
+      var t = termById[it.termId].term;
+      return (
+        '<div class="read-item read-item--static"><span class="read-item__term">' + esc(t.term) + "</span>" +
+        '<span class="read-item__def">' + esc(t.definition) + "</span>" +
+        (t.point ? '<span class="read-item__point">' + esc(t.point) + "</span>" : "") + "</div>"
+      );
+    }).join("");
+
+    var sub = quiz.kind === "theme"
+      ? (quiz.full ? "全問に挑戦しました" : "間違えた問題の解き直し")
+      : wrong.length ? "正解した問題は「まだ正解していない」から外れます" : "すべて正解しました";
+
+    var buttons;
+    if (quiz.kind === "theme") {
+      buttons =
+        '<button class="btn btn--ghost" data-action="quiz-again">もう一度全問解く</button>' +
+        '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "基礎学習で見直す</button>" +
+        '<button class="btn btn--text" data-action="back-themes">テーマ一覧へ</button>';
+    } else if (quiz.kind === "exam") {
+      buttons =
+        '<button class="btn btn--ghost" data-action="quiz-again">同じ問題をもう一度解く</button>' +
+        '<button class="btn btn--text" data-action="' + quizBackAction() + '">' + (quiz.back === "review" ? "過去に間違えた問題へ戻る" : "過去問題の一覧へ") + "</button>";
+    } else {
+      buttons =
+        '<button class="btn btn--ghost" data-action="back-review">過去に間違えた問題へ戻る</button>' +
+        '<button class="btn btn--text" data-action="home">ホームに戻る</button>';
+    }
+
+    return (
+      topbar(quiz.eyebrow, quiz.title, quizBackAction()) +
+      '<main class="content">' +
+      '<section class="done-hero">' +
+      '<div class="score"><b>' + score + "</b><span>/ " + n + "</span></div>" +
+      '<h2 class="done-hero__title">' + (pct === 100 ? "全問正解" : "正答率 " + pct + "%") + "</h2>" +
+      '<p class="done-hero__sub">' + sub + "</p>" +
+      bar(score, n) + "</section>" +
+      (wrong.length
+        ? '<section class="section"><h2 class="section__label">間違えた問題（' + wrong.length + "）</h2>" +
+          '<div class="read-list">' + list + "</div></section>"
+        : "") +
+      '<div class="btn-stack">' +
+      (wrong.length ? '<button class="btn btn--primary" data-action="quiz-retry-wrong">' + icon("redo") + "間違えた問題を解き直す</button>" : "") +
+      buttons +
+      "</div></main>"
+    );
+  }
+
+  function renderQuiz() {
+    if (!quiz) return renderHome();
+    if (!quiz.items) return renderQuizSetup();
+    if (quiz.index >= quiz.items.length) return renderQuizResult();
+    return renderQuizQuestion();
+  }
+
+  /* ---------------- 過去問題 ---------------- */
+  function examIdsOf(fieldId) { return examsByField[fieldId] || []; }
+  function allExamIds() {
+    return DATA.fields.reduce(function (acc, f) { return acc.concat(examIdsOf(f.id)); }, []);
+  }
+
+  function renderExams() {
+    var all = allExamIds();
+    var allSt = Store.examStats(all);
+    var groups = DATA.areas.map(function (area) {
+      var rows = area.fields.map(function (id) {
+        var f = fieldById[id];
+        var qids = examIdsOf(id);
+        if (!f || !qids.length) return "";
+        var st = Store.examStats(qids);
+        return (
+          '<button class="row" data-action="exam-field" data-id="' + f.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
+          '<span class="row__sub">' + qids.length + "問" + (st.answered ? " ・ 解いた " + st.answered + "問" : "") + "</span>" +
+          bar(st.answered, qids.length) + "</span>" +
+          '<span class="row__aside">' + rateChip(st) + icon("chev", "row__chev") + "</span></button>"
+        );
+      }).join("");
+      return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
+    }).join("");
+
+    return (
+      topbar("国家試験形式", "過去問題", "home") +
+      '<main class="content">' +
+      '<div class="panel review-sum"><div><p class="stat__label">全科目 ' + all.length + "問</p>" +
+      '<p class="stat__value">' + (allSt.answered ? Math.round((allSt.correct / allSt.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
+      '<button class="btn btn--primary" data-action="exam-random">' + icon("quiz") + "ランダム20問</button></div>" +
+      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式のオリジナル問題です。実際の過去問は、社会福祉振興・試験センターが公開しています。</span></p>" +
+      groups +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 7. 過去に間違えた問題 ---------------- */
+  var REVIEW_MODES = {
+    open: { label: "まだ正解していない", test: function (a) { return a && a.last === false; } },
+    ever: { label: "一度でも間違えた", test: function (a) { return a && a.wrong > 0; } },
+  };
+
+  function wrongExamIds(qids) {
+    var mode = REVIEW_MODES[Store.getPref("reviewMode", "open")];
+    var ex = Store.getExamAnswers();
+    return qids.filter(function (id) { return mode.test(ex[id]); });
+  }
+
+  function wrongTermIds(termIds) {
+    var mode = REVIEW_MODES[Store.getPref("reviewMode", "open")];
+    var answers = Store.getAnswers();
+    return termIds.filter(function (id) { return mode.test(answers[id]); });
+  }
+
+  function renderReview() {
+    var modeKey = Store.getPref("reviewMode", "open");
+    var all = wrongTermIds(allTermIds());
+    var allExam = wrongExamIds(allExamIds());
+
+    var seg =
+      '<div class="seg" role="group" aria-label="対象の切り替え">' +
+      Object.keys(REVIEW_MODES).map(function (k) {
+        return '<button class="seg__btn" data-action="review-mode" data-mode="' + k + '" aria-pressed="' + (k === modeKey) + '">' + REVIEW_MODES[k].label + "</button>";
+      }).join("") + "</div>";
+
+    if (!all.length && !allExam.length) {
+      return (
+        topbar("復習", "過去に間違えた問題", "home") +
+        '<main class="content">' + seg +
+        '<div class="panel empty"><p class="empty__title">' +
+        (Store.answerStats(allTermIds()).answered || Store.examStats(allExamIds()).answered ? "対象の問題はありません" : "まだ問題を解いていません") + "</p>" +
+        '<p class="empty__text">基礎問題と過去問題で間違えた問題が、科目ごとにここへ自動で集まります。正解すると「まだ正解していない」から外れます。</p>' +
+        '<button class="btn btn--primary" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題を解く</button></div>" +
+        "</main>"
+      );
+    }
+
+    var sections = DATA.fields.map(function (f) {
+      var fWrong = wrongTermIds(fieldTermIds(f));
+      if (!fWrong.length) return "";
+      var rows = f.themes.map(function (t) {
+        var ids = wrongTermIds(themeTermIds(t));
+        if (!ids.length) return "";
+        var names = ids.slice(0, 3).map(function (id) { return termById[id].term.term; }).join("・") + (ids.length > 3 ? " ほか" : "");
+        return (
+          '<button class="row" data-action="review-theme" data-id="' + t.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(t.name) + "</span>" +
+          '<span class="row__sub">' + esc(names) + "</span></span>" +
+          '<span class="row__aside"><span class="chip chip--ng">' + ids.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+        );
+      }).join("");
+      return (
+        '<section class="section"><div class="section__head"><h2 class="section__label">' + esc(f.name) + "（" + fWrong.length + "）</h2>" +
+        '<button class="link-btn" data-action="review-field" data-id="' + f.id + '">まとめて解く</button></div>' +
+        '<div class="rows">' + rows + "</div></section>"
+      );
+    }).join("");
+
+    var examRows = DATA.fields.map(function (f) {
+      var qids = wrongExamIds(examIdsOf(f.id));
+      if (!qids.length) return "";
+      return (
+        '<button class="row" data-action="review-exam-field" data-id="' + f.id + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span></span>" +
+        '<span class="row__aside"><span class="chip chip--ng">' + qids.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+
+    return (
+      topbar("復習", "過去に間違えた問題", "home") +
+      '<main class="content">' + seg +
+      (examRows
+        ? '<section class="section"><h2 class="section__label">過去問題（' + allExam.length + "）</h2>" +
+          '<div class="rows">' + examRows + "</div></section>"
+        : "") +
+      (all.length
+        ? '<section class="section"><div class="section__head"><h2 class="section__label">基礎問題（' + all.length + "）</h2>" +
+          '<button class="link-btn" data-action="review-all">すべて解く</button></div></section>'
+        : "") +
+      sections +
+      "</main>"
+    );
+  }
+
+  /* ---------------- 8. 苦手傾向分析 ---------------- */
+  var ANALYSIS_MIN = 10;
+
+  /** 用語の集合の、延べ解答数・正解数 */
+  function attemptStats(termIds, dir) {
+    var answers = Store.getAnswers();
+    var c = 0, w = 0, answered = 0;
+    termIds.forEach(function (id) {
+      var a = answers[id];
+      if (!a) return;
+      if (dir) {
+        var d = a.dirs && a.dirs[dir];
+        if (!d) return;
+        c += d.c; w += d.w;
+      } else {
+        c += a.correct; w += a.wrong;
+      }
+      answered++;
+    });
+    return { correct: c, wrong: w, total: c + w, answered: answered, rate: c + w ? Math.round((c / (c + w)) * 100) : null };
+  }
+
+  function meter(label, sub, rate) {
+    var cls = rate >= 80 ? " bar--done" : rate < 60 ? " bar--ng" : "";
+    return (
+      '<div class="meter"><div class="meter__head"><span class="meter__label">' + label + "</span>" +
+      '<span class="meter__value">' + rate + "%</span></div>" +
+      '<div class="bar' + cls + '"><div class="bar__fill" style="width:' + rate + '%"></div></div>' +
+      (sub ? '<p class="meter__sub">' + sub + "</p>" : "") + "</div>"
+    );
+  }
+
+  function renderAnalysis() {
+    var ids = allTermIds();
+    var answers = Store.getAnswers();
+    var overall = attemptStats(ids);
+
+    if (overall.answered < ANALYSIS_MIN) {
+      var rest = ANALYSIS_MIN - overall.answered;
+      return (
+        topbar("分析", "苦手傾向分析", "home") +
+        '<main class="content"><div class="panel empty">' +
+        '<p class="empty__title">あと ' + rest + " 問解くと分析できます</p>" +
+        '<p class="empty__text">基礎問題の解答記録から、間違えやすい科目・テーマ・用語と、重点的に勉強するポイントを自動でまとめます。</p>' +
+        bar(overall.answered, ANALYSIS_MIN) +
+        '<button class="btn btn--primary" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題を解く</button>" +
+        "</div></main>"
+      );
+    }
+
+    // 科目別
+    var fieldRows = [], untried = [];
+    DATA.fields.forEach(function (f) {
+      var st = attemptStats(fieldTermIds(f));
+      if (!st.total) untried.push(f.name);
+      else fieldRows.push({ field: f, st: st });
+    });
+    fieldRows.sort(function (a, b) { return a.st.rate - b.st.rate; });
+
+    // テーマ別：3語以上解いていて正答率80%未満を、正答率の低い順に
+    var themeRows = [];
+    readyThemes().forEach(function (t) {
+      var tIds = themeTermIds(t);
+      var st = attemptStats(tIds);
+      if (st.answered < 3 || st.rate >= 80) return;
+      var weakTerms = tIds.filter(function (id) { return answers[id] && answers[id].wrong > 0; })
+        .sort(function (a, b) { return answers[b].wrong - answers[a].wrong; });
+      themeRows.push({ theme: t, st: st, weakTerms: weakTerms });
+    });
+    themeRows.sort(function (a, b) { return a.st.rate - b.st.rate || b.st.wrong - a.st.wrong; });
+    var focus = themeRows.slice(0, 3);
+
+    // 過去問題の科目別
+    var examFieldRows = DATA.fields.map(function (f) {
+      return { field: f, st: Store.examStats(examIdsOf(f.id)) };
+    }).filter(function (r) { return r.st.attempts; }).sort(function (a, b) { return a.st.rate - b.st.rate; });
+    var examMeters = examFieldRows.length
+      ? '<section class="section"><h2 class="section__label">過去問題の科目別正答率（低い順）</h2><div class="panel meters">' +
+        examFieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "問・" + r.st.attempts + "回", r.st.rate); }).join("") +
+        "</div></section>"
+      : "";
+    if (examFieldRows.length && examFieldRows[0].st.rate < 70) {
+      var ef = examFieldRows[0];
+      var advExam = "過去問題では「" + ef.field.name + "」の正答率が低めです（" + ef.st.rate + "%）。基礎学習で用語を固めてから、もう一度解きましょう。";
+    }
+
+    // 形式別
+    var t2d = attemptStats(ids, "t2d");
+    var d2t = attemptStats(ids, "d2t");
+
+    // 繰り返し間違えている用語
+    var repeat = ids.filter(function (id) { return answers[id] && answers[id].wrong >= 2; })
+      .sort(function (a, b) { return answers[b].wrong - answers[a].wrong; }).slice(0, 8);
+
+    // アドバイス
+    var advice = [];
+    if (fieldRows.length && fieldRows[0].st.rate < 80) {
+      advice.push("最も正答率が低い科目は「" + fieldRows[0].field.name + "」（" + fieldRows[0].st.rate + "%）です。下の重点ポイントから取り組みましょう。");
+    }
+    if (t2d.total >= 5 && d2t.total >= 5 && t2d.rate - d2t.rate >= 10) {
+      advice.push("説明から用語を思い出す問題の正答率が低めです（" + d2t.rate + "%）。国家試験はこの形式が中心なので、基礎学習の「説明つきで読む」で説明と用語を結びつけましょう。");
+    } else if (t2d.total >= 5 && d2t.total >= 5 && d2t.rate - t2d.rate >= 10) {
+      advice.push("用語の意味を選ぶ問題の正答率が低めです（" + t2d.rate + "%）。カードを見て、説明を自分の言葉で言えるか確かめましょう。");
+    }
+    var notStudied = focus.filter(function (r) { return !Store.isThemeCompleted(r.theme.id); });
+    if (notStudied.length) {
+      advice.push("重点ポイントのうち " + notStudied.length + " テーマは、基礎学習がまだ完了していません。問題を解く前に、カードで一通り見ておくと効果的です。");
+    }
+    if (typeof advExam === "string") advice.push(advExam);
+    if (repeat.length) {
+      advice.push(repeat.length + " 語を2回以上間違えています。覚え違いをしている可能性があるので、説明とポイントを読み直しましょう。");
+    }
+    if (untried.length) {
+      advice.push("まだ基礎問題を解いていない科目が " + untried.length + " あります。苦手の判定には、全科目を一度ずつ解くのがおすすめです。");
+    }
+    if (!advice.length) advice.push("全体的によく覚えられています。時間をおいて、正答率の低い順に解き直しましょう。");
+
+    var focusHtml = focus.length
+      ? focus.map(function (r, i) {
+          var t = r.theme;
+          var studied = Store.isThemeCompleted(t.id);
+          var names = r.weakTerms.slice(0, 4).map(function (id) { return termById[id].term.term; });
+          return (
+            '<div class="focus">' +
+            '<div class="focus__head"><span class="focus__rank">' + (i + 1) + "</span>" +
+            '<div class="focus__titles"><p class="focus__meta">' + esc(fieldOfTheme[t.id].name) + "</p>" +
+            '<p class="focus__title">' + esc(t.name) + "</p></div>" +
+            '<span class="chip ' + (r.st.rate < 60 ? "chip--ng" : "chip--progress") + '">' + r.st.rate + "%</span></div>" +
+            (names.length ? '<p class="focus__terms"><span>間違えやすい用語</span>' + names.map(esc).join("・") + "</p>" : "") +
+            '<p class="focus__why">' + r.st.total + "回解いて " + r.st.wrong + "回不正解。" +
+            (studied ? "基礎学習は完了済みです。「説明つきで読む」で説明とポイントを読み直しましょう。" : "基礎学習がまだ完了していません。まずカードで一通り見ましょう。") + "</p>" +
+            '<div class="focus__actions">' +
+            '<button class="btn btn--ghost btn--sm" data-action="open-theme" data-id="' + t.id + '">' + icon("grid") + "カードで見直す</button>" +
+            (r.weakTerms.length ? '<button class="btn btn--primary btn--sm" data-action="review-theme-ever" data-id="' + t.id + '">' + icon("redo") + "解き直す</button>" : "") +
+            "</div></div>"
+          );
+        }).join("")
+      : '<p class="empty__text">正答率80%未満のテーマはありません。</p>';
+
+    var repeatHtml = repeat.map(function (id) {
+      var e = termById[id];
+      return (
+        '<div class="read-item read-item--static"><span class="read-item__head"><span class="read-item__term">' + esc(e.term.term) + "</span>" +
+        '<span class="chip chip--ng">' + answers[id].wrong + "回</span></span>" +
+        '<span class="read-item__reading">' + esc(fieldOfTheme[e.theme.id].name + " ・ " + e.theme.name) + "</span>" +
+        '<span class="read-item__def">' + esc(e.term.definition) + "</span>" +
+        (e.term.point ? '<span class="read-item__point">' + esc(e.term.point) + "</span>" : "") + "</div>"
+      );
+    }).join("");
+
+    return (
+      topbar("分析", "苦手傾向分析", "home") +
+      '<main class="content">' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">解いた用語</p><p class="stat__value">' + overall.answered + "<small>/ " + ids.length + "</small></p></div>" +
+      '<div><p class="stat__label">延べ解答数</p><p class="stat__value">' + overall.total + "<small>回</small></p></div>" +
+      '<div><p class="stat__label">正答率</p><p class="stat__value">' + overall.rate + "<small>%</small></p></div>" +
+      "</div>" +
+      '<section class="section"><h2 class="section__label">あなたの傾向</h2>' +
+      '<ul class="advice">' + advice.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul></section>" +
+      '<section class="section"><h2 class="section__label">重点的に勉強するポイント</h2>' + focusHtml + "</section>" +
+      '<section class="section"><h2 class="section__label">科目別の正答率（低い順）</h2><div class="panel meters">' +
+      fieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "語・" + r.st.total + "回", r.st.rate); }).join("") +
+      (untried.length ? '<p class="meter__sub">未挑戦：' + untried.map(esc).join("、") + "</p>" : "") +
+      "</div></section>" +
+      examMeters +
+      ((t2d.total || d2t.total)
+        ? '<section class="section"><h2 class="section__label">出題形式別の正答率</h2><div class="panel meters">' +
+          (t2d.total ? meter("用語を見て説明を選ぶ", t2d.total + "回", t2d.rate) : "") +
+          (d2t.total ? meter("説明を見て用語を選ぶ", d2t.total + "回", d2t.rate) : "") +
+          "</div></section>"
+        : "") +
+      (repeat.length
+        ? '<section class="section"><h2 class="section__label">繰り返し間違えている用語</h2><div class="read-list">' + repeatHtml + "</div></section>"
+        : "") +
+      '<p class="notice">基礎問題の解答記録から自動で集計しています。正答率は延べの解答回数で計算しています。</p>' +
+      "</main>"
+    );
+  }
+
+  /* ---------------- カードの文字サイズ自動調整 ---------------- */
+  /**
+   * 用語が数文字だけ次の行に落ちるのを防ぐ。
+   * 文字を小さくすると行数が減る場合、その行数になる最大のサイズを使う（下限 FIT_MIN）。
+   */
+  var FIT_MIN = 13;
+  function fitTermNames() {
+    var els = $app.querySelectorAll(".term__name");
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      el.style.fontSize = "";
+      var base = parseFloat(getComputedStyle(el).fontSize);
+      var lines = function (size) {
+        el.style.fontSize = size + "px";
+        return Math.round(el.getBoundingClientRect().height / (size * 1.3));
+      };
+      var best = base;
+      var bestLines = lines(base);
+      for (var size = base - 0.5; bestLines > 1 && size >= FIT_MIN; size -= 0.5) {
+        var n = lines(size);
+        if (n < bestLines) { bestLines = n; best = size; }
+      }
+      el.style.fontSize = best + "px";
+    }
+  }
+  /**
+   * 説明つきで読む：まとめシート全体が、下のボタンの上までスクロールなしで収まる
+   * 最大の文字サイズを選ぶ（READ_MAX〜READ_MIN）。最小でも収まらなければ最小で表示する。
+   */
+  var READ_MAX = 14, READ_MIN = 10;
+  function fitReadSheet() {
+    var sheet = $app.querySelector(".read-sheet");
+    if (!sheet) return;
+    var dock = $app.querySelector(".dock");
+    var bottom = (dock ? dock.getBoundingClientRect().top : window.innerHeight) - 2;
+    var top = sheet.getBoundingClientRect().top + window.scrollY;
+    var room = bottom - top;
+    var size = READ_MAX;
+    for (; size > READ_MIN; size -= 0.5) {
+      sheet.style.fontSize = size + "px";
+      if (sheet.offsetHeight <= room) break;
+    }
+    sheet.style.fontSize = size + "px";
+  }
+  function fitAll() { fitTermNames(); fitReadSheet(); }
+  var fitTimer = null;
+  window.addEventListener("resize", function () {
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitAll, 120);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+
+  /* ---------------- 描画 ---------------- */
+  function render() {
+    var html;
+    switch (view.name) {
+      case "fields": html = renderFields(); break;
+      case "themes": html = renderThemes(); break;
+      case "study": html = renderStudy(); break;
+      case "complete": html = renderComplete(); break;
+      case "quiz": html = renderQuiz(); break;
+      case "review": html = renderReview(); break;
+      case "exams": html = renderExams(); break;
+      case "analysis": html = renderAnalysis(); break;
+      default: html = renderHome();
+    }
+    $app.innerHTML = html;
+    fitAll();
+    justChecked = null;
+  }
+
+  /* ---------------- 操作 ---------------- */
+  var actions = {
+    home: function () { go({ name: "home" }); },
+    "open-fields": function (el) { go({ name: "fields", ctx: el.dataset.ctx }); },
+    fields: function () { go({ name: "fields", ctx: view.ctx || "study" }); },
+    "open-field": function (el) { go({ name: "themes", fieldId: el.dataset.id, ctx: view.ctx }); },
+    "open-quiz": function (el) { startQuiz(el.dataset.id); },
+    "quiz-dir": function (el) {
+      quiz.dir = el.dataset.dir;
+      quiz.items = buildItems(quiz.termIds, quiz.dir);
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-answer": function (el) {
+      var item = quiz.items[quiz.index];
+      if (item.chosen !== null) return;
+      item.chosen = parseInt(el.dataset.index, 10);
+      if (item.kind === "exam") Store.recordExam(item.qid, itemCorrect(item));
+      else Store.recordAnswer(item.termId, itemCorrect(item), item.dir);
+      render();
+      // 解説が下部のボタンに隠れないよう、見える位置までスクロール
+      var fb = $app.querySelector(".q-feedback");
+      var dock = $app.querySelector(".dock");
+      if (fb) {
+        var limit = window.innerHeight - (dock ? dock.offsetHeight : 0) - 12;
+        var over = fb.getBoundingClientRect().bottom - limit;
+        if (over > 0) window.scrollBy(0, over);
+      }
+    },
+    "quiz-next": function () {
+      quiz.index++;
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-quit": function () {
+      var q = quiz;
+      quiz = null;
+      if (q.kind === "theme") go({ name: "themes", fieldId: fieldOfTheme[q.themeId].id, ctx: "quiz" });
+      else if (q.kind === "exam" && q.back !== "review") go({ name: "exams" });
+      else go({ name: "review" });
+    },
+    "quiz-retry-wrong": function () {
+      var wrong = quiz.items.filter(function (it) { return !itemCorrect(it); });
+      if (quiz.kind === "exam") {
+        var qids = wrong.map(function (it) { return it.qid; });
+        quiz = Object.assign({}, quiz, { qids: qids, index: 0, items: buildExamItems(qids) });
+      } else {
+        var ids = wrong.map(function (it) { return it.termId; });
+        quiz = Object.assign({}, quiz, { termIds: ids, index: 0, saved: false, full: false, items: buildItems(ids, quiz.dir) });
+      }
+      render();
+      window.scrollTo(0, 0);
+    },
+    "quiz-again": function () {
+      if (quiz.kind === "exam") {
+        quiz = Object.assign({}, quiz, { index: 0, items: buildExamItems(quiz.qids) });
+        render();
+        window.scrollTo(0, 0);
+        return;
+      }
+      var ids = themeTermIds(themeById[quiz.themeId]);
+      quiz = Object.assign({}, quiz, { termIds: ids, index: 0, saved: false, full: true, items: buildItems(ids, quiz.dir) });
+      render();
+      window.scrollTo(0, 0);
+    },
+    "open-theme": function (el) { startTheme(el.dataset.id); },
+    resume: function () {
+      var last = Store.getLast();
+      if (!last || !themeById[last.themeId]) return;
+      var t = themeById[last.themeId];
+      var ids = themeTermIds(t);
+      // 全て確認済みなら最初のページから見直す
+      startTheme(t.id, Store.countChecked(ids) === ids.length ? 0 : last.pageIndex);
+    },
+    "back-themes": function () {
+      var ctx = view.name === "quiz" ? "quiz" : "study";
+      var themeId = view.name === "quiz" && quiz ? quiz.themeId : view.themeId;
+      if (ctx === "quiz") quiz = null;
+      go({ name: "themes", fieldId: fieldOfTheme[themeId].id, ctx: ctx });
+    },
+    "back-review": function () { quiz = null; go({ name: "review" }); },
+    "back-exams": function () { quiz = null; go({ name: "exams" }); },
+    "open-exams": function () { go({ name: "exams" }); },
+    "exam-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startExam(examIdsOf(f.id), f.name, "過去問題");
+    },
+    "exam-random": function () {
+      startExam(shuffle(allExamIds()).slice(0, 20), "ランダム20問", "過去問題");
+    },
+    "review-exam-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startExam(wrongExamIds(examIdsOf(f.id)), f.name, "過去に間違えた問題", "review");
+    },
+    "goto-page": function (el) {
+      var pi = parseInt(el.dataset.page, 10);
+      Store.setLast(view.themeId, pi);
+      go({ name: "study", themeId: view.themeId, pageIndex: pi });
+    },
+    "toggle-check": function (el) {
+      var id = el.dataset.id;
+      Store.setChecked(id, !Store.isChecked(id));
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
+    "open-review": function () { go({ name: "review" }); },
+    "open-analysis": function () { go({ name: "analysis" }); },
+    "review-mode": function (el) { Store.setPref("reviewMode", el.dataset.mode); render(); },
+    "review-theme": function (el) {
+      var t = themeById[el.dataset.id];
+      startReviewQuiz(wrongTermIds(themeTermIds(t)), t.name, "過去に間違えた問題");
+    },
+    "review-theme-ever": function (el) {
+      var t = themeById[el.dataset.id];
+      var answers = Store.getAnswers();
+      var ids = themeTermIds(t).filter(function (id) { return answers[id] && answers[id].wrong > 0; });
+      startReviewQuiz(ids, t.name, "苦手傾向分析");
+    },
+    "review-field": function (el) {
+      var f = fieldById[el.dataset.id];
+      startReviewQuiz(wrongTermIds(fieldTermIds(f)), f.name, "過去に間違えた問題");
+    },
+    "review-all": function () {
+      startReviewQuiz(wrongTermIds(allTermIds()), "すべての間違えた問題", "過去に間違えた問題");
+    },
+    "open-term": function (el) { openSheet(el.dataset.id, el); },
+    mode: function (el) {
+      Store.setPref("studyMode", el.dataset.mode);
+      render();
+    },
+    "close-sheet": function () { closeSheet(); },
+    check: function () {
+      var id = openTermId;
+      Store.setChecked(id, true);
+      justChecked = id;
+      closeSheet(true);
+      render();
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    },
+    uncheck: function () {
+      var id = openTermId;
+      Store.setChecked(id, false);
+      closeSheet(true);
+      render();
+      var card = $app.querySelector('[data-action="open-term"][data-id="' + id + '"]');
+      if (card) card.focus({ preventScroll: true });
+    },
+    "next-page": function () {
+      var theme = themeById[view.themeId];
+      if (view.pageIndex < theme.pages.length - 1) {
+        var pi = view.pageIndex + 1;
+        Store.setLast(theme.id, pi);
+        go({ name: "study", themeId: theme.id, pageIndex: pi });
+      } else {
+        Store.completeTheme(theme.id);
+        go({ name: "complete", themeId: theme.id });
+      }
+    },
+    restart: function () {
+      var theme = themeById[view.themeId];
+      Store.resetTheme(theme.id, themeTermIds(theme));
+      startTheme(theme.id, 0);
+    },
+  };
+
+  function onClick(e) {
+    var el = e.target.closest("[data-action]");
+    if (!el || el.disabled) return;
+    var fn = actions[el.dataset.action];
+    if (fn) fn(el);
+  }
+  $app.addEventListener("click", onClick);
+  $sheet.addEventListener("click", onClick);
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && openTermId) closeSheet();
+  });
+
+  render();
+})();
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
