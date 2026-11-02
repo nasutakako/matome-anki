@@ -824,6 +824,176 @@
     return renderQuizQuestion();
   }
 
+  /* ---------------- 年度別の本試験（マークシート採点） ---------------- */
+  var PAST = window.KAIGO_PAST_EXAMS || { years: [], groups: [] };
+  var pastById = {};
+  PAST.years.forEach(function (y) { pastById[y.id] = y; });
+
+  function isRight(year, q, choice) {
+    var a = year.answers[q - 1];
+    return Array.isArray(a) ? a.indexOf(choice) !== -1 : a === choice;
+  }
+  function answerLabel(a) { return Array.isArray(a) ? a.join("・") : String(a); }
+
+  /** 年度ごとの集計：採点済みの科目だけを数える */
+  function pastSummary(year) {
+    var rec = Store.getPast(year.id);
+    var total = 0, answered = 0, gradedQ = 0, bySubject = [], byField = {};
+    year.subjects.forEach(function (s, si) {
+      var graded = !!rec.graded[si];
+      var right = 0, done = 0;
+      for (var q = s.from; q <= s.to; q++) {
+        var c = rec.answers[q];
+        if (c) done++;
+        if (graded && c && isRight(year, q, c)) right++;
+      }
+      answered += done;
+      if (graded) { total += right; gradedQ += s.to - s.from + 1; }
+      bySubject.push({ graded: graded, right: right, done: done, count: s.to - s.from + 1 });
+      byField[s.field] = { graded: graded, right: right };
+    });
+    var allGraded = bySubject.every(function (b) { return b.graded; });
+    var groupsOk = PAST.groups.every(function (g) {
+      return g.some(function (f) { return byField[f] && byField[f].right > 0; });
+    });
+    return { total: total, answered: answered, gradedQ: gradedQ, bySubject: bySubject, allGraded: allGraded, groupsOk: groupsOk };
+  }
+
+  /** 採点済みの本試験の、科目ごとの正誤（総合問題を除く） */
+  function pastFieldStats() {
+    var st = {};
+    PAST.years.forEach(function (y) {
+      var rec = Store.getPast(y.id);
+      y.subjects.forEach(function (s, si) {
+        if (!rec.graded[si] || s.field === "general") return;
+        var r = st[s.field] || { right: 0, total: 0 };
+        for (var q = s.from; q <= s.to; q++) {
+          r.total++;
+          if (rec.answers[q] && isRight(y, q, rec.answers[q])) r.right++;
+        }
+        st[s.field] = r;
+      });
+    });
+    return st;
+  }
+
+  /** 採点済みで間違えた問題の一覧（年度・科目ごと） */
+  function pastWrongList() {
+    var list = [];
+    PAST.years.forEach(function (y) {
+      var rec = Store.getPast(y.id);
+      y.subjects.forEach(function (s, si) {
+        if (!rec.graded[si]) return;
+        var qs = [];
+        for (var q = s.from; q <= s.to; q++) if (!(rec.answers[q] && isRight(y, q, rec.answers[q]))) qs.push(q);
+        if (qs.length) list.push({ year: y, subject: s, index: si, qs: qs });
+      });
+    });
+    return list;
+  }
+
+  function renderPastYears() {
+    return PAST.years.map(function (y) {
+      var sm = pastSummary(y);
+      var chip = sm.gradedQ
+        ? '<span class="chip ' + (sm.allGraded ? (sm.total >= y.passing && sm.groupsOk ? "chip--done" : "chip--ng") : "chip--progress") + '">' +
+          sm.total + "点</span>"
+        : '<span class="chip">未挑戦</span>';
+      return (
+        '<button class="row" data-action="open-past-year" data-id="' + y.id + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(y.name) + "（" + esc(y.nendo) + "）</span>" +
+        '<span class="row__sub">' + esc(y.date) + "実施 ・ 125問 ・ 合格点 " + y.passing + "点" +
+        (sm.gradedQ ? " ・ 採点済み " + sm.gradedQ + "問" : "") + "</span>" +
+        bar(sm.gradedQ, 125) + "</span>" +
+        '<span class="row__aside">' + chip + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+  }
+
+  function renderPastYear() {
+    var y = pastById[view.yearId];
+    var sm = pastSummary(y);
+    var verdict = sm.allGraded
+      ? (sm.total >= y.passing && sm.groupsOk
+          ? '<p class="verdict verdict--ok">合格基準に達しています</p>'
+          : '<p class="verdict verdict--ng">' + (sm.total < y.passing ? "合格点まであと " + (y.passing - sm.total) + "点" : "得点のない科目群があります") + "</p>")
+      : '<p class="verdict">全科目を採点すると、合格基準で判定します</p>';
+    var rows = y.subjects.map(function (s, si) {
+      var b = sm.bySubject[si];
+      var chip = b.graded
+        ? '<span class="chip ' + (b.right / b.count >= 0.6 ? "chip--done" : "chip--ng") + '">' + b.right + " / " + b.count + "</span>"
+        : b.done ? '<span class="chip chip--progress">解答中 ' + b.done + "/" + b.count + "</span>" : '<span class="chip">未解答</span>';
+      return (
+        '<button class="row" data-action="open-past-sheet" data-index="' + si + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(s.name) + "</span>" +
+        '<span class="row__sub">問題' + s.from + "〜" + s.to + "（" + b.count + "問）</span></span>" +
+        '<span class="row__aside">' + chip + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+    return (
+      topbar("過去問題（本試験）", y.name + "（" + y.nendo + "）", "back-exams") +
+      '<main class="content">' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">得点</p><p class="stat__value">' + sm.total + "<small>/ 125</small></p></div>" +
+      '<div><p class="stat__label">合格点</p><p class="stat__value">' + y.passing + "<small>点</small></p></div>" +
+      '<div><p class="stat__label">採点済み</p><p class="stat__value">' + sm.gradedQ + "<small>問</small></p></div>" +
+      bar(sm.total, 125) + "</div>" +
+      verdict +
+      '<p class="hint">' + icon("info") + "<span>問題は試験センター公式サイトのPDFで読み、答えの番号をアプリで選んで採点します。合格には、合格点に加えて11の科目群すべてで得点があることが必要です。</span></p>" +
+      '<div class="rows">' + rows + "</div>" +
+      '<p class="notice">正答は社会福祉振興・試験センター／厚生労働省が公表した正答によります。試験問題の著作権は社会福祉振興・試験センターに帰属します。</p>' +
+      "</main>"
+    );
+  }
+
+  function renderPastSheet() {
+    var y = pastById[view.yearId];
+    var s = y.subjects[view.subjectIndex];
+    var rec = Store.getPast(y.id);
+    var graded = !!rec.graded[view.subjectIndex];
+    var right = 0, done = 0, n = s.to - s.from + 1;
+    var rows = "";
+    for (var q = s.from; q <= s.to; q++) {
+      var c = rec.answers[q];
+      if (c) done++;
+      var ok = graded && c && isRight(y, q, c);
+      if (ok) right++;
+      var btns = "";
+      for (var k = 1; k <= 5; k++) {
+        var cls = "ms-btn";
+        if (c === k) cls += " is-chosen";
+        if (graded) {
+          var correctK = isRight(y, q, k);
+          if (correctK) cls += " is-answer";
+          if (c === k && !correctK) cls += " is-wrong";
+        }
+        btns += '<button class="' + cls + '" data-action="past-mark" data-q="' + q + '" data-k="' + k + '"' + (graded ? " disabled" : "") +
+          ' aria-label="問題' + q + "の" + k + '">' + k + "</button>";
+      }
+      rows +=
+        '<div class="ms-row' + (graded ? (ok ? " is-ok" : " is-ng") : "") + '">' +
+        '<span class="ms-q">問' + q + "</span>" +
+        '<span class="ms-btns">' + btns + "</span>" +
+        '<span class="ms-mark">' + (graded ? (ok ? "○" : "×") : "") + "</span></div>";
+    }
+    var dock = graded
+      ? '<button class="btn btn--ghost" data-action="past-reset">' + icon("redo") + "解き直す</button>"
+      : '<button class="btn btn--primary" data-action="past-grade"' + (done ? "" : " disabled") + ">" + icon("check") +
+        "採点する（" + done + " / " + n + "問 解答）</button>";
+    return (
+      topbar(y.name + "（" + y.nendo + "）", s.name, view.from === "review" ? "open-review" : "back-past-year") +
+      '<main class="content content--with-dock">' +
+      '<a class="btn btn--ghost" href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + icon("doc") + "問題を開く（公式PDF）</a>" +
+      (graded
+        ? '<div class="panel ms-score"><b>' + right + "</b> / " + n + "問 正解" +
+          '<span class="chip ' + (right / n >= 0.6 ? "chip--done" : "chip--ng") + '">' + Math.round((right / n) * 100) + "%</span></div>"
+        : '<p class="hint">' + icon("info") + "<span>問題" + s.from + "〜" + s.to + "の答えを選んで「採点する」を押してください。</span></p>") +
+      '<div class="ms-sheet">' + rows + "</div>" +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
   /* ---------------- 過去問題 ---------------- */
   function examIdsOf(fieldId) { return examsByField[fieldId] || []; }
   function allExamIds() {
@@ -850,13 +1020,29 @@
       return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
     }).join("");
 
+    var tab = Store.getPref("examTab", "past");
+    var seg =
+      '<div class="seg" role="group" aria-label="過去問題の種類">' +
+      '<button class="seg__btn" data-action="exam-tab" data-tab="past" aria-pressed="' + (tab === "past") + '">年度別（本試験）</button>' +
+      '<button class="seg__btn" data-action="exam-tab" data-tab="original" aria-pressed="' + (tab === "original") + '">オリジナル問題</button>' +
+      "</div>";
+    if (tab === "past") {
+      return (
+        topbar("国家試験", "過去問題", "home") +
+        '<main class="content">' + seg +
+        '<div class="rows">' + renderPastYears() + "</div>" +
+        '<p class="hint">' + icon("info") + "<span>試験センターが公開している直近3回分です。問題は公式PDFで読み、答えをアプリで選ぶと採点・合否判定ができます。</span></p>" +
+        '<p class="notice">出典：<a href="' + esc(PAST.source) + '" target="_blank" rel="noopener">社会福祉振興・試験センター 過去の試験問題</a></p>' +
+        "</main>"
+      );
+    }
     return (
       topbar("国家試験形式", "過去問題", "home") +
-      '<main class="content">' +
+      '<main class="content">' + seg +
       '<div class="panel review-sum"><div><p class="stat__label">全科目 ' + all.length + "問</p>" +
       '<p class="stat__value">' + (allSt.answered ? Math.round((allSt.correct / allSt.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
       '<button class="btn btn--primary" data-action="exam-random">' + icon("quiz") + "ランダム20問</button></div>" +
-      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式のオリジナル問題です。実際の過去問は、社会福祉振興・試験センターが公開しています。</span></p>" +
+      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式で、頻出事項を問うオリジナル問題です。</span></p>" +
       groups +
       "</main>"
     );
@@ -891,7 +1077,8 @@
         return '<button class="seg__btn" data-action="review-mode" data-mode="' + k + '" aria-pressed="' + (k === modeKey) + '">' + REVIEW_MODES[k].label + "</button>";
       }).join("") + "</div>";
 
-    if (!all.length && !allExam.length) {
+    var pastWrong = pastWrongList();
+    if (!all.length && !allExam.length && !pastWrong.length) {
       return (
         topbar("復習", "過去に間違えた問題", "home") +
         '<main class="content">' + seg +
@@ -934,9 +1121,21 @@
       );
     }).join("");
 
+    var pastRows = pastWrong.map(function (w) {
+      return (
+        '<button class="row" data-action="open-past-wrong" data-year="' + w.year.id + '" data-index="' + w.index + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(w.year.name) + " ・ " + esc(w.subject.name) + "</span>" +
+        '<span class="row__sub">問' + w.qs.slice(0, 8).join("・問") + (w.qs.length > 8 ? " ほか" : "") + "</span></span>" +
+        '<span class="row__aside"><span class="chip chip--ng">' + w.qs.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+
     return (
       topbar("復習", "過去に間違えた問題", "home") +
       '<main class="content">' + seg +
+      (pastRows
+        ? '<section class="section"><h2 class="section__label">本試験（年度別）</h2><div class="rows">' + pastRows + "</div></section>"
+        : "") +
       (examRows
         ? '<section class="section"><h2 class="section__label">過去問題（' + allExam.length + "）</h2>" +
           '<div class="rows">' + examRows + "</div></section>"
@@ -1022,6 +1221,21 @@
     themeRows.sort(function (a, b) { return a.st.rate - b.st.rate || b.st.wrong - a.st.wrong; });
     var focus = themeRows.slice(0, 3);
 
+    // 本試験（年度別）の科目別
+    var pst = pastFieldStats();
+    var pastRowsA = Object.keys(pst).map(function (fid) {
+      var r = pst[fid];
+      return { field: fieldById[fid], r: r, rate: Math.round((r.right / r.total) * 100) };
+    }).filter(function (x) { return x.field; }).sort(function (a, b) { return a.rate - b.rate; });
+    var pastMeters = pastRowsA.length
+      ? '<section class="section"><h2 class="section__label">本試験（年度別）の科目別正答率（低い順）</h2><div class="panel meters">' +
+        pastRowsA.map(function (x) { return meter(esc(x.field.name), x.r.right + " / " + x.r.total + "問", x.rate); }).join("") +
+        "</div></section>"
+      : "";
+    var advPast = pastRowsA.length && pastRowsA[0].rate < 60
+      ? "本試験では「" + pastRowsA[0].field.name + "」の正答率が " + pastRowsA[0].rate + "% です。この科目の基礎学習から見直しましょう。"
+      : null;
+
     // 過去問題の科目別
     var examFieldRows = DATA.fields.map(function (f) {
       return { field: f, st: Store.examStats(examIdsOf(f.id)) };
@@ -1058,6 +1272,7 @@
     if (notStudied.length) {
       advice.push("重点ポイントのうち " + notStudied.length + " テーマは、基礎学習がまだ完了していません。問題を解く前に、カードで一通り見ておくと効果的です。");
     }
+    if (advPast) advice.push(advPast);
     if (typeof advExam === "string") advice.push(advExam);
     if (repeat.length) {
       advice.push(repeat.length + " 語を2回以上間違えています。覚え違いをしている可能性があるので、説明とポイントを読み直しましょう。");
@@ -1115,6 +1330,7 @@
       fieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "語・" + r.st.total + "回", r.st.rate); }).join("") +
       (untried.length ? '<p class="meter__sub">未挑戦：' + untried.map(esc).join("、") + "</p>" : "") +
       "</div></section>" +
+      pastMeters +
       examMeters +
       ((t2d.total || d2t.total)
         ? '<section class="section"><h2 class="section__label">出題形式別の正答率</h2><div class="panel meters">' +
@@ -1164,7 +1380,7 @@
     var sheet = $app.querySelector(".read-sheet");
     if (!sheet) return;
     var dock = $app.querySelector(".dock");
-    var bottom = (dock ? dock.getBoundingClientRect().top : window.innerHeight) - 2;
+    var bottom = dock ? dock.getBoundingClientRect().top : window.innerHeight;
     var top = sheet.getBoundingClientRect().top + window.scrollY;
     var room = bottom - top;
     var size = READ_MAX;
@@ -1193,6 +1409,8 @@
       case "quiz": html = renderQuiz(); break;
       case "review": html = renderReview(); break;
       case "exams": html = renderExams(); break;
+      case "pastYear": html = renderPastYear(); break;
+      case "pastSheet": html = renderPastSheet(); break;
       case "analysis": html = renderAnalysis(); break;
       default: html = renderHome();
     }
@@ -1284,6 +1502,32 @@
     "back-review": function () { quiz = null; go({ name: "review" }); },
     "back-exams": function () { quiz = null; go({ name: "exams" }); },
     "open-exams": function () { go({ name: "exams" }); },
+    "exam-tab": function (el) { Store.setPref("examTab", el.dataset.tab); render(); },
+    "open-past-wrong": function (el) {
+      go({ name: "pastSheet", yearId: el.dataset.year, subjectIndex: parseInt(el.dataset.index, 10), from: "review" });
+    },
+    "open-past-year": function (el) { go({ name: "pastYear", yearId: el.dataset.id }); },
+    "back-past-year": function () { go({ name: "pastYear", yearId: view.yearId }); },
+    "open-past-sheet": function (el) {
+      go({ name: "pastSheet", yearId: view.yearId, subjectIndex: parseInt(el.dataset.index, 10) });
+    },
+    "past-mark": function (el) {
+      Store.setPastAnswer(view.yearId, parseInt(el.dataset.q, 10), parseInt(el.dataset.k, 10));
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
+    "past-grade": function () {
+      Store.gradePast(view.yearId, view.subjectIndex);
+      render();
+      window.scrollTo(0, 0);
+    },
+    "past-reset": function () {
+      var s = pastById[view.yearId].subjects[view.subjectIndex];
+      Store.resetPast(view.yearId, view.subjectIndex, s.from, s.to);
+      render();
+      window.scrollTo(0, 0);
+    },
     "exam-field": function (el) {
       var f = fieldById[el.dataset.id];
       startExam(examIdsOf(f.id), f.name, "過去問題");

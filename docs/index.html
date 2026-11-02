@@ -1139,6 +1139,35 @@ body::before { background: var(--brand); }
 .study-head__row .page-tabs { flex: 1; min-width: 0; margin-top: 0; }
 .page-tab { min-height: 28px; padding: 0 9px; }
 
+/* ---------- 年度別の本試験：マークシート ---------- */
+a.btn { text-decoration: none; }
+.verdict { font-size: var(--fs-sm); font-weight: 700; color: var(--muted); text-align: center; }
+.verdict--ok { color: var(--ok); }
+.verdict--ng { color: var(--ng); }
+.ms-score { display: flex; align-items: baseline; justify-content: center; gap: 8px; font-size: var(--fs-md); }
+.ms-score b { font-size: 28px; font-variant-numeric: tabular-nums; }
+.ms-sheet { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.ms-row { display: flex; align-items: center; gap: 8px; padding: 6px 10px; }
+.ms-row + .ms-row { border-top: 1px solid var(--line); }
+.ms-row.is-ng { background: var(--ng-soft); }
+.ms-q { flex: none; width: 3.6em; font-size: var(--fs-sm); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ms-btns { flex: 1; display: flex; justify-content: space-between; gap: 6px; max-width: 260px; }
+.ms-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink);
+  font-size: var(--fs-md); font-weight: 700; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.ms-btn.is-chosen { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ms-btn:disabled { cursor: default; }
+.ms-btn.is-answer { border-color: var(--ok); color: var(--ok); background: var(--ok-soft); }
+.ms-btn.is-chosen.is-answer { background: var(--ok); color: var(--ok-ink); }
+.ms-btn.is-wrong { background: var(--ng); border-color: var(--ng); color: var(--surface); }
+.ms-mark { flex: none; width: 1.2em; text-align: center; font-weight: 700; }
+.ms-row.is-ok .ms-mark { color: var(--ok); }
+.ms-row.is-ng .ms-mark { color: var(--ng); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.rs-item__body { padding-top: 0.38em; padding-bottom: 0.42em; }
+
 </style>
 </head>
 <body>
@@ -1258,6 +1287,7 @@ defineField({
             ["IL運動", "自立生活運動", "1960年代にアメリカで始まった、障害のある人自身による自立生活をめざす運動。", "介助を受けながらでも、自分で決めて生活することが自立であると考えた。"],
             ["身体的・精神的・社会的自立", "", "身の回りのことを自分で行う身体的自立、自分で判断し決める精神的自立、社会の中で役割を持って生活する社会的自立がある。", ""],
             ["リハビリテーション", "", "障害のある人が、身体的・精神的・社会的に、その人らしく生きる権利を回復すること。", "キーワードは「全人間的復権」。"],
+            ["糸賀一雄", "いとがかずお", "知的障害のある子どもの施設「近江学園」や、重症心身障害児の施設「びわこ学園」をつくり、障害のある子どもの福祉と教育に尽くした。", "「この子らを世の光に」という言葉を残した。", { profile: "日本・社会福祉の実践家" }],
           ],
         },
       ],
@@ -1335,14 +1365,14 @@ defineField({
           title: "社会保障のしくみ",
           lead: "社会保険の種類と、自助・互助・共助・公助",
           terms: [
-            ["社会保険", "", "加入者が保険料を出し合い、病気や老齢などのときに給付を受けるしくみ。", "医療保険・年金保険・介護保険・雇用保険・労災保険の5種類。"],
+            ["社会保険", "", "保険料を出し合い、病気や老齢などのときに給付を受けるしくみ。", "医療保険・年金保険・介護保険・雇用保険・労災保険の5種類。"],
             ["公的扶助", "こうてきふじょ", "生活に困窮する人に、税金を財源として最低限度の生活を保障する制度。", "代表は生活保護。"],
             ["国民皆保険・皆年金", "", "すべての国民が公的な医療保険と年金に加入するしくみ。", "1961年に実現した。"],
             ["自助・互助・共助・公助", "", "自助＝自分で。互助＝住民同士の支え合い。共助＝社会保険など制度化された相互扶助。公助＝税による公的支援。", "介護保険は「共助」、生活保護は「公助」。"],
-            ["後期高齢者医療制度", "", "75歳以上の人が加入する医療保険制度。", "一定の障害がある65歳以上も対象。運営は都道府県ごとの後期高齢者医療広域連合。"],
+            ["後期高齢者医療制度", "", "75歳以上の人が加入する医療保険制度。", "一定の障害がある65歳以上も対象。運営は後期高齢者医療広域連合（都道府県ごと）。"],
             ["国民年金", "", "20歳以上60歳未満の、日本国内に住むすべての人が加入する年金。", "老齢基礎年金は原則65歳から支給。"],
-            ["福祉六法", "", "生活保護法、児童福祉法、身体障害者福祉法、知的障害者福祉法、老人福祉法、母子及び父子並びに寡婦福祉法。", ""],
-            ["介護休業", "", "要介護状態の家族を介護するために取得できる休業。", "対象家族1人につき通算93日まで、3回まで分けて取得できる（育児・介護休業法）。"],
+            ["福祉六法", "", "生活保護法、児童福祉法、身体障害者福祉法、知的障害者福祉法、老人福祉法、母子及び父子並びに寡婦福祉法。", "福祉三法（1940年代：生活保護法・児童福祉法・身体障害者福祉法）に、1960年代の知的障害者福祉法・老人福祉法・母子福祉法を加えたもの。介護保険法は含まれない。"],
+            ["介護休業", "", "要介護状態の家族を介護するための休業。", "対象家族1人につき通算93日まで、3回まで分割できる（育児・介護休業法）。"],
           ],
         },
         {
@@ -1875,7 +1905,7 @@ defineField({
     {
       id: "development-stages",
       name: "人間の成長と発達",
-      summary: "発達理論・知能・乳幼児の発達",
+      summary: "発達の理論・発達の原則・乳幼児の発達",
       pages: [
         {
           title: "発達の理論",
@@ -1884,9 +1914,22 @@ defineField({
             ["エリクソンの発達段階", "", "人生を8つの段階に分け、各段階に発達課題（心理社会的危機）があるとした。", "老年期は「統合 対 絶望」。青年期は「アイデンティティ（自我同一性）の確立」。", { person: "エリクソン" }],
             ["ピアジェの発達段階", "", "思考の発達を、感覚運動期 → 前操作期 → 具体的操作期 → 形式的操作期の4段階で示した。", "前操作期（2〜7歳）は自己中心性が特徴。", { person: "ピアジェ" }],
             ["ハヴィガーストの発達課題", "", "各発達段階で達成すべき課題を示した。", "老年期：体力や健康の衰え、退職と収入の減少、配偶者の死への適応など。", { person: "ハヴィガースト" }],
+            ["バルテスの生涯発達", "", "発達は生涯を通じて続き、どの時期にも獲得（成長）と喪失（衰退）が同時に起こるとした。", "老年期の喪失には、選択・最適化・補償（SOC理論）で適応する。", { person: "バルテス" }],
+            ["発達の原則", "はったつのげんそく", "発達には一定の方向と順序がある。頭部から脚部へ、体の中心から末梢へ、粗大な運動から微細な運動へと進む。", "発達の速さには個人差があるが、順序は一定。"],
             ["流動性知能・結晶性知能", "", "流動性知能＝新しいことを学び、すばやく処理する力。結晶性知能＝経験や学習で積み重ねた知識や判断力。", "流動性知能は加齢で低下しやすく、結晶性知能は高齢になっても維持されやすい。"],
-            ["愛着", "アタッチメント", "乳幼児が特定の養育者との間に結ぶ、情緒的な絆。", "ボウルビィが提唱。"],
+            ["愛着", "アタッチメント", "乳幼児が特定の養育者との間に結ぶ、情緒的な絆。", "ボウルビィが提唱。安心できる「安全基地」になる。"],
+          ],
+        },
+        {
+          title: "乳幼児の発達",
+          lead: "できるようになる順番と、おおよその時期",
+          terms: [
             ["原始反射", "げんしはんしゃ", "新生児にみられ、成長とともに消える反射。", "モロー反射（驚いて抱きつくような動き）、吸啜反射、把握反射など。"],
+            ["運動機能の発達", "", "首がすわる（3〜4か月頃）→ 寝返り（5〜6か月頃）→ ひとりすわり（7〜8か月頃）→ つかまり立ち（9〜10か月頃）→ ひとり歩き（1歳〜1歳3か月頃）。", "時期には個人差がある。順序を確実に覚える。"],
+            ["言葉の発達", "", "喃語（生後4〜6か月頃から）→ 一語文（1歳頃）→ 二語文（2歳頃）。", "一語文は「マンマ」など1語で気持ちを伝える。二語文は「ワンワン きた」など。"],
+            ["人見知り", "ひとみしり", "生後6〜8か月頃から、知らない人を見ると不安がって泣いたり、避けたりする。", "養育者との愛着ができた表れとされる。"],
+            ["社会的参照", "しゃかいてきさんしょう", "1歳前後から、どうしてよいかわからない場面で、養育者の表情を見て自分の行動を決める。", ""],
+            ["第一次反抗期", "だいいちじはんこうき", "2〜3歳頃、自我が芽生え、「いや」「自分で」と自己主張が強くなる時期。", "第二次反抗期は思春期。"],
             ["スキャモンの発育曲線", "", "体の発育を、一般型・神経型・リンパ型・生殖型の4つの曲線で示した。", "神経型は乳幼児期に急速に発達する。"],
           ],
         },
@@ -1895,7 +1938,7 @@ defineField({
     {
       id: "development-aging",
       name: "老化と心理",
-      summary: "老化の考え方・適応・フレイル",
+      summary: "老化の考え方・適応・フレイル・体の変化",
       pages: [
         {
           title: "老化の理解",
@@ -1911,12 +1954,25 @@ defineField({
             ["サルコペニア", "", "加齢により筋肉量が減り、筋力や身体機能が低下した状態。", ""],
           ],
         },
+        {
+          title: "老化による体の変化",
+          lead: "変化と、生活で気をつけることをセットで",
+          terms: [
+            ["高齢者の定義", "", "WHO（世界保健機関）では65歳以上を高齢者とする。日本では65〜74歳を前期高齢者、75歳以上を後期高齢者という。", "高齢化率7％以上＝高齢化社会、14％以上＝高齢社会、21％以上＝超高齢社会。"],
+            ["感覚機能の変化", "", "聴力は高い音から聞こえにくくなる。水晶体の弾力が落ちて近くが見えにくくなる（老視）。暗い所に目が慣れるのに時間がかかる。", "味覚（特に塩味）を感じにくく、味付けが濃くなりやすい。皮膚の感覚が鈍り、やけどに気づきにくい。"],
+            ["呼吸・循環の変化", "", "肺活量が減り、残気量が増える。血管の弾力が低下し、収縮期血圧が上がりやすい。", "立ち上がったときのふらつき（起立性低血圧）も起こりやすい。"],
+            ["腎臓・排尿の変化", "", "腎臓の働きが低下し、薬が体に残りやすい。尿を濃縮する力が落ち、夜間頻尿になりやすい。", ""],
+            ["体温調節の変化", "", "暑さや寒さを感じにくくなり、体温を調節する働きも低下する。", "熱中症や低体温症になりやすい。室温を整え、こまめに水分をとる。"],
+            ["体内の水分量", "", "体内の水分量は、成人で体重の約60％、高齢者では約50％に減る。", "のどの渇きも感じにくく、脱水になりやすい。"],
+            ["平均寿命と健康寿命", "", "健康寿命は、健康上の問題で日常生活が制限されることなく生活できる期間。", "平均寿命と健康寿命の差が、日常生活に制限のある期間になる。"],
+          ],
+        },
       ],
     },
     {
       id: "development-diseases",
       name: "高齢者に多い症状と病気",
-      summary: "老年症候群・廃用症候群・骨粗鬆症",
+      summary: "老年症候群・骨粗鬆症・心筋梗塞・糖尿病",
       pages: [
         {
           title: "高齢者の症状と病気の特徴",
@@ -1930,6 +1986,17 @@ defineField({
             ["高齢者の肺炎", "", "発熱や咳などの典型的な症状が出にくく、食欲がない、元気がないなどで気づくことがある。", "誤嚥性肺炎が多い。"],
             ["高齢者と薬", "", "肝臓・腎臓の働きが低下し、薬が体に残りやすく、副作用が出やすい。", "多くの薬を飲むことで有害な作用が出る状態をポリファーマシーという。"],
             ["前立腺肥大症", "ぜんりつせんひだいしょう", "男性の前立腺が大きくなり、尿が出にくい、頻尿などが起こる。", "溢流性尿失禁の原因になる。"],
+          ],
+        },
+        {
+          title: "高齢者に多い内科の病気",
+          lead: "高齢者は典型的な症状が出にくい",
+          terms: [
+            ["高血圧症", "こうけつあつしょう", "診察室で測った収縮期血圧140mmHg以上、または拡張期血圧90mmHg以上。脳卒中や心臓病の危険因子になる。", "塩分を控える。降圧剤を飲んでいる人は立ちくらみ・転倒に注意。"],
+            ["心筋梗塞", "しんきんこうそく", "心臓の冠動脈が詰まり、心筋が壊死する。強い胸の痛みが30分以上続く。", "高齢者や糖尿病の人は胸の痛みがはっきりせず、息切れ・冷や汗・意識障害で気づくことがある。狭心症に効くニトログリセリンは効きにくい。"],
+            ["糖尿病", "とうにょうびょう", "インスリンの働きが不足し、血糖値が高い状態が続く病気。", "高齢者はのどの渇きなどの自覚症状が出にくい。三大合併症は網膜症・腎症・神経障害。低血糖に注意。"],
+            ["熱中症", "ねっちゅうしょう", "暑い環境で体温を調節できなくなり、めまい・頭痛・けいれん・意識障害などが起こる。", "高齢者は室内でも起こりやすい。エアコンを使い、のどが渇く前に水分をとる。"],
+            ["低栄養", "ていえいよう", "必要なエネルギーやたんぱく質が不足した状態。体重の減少、筋力や免疫力の低下を招く。", "目安はBMI 18.5未満、血清アルブミン値3.5g/dL以下。"],
           ],
         },
       ],
@@ -2724,6 +2791,9 @@ window.KAIGO_EXAMS = {
     { q: "IL運動（自立生活運動）に関する説明として、最も適切なものを1つ選びなさい。",
       c: ["1960年代のアメリカで、障害のある人自身によって始まった。", "イギリスの救貧法の改正を求めて始まった。", "日本で、大規模施設の建設を求めて始まった。", "介助を受けずにすべて自分で行うことを自立とした。", "専門職が中心となって進めた運動である。"],
       a: 1, exp: "IL運動は障害のある人自身が始めた運動で、介助を受けながらでも自分で決めて生活することを自立と考えた。", terms: ["IL運動"] },
+    { q: "「この子らを世の光に」という言葉を残し、近江学園やびわこ学園をつくった人物として、正しいものを1つ選びなさい。",
+      c: ["糸賀一雄", "バンク-ミケルセン", "ニィリエ", "トム・キットウッド", "ロバート・バトラー"],
+      a: 1, exp: "糸賀一雄は障害のある子どもの福祉と教育に尽くした。バンク-ミケルセンはノーマライゼーションを提唱した。", terms: ["糸賀一雄", "ノーマライゼーション"] },
   ],
 
   relations: [
@@ -2766,6 +2836,9 @@ window.KAIGO_EXAMS = {
     { q: "生活保護の扶助のうち、原則として現物給付で行われるものを1つ選びなさい。",
       c: ["生活扶助", "住宅扶助", "医療扶助", "教育扶助", "葬祭扶助"],
       a: 3, exp: "医療扶助と介護扶助は原則として現物給付。そのほかの扶助は原則として金銭給付。", terms: ["生活保護の8つの扶助"] },
+    { q: "福祉六法に含まれない法律として、正しいものを1つ選びなさい。",
+      c: ["介護保険法", "生活保護法", "児童福祉法", "老人福祉法", "知的障害者福祉法"],
+      a: 1, exp: "福祉六法は、福祉三法（生活保護法・児童福祉法・身体障害者福祉法）に、1960年代の知的障害者福祉法・老人福祉法・母子福祉法を加えたもの。介護保険法や社会福祉法は含まれない。", terms: ["福祉六法"] },
   ],
 
   "care-basics": [
@@ -2868,6 +2941,18 @@ window.KAIGO_EXAMS = {
     { q: "廃用症候群でみられる症状として、最も適切なものを1つ選びなさい。",
       c: ["起立性低血圧", "白内障", "前立腺肥大症", "緑内障", "糖尿病"],
       a: 1, exp: "廃用症候群（生活不活発病）では、筋萎縮、関節拘縮、骨粗鬆症、褥瘡、起立性低血圧、うつなどがみられる。", terms: ["廃用症候群"] },
+    { q: "乳幼児の運動機能の発達の順序として、正しいものを1つ選びなさい。",
+      c: ["首がすわる → 寝返り → ひとりすわり → つかまり立ち → ひとり歩き", "寝返り → 首がすわる → ひとりすわり → つかまり立ち → ひとり歩き", "首がすわる → ひとりすわり → 寝返り → つかまり立ち → ひとり歩き", "首がすわる → 寝返り → つかまり立ち → ひとりすわり → ひとり歩き", "寝返り → ひとりすわり → 首がすわる → つかまり立ち → ひとり歩き"],
+      a: 1, exp: "発達は頭部から脚部へ進む。首がすわる（3〜4か月頃）から、ひとり歩き（1歳〜1歳3か月頃）まで、順序は一定。", terms: ["運動機能の発達", "発達の原則"] },
+    { q: "発達の原則に関する記述として、最も適切なものを1つ選びなさい。",
+      c: ["頭部から脚部へ、体の中心から末梢へと進む。", "脚部から頭部へと進む。", "微細な運動から粗大な運動へと進む。", "発達の順序は人によって大きく異なる。", "発達は成人期で終わる。"],
+      a: 1, exp: "発達には一定の方向と順序がある。粗大な運動から微細な運動へと進み、速さには個人差があるが順序は一定。", terms: ["発達の原則", "バルテスの生涯発達"] },
+    { q: "高齢者の心筋梗塞の特徴として、最も適切なものを1つ選びなさい。",
+      c: ["胸の痛みがはっきりせず、息切れや冷や汗で気づくことがある。", "必ず激しい胸の痛みを訴える。", "ニトログリセリンでほぼ改善する。", "痛みは数分でおさまる。", "高齢者にはほとんど起こらない。"],
+      a: 1, exp: "高齢者や糖尿病の人は典型的な症状が出にくい。強い胸の痛みが30分以上続き、ニトログリセリンが効きにくいのが特徴。", terms: ["心筋梗塞"] },
+    { q: "老化による体の変化として、最も適切なものを1つ選びなさい。",
+      c: ["聴力は高い音から聞こえにくくなる。", "体内の水分量が増える。", "肺活量が増え、残気量が減る。", "暑さや寒さを感じやすくなる。", "塩味を感じやすくなる。"],
+      a: 1, exp: "体内の水分量は約50％に減り、肺活量は減って残気量が増える。暑さ寒さや塩味は感じにくくなる。", terms: ["感覚機能の変化", "体内の水分量", "呼吸・循環の変化"] },
   ],
 
   dementia: [
@@ -2958,6 +3043,710 @@ window.KAIGO_EXAMS = {
     { q: "成人の心肺蘇生での胸骨圧迫の方法として、最も適切なものを1つ選びなさい。",
       c: ["1分間に100〜120回、深さ約5cm", "1分間に60回、深さ約5cm", "1分間に100〜120回、深さ約2cm", "1分間に30回、深さ約10cm", "1分間に200回、深さ約1cm"],
       a: 1, exp: "人工呼吸ができる場合は30：2で行う。", terms: ["心肺蘇生"] },
+  ],
+};
+
+</script>
+<script>
+/**
+ * 年度別の過去問題（国家試験の本試験）
+ *
+ * 試験問題は社会福祉振興・試験センターの著作物のため、アプリには収録しない。
+ * 問題は公式サイトのPDFで読み、アプリでは答えの番号を選んで採点する。
+ * 正答は試験センター／厚生労働省が公表した「合格基準及び正答」による（第36回 問46 は 4・5 の複数正答）。
+ *
+ * answers[i] は問題 i+1 の正答。複数正答は配列。
+ * 科目群（11群）：尊厳と自立＋介護の基本、人間関係＋コミュニケーション技術 はそれぞれ1群として数える。
+ */
+window.KAIGO_PAST_EXAMS = {
+  source: "https://www.sssc.or.jp/kaigo/past_exam/index.html",
+  groups: [["dignity", "care-basics"], ["relations", "comm-skills"], ["society"], ["life-support"], ["care-process"],
+           ["body"], ["development"], ["dementia"], ["disability"], ["medical"], ["general"]],
+  years: [
+    {
+      "id": "38",
+      "name": "第38回",
+      "date": "2026年1月25日",
+      "nendo": "令和7年度",
+      "passing": 64,
+      "subjects": [
+        {
+          "field": "dignity",
+          "name": "人間の尊厳と自立",
+          "from": 1,
+          "to": 2,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_01_38.pdf"
+        },
+        {
+          "field": "care-basics",
+          "name": "介護の基本",
+          "from": 3,
+          "to": 12,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_02_38.pdf"
+        },
+        {
+          "field": "society",
+          "name": "社会の理解",
+          "from": 13,
+          "to": 24,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_03_38.pdf"
+        },
+        {
+          "field": "relations",
+          "name": "人間関係とコミュニケーション",
+          "from": 25,
+          "to": 28,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_04_38.pdf"
+        },
+        {
+          "field": "comm-skills",
+          "name": "コミュニケーション技術",
+          "from": 29,
+          "to": 34,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_05_38.pdf"
+        },
+        {
+          "field": "life-support",
+          "name": "生活支援技術",
+          "from": 35,
+          "to": 60,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_am_06_38.pdf"
+        },
+        {
+          "field": "body",
+          "name": "こころとからだのしくみ",
+          "from": 61,
+          "to": 72,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_01_38.pdf"
+        },
+        {
+          "field": "development",
+          "name": "発達と老化の理解",
+          "from": 73,
+          "to": 80,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_02_38.pdf"
+        },
+        {
+          "field": "dementia",
+          "name": "認知症の理解",
+          "from": 81,
+          "to": 90,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_03_38.pdf"
+        },
+        {
+          "field": "disability",
+          "name": "障害の理解",
+          "from": 91,
+          "to": 100,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_04_38.pdf"
+        },
+        {
+          "field": "medical",
+          "name": "医療的ケア",
+          "from": 101,
+          "to": 105,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_05_38.pdf"
+        },
+        {
+          "field": "care-process",
+          "name": "介護過程",
+          "from": 106,
+          "to": 113,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_06_38.pdf"
+        },
+        {
+          "field": "general",
+          "name": "総合問題",
+          "from": 114,
+          "to": 125,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no38/k_pm_07_38.pdf"
+        }
+      ],
+      "answers": [
+        2,
+        4,
+        3,
+        1,
+        1,
+        5,
+        2,
+        2,
+        5,
+        1,
+        3,
+        4,
+        4,
+        3,
+        1,
+        2,
+        1,
+        3,
+        5,
+        4,
+        2,
+        1,
+        4,
+        4,
+        4,
+        5,
+        1,
+        3,
+        4,
+        1,
+        5,
+        3,
+        5,
+        2,
+        2,
+        1,
+        2,
+        3,
+        5,
+        4,
+        1,
+        3,
+        5,
+        3,
+        1,
+        2,
+        2,
+        3,
+        2,
+        3,
+        5,
+        1,
+        4,
+        1,
+        5,
+        3,
+        4,
+        3,
+        5,
+        4,
+        5,
+        3,
+        2,
+        1,
+        5,
+        4,
+        2,
+        1,
+        3,
+        5,
+        4,
+        4,
+        2,
+        2,
+        5,
+        3,
+        2,
+        1,
+        4,
+        4,
+        5,
+        1,
+        3,
+        5,
+        2,
+        4,
+        1,
+        4,
+        3,
+        3,
+        5,
+        1,
+        1,
+        2,
+        3,
+        3,
+        4,
+        2,
+        5,
+        4,
+        1,
+        5,
+        3,
+        2,
+        4,
+        2,
+        4,
+        5,
+        1,
+        2,
+        2,
+        3,
+        5,
+        2,
+        1,
+        4,
+        1,
+        3,
+        3,
+        5,
+        3,
+        1,
+        2,
+        5,
+        3
+      ]
+    },
+    {
+      "id": "37",
+      "name": "第37回",
+      "date": "2025年1月26日",
+      "nendo": "令和6年度",
+      "passing": 70,
+      "subjects": [
+        {
+          "field": "dignity",
+          "name": "人間の尊厳と自立",
+          "from": 1,
+          "to": 2,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_01_37.pdf"
+        },
+        {
+          "field": "relations",
+          "name": "人間関係とコミュニケーション",
+          "from": 3,
+          "to": 6,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_02_37.pdf"
+        },
+        {
+          "field": "society",
+          "name": "社会の理解",
+          "from": 7,
+          "to": 18,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_03_37.pdf"
+        },
+        {
+          "field": "body",
+          "name": "こころとからだのしくみ",
+          "from": 19,
+          "to": 30,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_04_37.pdf"
+        },
+        {
+          "field": "development",
+          "name": "発達と老化の理解",
+          "from": 31,
+          "to": 38,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_05_37.pdf"
+        },
+        {
+          "field": "dementia",
+          "name": "認知症の理解",
+          "from": 39,
+          "to": 48,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_06_37.pdf"
+        },
+        {
+          "field": "disability",
+          "name": "障害の理解",
+          "from": 49,
+          "to": 58,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_07_37.pdf"
+        },
+        {
+          "field": "medical",
+          "name": "医療的ケア",
+          "from": 59,
+          "to": 63,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_am_08_37.pdf"
+        },
+        {
+          "field": "care-basics",
+          "name": "介護の基本",
+          "from": 64,
+          "to": 73,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_pm_01_37.pdf"
+        },
+        {
+          "field": "comm-skills",
+          "name": "コミュニケーション技術",
+          "from": 74,
+          "to": 79,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_pm_02_37.pdf"
+        },
+        {
+          "field": "life-support",
+          "name": "生活支援技術",
+          "from": 80,
+          "to": 105,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_pm_03_37.pdf"
+        },
+        {
+          "field": "care-process",
+          "name": "介護過程",
+          "from": 106,
+          "to": 113,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_pm_04_37.pdf"
+        },
+        {
+          "field": "general",
+          "name": "総合問題",
+          "from": 114,
+          "to": 125,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no37/k_pm_05_37.pdf"
+        }
+      ],
+      "answers": [
+        4,
+        5,
+        2,
+        5,
+        5,
+        2,
+        4,
+        2,
+        5,
+        3,
+        1,
+        3,
+        4,
+        1,
+        2,
+        5,
+        1,
+        4,
+        1,
+        2,
+        2,
+        5,
+        4,
+        3,
+        1,
+        2,
+        1,
+        5,
+        4,
+        5,
+        2,
+        1,
+        4,
+        2,
+        3,
+        5,
+        4,
+        3,
+        1,
+        3,
+        5,
+        1,
+        3,
+        2,
+        5,
+        4,
+        3,
+        2,
+        3,
+        3,
+        2,
+        4,
+        3,
+        4,
+        1,
+        5,
+        5,
+        5,
+        1,
+        4,
+        4,
+        1,
+        3,
+        4,
+        3,
+        2,
+        2,
+        3,
+        1,
+        3,
+        3,
+        5,
+        4,
+        4,
+        3,
+        3,
+        2,
+        5,
+        5,
+        5,
+        1,
+        1,
+        3,
+        1,
+        4,
+        2,
+        2,
+        3,
+        5,
+        2,
+        2,
+        3,
+        5,
+        5,
+        1,
+        3,
+        5,
+        1,
+        4,
+        5,
+        4,
+        1,
+        5,
+        4,
+        2,
+        2,
+        2,
+        3,
+        5,
+        5,
+        4,
+        4,
+        1,
+        3,
+        2,
+        1,
+        2,
+        1,
+        5,
+        1,
+        2,
+        3,
+        4,
+        1,
+        5
+      ]
+    },
+    {
+      "id": "36",
+      "name": "第36回",
+      "date": "2024年1月28日",
+      "nendo": "令和5年度",
+      "passing": 67,
+      "subjects": [
+        {
+          "field": "dignity",
+          "name": "人間の尊厳と自立",
+          "from": 1,
+          "to": 2,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_01_36.pdf"
+        },
+        {
+          "field": "relations",
+          "name": "人間関係とコミュニケーション",
+          "from": 3,
+          "to": 6,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_02_36.pdf"
+        },
+        {
+          "field": "society",
+          "name": "社会の理解",
+          "from": 7,
+          "to": 18,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_03_36.pdf"
+        },
+        {
+          "field": "body",
+          "name": "こころとからだのしくみ",
+          "from": 19,
+          "to": 30,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_04_36.pdf"
+        },
+        {
+          "field": "development",
+          "name": "発達と老化の理解",
+          "from": 31,
+          "to": 38,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_05_36.pdf"
+        },
+        {
+          "field": "dementia",
+          "name": "認知症の理解",
+          "from": 39,
+          "to": 48,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_06_36.pdf"
+        },
+        {
+          "field": "disability",
+          "name": "障害の理解",
+          "from": 49,
+          "to": 58,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_07_36.pdf"
+        },
+        {
+          "field": "medical",
+          "name": "医療的ケア",
+          "from": 59,
+          "to": 63,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_am_08_36.pdf"
+        },
+        {
+          "field": "care-basics",
+          "name": "介護の基本",
+          "from": 64,
+          "to": 73,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_pm_01_36.pdf"
+        },
+        {
+          "field": "comm-skills",
+          "name": "コミュニケーション技術",
+          "from": 74,
+          "to": 79,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_pm_02_36.pdf"
+        },
+        {
+          "field": "life-support",
+          "name": "生活支援技術",
+          "from": 80,
+          "to": 105,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_pm_03_36.pdf"
+        },
+        {
+          "field": "care-process",
+          "name": "介護過程",
+          "from": 106,
+          "to": 113,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_pm_04_36.pdf"
+        },
+        {
+          "field": "general",
+          "name": "総合問題",
+          "from": 114,
+          "to": 125,
+          "pdf": "https://www.sssc.or.jp/kaigo/past_exam/pdf/no36/k_pm_05_36.pdf"
+        }
+      ],
+      "answers": [
+        5,
+        2,
+        5,
+        3,
+        4,
+        1,
+        1,
+        3,
+        5,
+        5,
+        2,
+        3,
+        5,
+        4,
+        4,
+        1,
+        3,
+        2,
+        3,
+        1,
+        3,
+        1,
+        1,
+        4,
+        5,
+        4,
+        2,
+        2,
+        5,
+        4,
+        3,
+        2,
+        5,
+        1,
+        4,
+        5,
+        3,
+        4,
+        1,
+        1,
+        4,
+        2,
+        5,
+        3,
+        3,
+        [
+          4,
+          5
+        ],
+        1,
+        2,
+        1,
+        2,
+        5,
+        2,
+        4,
+        3,
+        3,
+        2,
+        5,
+        4,
+        5,
+        4,
+        1,
+        2,
+        3,
+        5,
+        5,
+        3,
+        2,
+        3,
+        4,
+        1,
+        3,
+        4,
+        5,
+        2,
+        3,
+        2,
+        2,
+        1,
+        4,
+        3,
+        1,
+        4,
+        2,
+        5,
+        4,
+        5,
+        3,
+        5,
+        1,
+        2,
+        3,
+        3,
+        2,
+        4,
+        5,
+        1,
+        1,
+        5,
+        4,
+        2,
+        5,
+        3,
+        4,
+        2,
+        3,
+        2,
+        4,
+        1,
+        3,
+        5,
+        4,
+        3,
+        1,
+        1,
+        1,
+        4,
+        4,
+        3,
+        5,
+        5,
+        2,
+        3,
+        4,
+        3,
+        2
+      ]
+    }
   ],
 };
 
@@ -3099,6 +3888,35 @@ window.KaigoStore = (function () {
     /** 用語ID → { correct, wrong, last, at, dirs } */
     getAnswers: function () {
       return state.answers || {};
+    },
+
+    /* ---------- 年度別の本試験（マークシート） ---------- */
+    getPast: function (yearId) {
+      state.past = state.past || {};
+      return state.past[yearId] || { answers: {}, graded: {} };
+    },
+    setPastAnswer: function (yearId, q, choice) {
+      state.past = state.past || {};
+      var p = state.past[yearId] || { answers: {}, graded: {} };
+      p.answers[q] = choice;
+      state.past[yearId] = p;
+      save();
+    },
+    gradePast: function (yearId, subjectIndex) {
+      state.past = state.past || {};
+      var p = state.past[yearId] || { answers: {}, graded: {} };
+      p.graded[subjectIndex] = Date.now();
+      state.past[yearId] = p;
+      log("past_graded", { year: yearId, subject: subjectIndex });
+      save();
+    },
+    resetPast: function (yearId, subjectIndex, from, to) {
+      state.past = state.past || {};
+      var p = state.past[yearId];
+      if (!p) return;
+      for (var q = from; q <= to; q++) delete p.answers[q];
+      delete p.graded[subjectIndex];
+      save();
     },
 
     /* ---------- 過去問題 ---------- */
@@ -3995,6 +4813,176 @@ window.KaigoStore = (function () {
     return renderQuizQuestion();
   }
 
+  /* ---------------- 年度別の本試験（マークシート採点） ---------------- */
+  var PAST = window.KAIGO_PAST_EXAMS || { years: [], groups: [] };
+  var pastById = {};
+  PAST.years.forEach(function (y) { pastById[y.id] = y; });
+
+  function isRight(year, q, choice) {
+    var a = year.answers[q - 1];
+    return Array.isArray(a) ? a.indexOf(choice) !== -1 : a === choice;
+  }
+  function answerLabel(a) { return Array.isArray(a) ? a.join("・") : String(a); }
+
+  /** 年度ごとの集計：採点済みの科目だけを数える */
+  function pastSummary(year) {
+    var rec = Store.getPast(year.id);
+    var total = 0, answered = 0, gradedQ = 0, bySubject = [], byField = {};
+    year.subjects.forEach(function (s, si) {
+      var graded = !!rec.graded[si];
+      var right = 0, done = 0;
+      for (var q = s.from; q <= s.to; q++) {
+        var c = rec.answers[q];
+        if (c) done++;
+        if (graded && c && isRight(year, q, c)) right++;
+      }
+      answered += done;
+      if (graded) { total += right; gradedQ += s.to - s.from + 1; }
+      bySubject.push({ graded: graded, right: right, done: done, count: s.to - s.from + 1 });
+      byField[s.field] = { graded: graded, right: right };
+    });
+    var allGraded = bySubject.every(function (b) { return b.graded; });
+    var groupsOk = PAST.groups.every(function (g) {
+      return g.some(function (f) { return byField[f] && byField[f].right > 0; });
+    });
+    return { total: total, answered: answered, gradedQ: gradedQ, bySubject: bySubject, allGraded: allGraded, groupsOk: groupsOk };
+  }
+
+  /** 採点済みの本試験の、科目ごとの正誤（総合問題を除く） */
+  function pastFieldStats() {
+    var st = {};
+    PAST.years.forEach(function (y) {
+      var rec = Store.getPast(y.id);
+      y.subjects.forEach(function (s, si) {
+        if (!rec.graded[si] || s.field === "general") return;
+        var r = st[s.field] || { right: 0, total: 0 };
+        for (var q = s.from; q <= s.to; q++) {
+          r.total++;
+          if (rec.answers[q] && isRight(y, q, rec.answers[q])) r.right++;
+        }
+        st[s.field] = r;
+      });
+    });
+    return st;
+  }
+
+  /** 採点済みで間違えた問題の一覧（年度・科目ごと） */
+  function pastWrongList() {
+    var list = [];
+    PAST.years.forEach(function (y) {
+      var rec = Store.getPast(y.id);
+      y.subjects.forEach(function (s, si) {
+        if (!rec.graded[si]) return;
+        var qs = [];
+        for (var q = s.from; q <= s.to; q++) if (!(rec.answers[q] && isRight(y, q, rec.answers[q]))) qs.push(q);
+        if (qs.length) list.push({ year: y, subject: s, index: si, qs: qs });
+      });
+    });
+    return list;
+  }
+
+  function renderPastYears() {
+    return PAST.years.map(function (y) {
+      var sm = pastSummary(y);
+      var chip = sm.gradedQ
+        ? '<span class="chip ' + (sm.allGraded ? (sm.total >= y.passing && sm.groupsOk ? "chip--done" : "chip--ng") : "chip--progress") + '">' +
+          sm.total + "点</span>"
+        : '<span class="chip">未挑戦</span>';
+      return (
+        '<button class="row" data-action="open-past-year" data-id="' + y.id + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(y.name) + "（" + esc(y.nendo) + "）</span>" +
+        '<span class="row__sub">' + esc(y.date) + "実施 ・ 125問 ・ 合格点 " + y.passing + "点" +
+        (sm.gradedQ ? " ・ 採点済み " + sm.gradedQ + "問" : "") + "</span>" +
+        bar(sm.gradedQ, 125) + "</span>" +
+        '<span class="row__aside">' + chip + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+  }
+
+  function renderPastYear() {
+    var y = pastById[view.yearId];
+    var sm = pastSummary(y);
+    var verdict = sm.allGraded
+      ? (sm.total >= y.passing && sm.groupsOk
+          ? '<p class="verdict verdict--ok">合格基準に達しています</p>'
+          : '<p class="verdict verdict--ng">' + (sm.total < y.passing ? "合格点まであと " + (y.passing - sm.total) + "点" : "得点のない科目群があります") + "</p>")
+      : '<p class="verdict">全科目を採点すると、合格基準で判定します</p>';
+    var rows = y.subjects.map(function (s, si) {
+      var b = sm.bySubject[si];
+      var chip = b.graded
+        ? '<span class="chip ' + (b.right / b.count >= 0.6 ? "chip--done" : "chip--ng") + '">' + b.right + " / " + b.count + "</span>"
+        : b.done ? '<span class="chip chip--progress">解答中 ' + b.done + "/" + b.count + "</span>" : '<span class="chip">未解答</span>';
+      return (
+        '<button class="row" data-action="open-past-sheet" data-index="' + si + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(s.name) + "</span>" +
+        '<span class="row__sub">問題' + s.from + "〜" + s.to + "（" + b.count + "問）</span></span>" +
+        '<span class="row__aside">' + chip + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+    return (
+      topbar("過去問題（本試験）", y.name + "（" + y.nendo + "）", "back-exams") +
+      '<main class="content">' +
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">得点</p><p class="stat__value">' + sm.total + "<small>/ 125</small></p></div>" +
+      '<div><p class="stat__label">合格点</p><p class="stat__value">' + y.passing + "<small>点</small></p></div>" +
+      '<div><p class="stat__label">採点済み</p><p class="stat__value">' + sm.gradedQ + "<small>問</small></p></div>" +
+      bar(sm.total, 125) + "</div>" +
+      verdict +
+      '<p class="hint">' + icon("info") + "<span>問題は試験センター公式サイトのPDFで読み、答えの番号をアプリで選んで採点します。合格には、合格点に加えて11の科目群すべてで得点があることが必要です。</span></p>" +
+      '<div class="rows">' + rows + "</div>" +
+      '<p class="notice">正答は社会福祉振興・試験センター／厚生労働省が公表した正答によります。試験問題の著作権は社会福祉振興・試験センターに帰属します。</p>' +
+      "</main>"
+    );
+  }
+
+  function renderPastSheet() {
+    var y = pastById[view.yearId];
+    var s = y.subjects[view.subjectIndex];
+    var rec = Store.getPast(y.id);
+    var graded = !!rec.graded[view.subjectIndex];
+    var right = 0, done = 0, n = s.to - s.from + 1;
+    var rows = "";
+    for (var q = s.from; q <= s.to; q++) {
+      var c = rec.answers[q];
+      if (c) done++;
+      var ok = graded && c && isRight(y, q, c);
+      if (ok) right++;
+      var btns = "";
+      for (var k = 1; k <= 5; k++) {
+        var cls = "ms-btn";
+        if (c === k) cls += " is-chosen";
+        if (graded) {
+          var correctK = isRight(y, q, k);
+          if (correctK) cls += " is-answer";
+          if (c === k && !correctK) cls += " is-wrong";
+        }
+        btns += '<button class="' + cls + '" data-action="past-mark" data-q="' + q + '" data-k="' + k + '"' + (graded ? " disabled" : "") +
+          ' aria-label="問題' + q + "の" + k + '">' + k + "</button>";
+      }
+      rows +=
+        '<div class="ms-row' + (graded ? (ok ? " is-ok" : " is-ng") : "") + '">' +
+        '<span class="ms-q">問' + q + "</span>" +
+        '<span class="ms-btns">' + btns + "</span>" +
+        '<span class="ms-mark">' + (graded ? (ok ? "○" : "×") : "") + "</span></div>";
+    }
+    var dock = graded
+      ? '<button class="btn btn--ghost" data-action="past-reset">' + icon("redo") + "解き直す</button>"
+      : '<button class="btn btn--primary" data-action="past-grade"' + (done ? "" : " disabled") + ">" + icon("check") +
+        "採点する（" + done + " / " + n + "問 解答）</button>";
+    return (
+      topbar(y.name + "（" + y.nendo + "）", s.name, view.from === "review" ? "open-review" : "back-past-year") +
+      '<main class="content content--with-dock">' +
+      '<a class="btn btn--ghost" href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + icon("doc") + "問題を開く（公式PDF）</a>" +
+      (graded
+        ? '<div class="panel ms-score"><b>' + right + "</b> / " + n + "問 正解" +
+          '<span class="chip ' + (right / n >= 0.6 ? "chip--done" : "chip--ng") + '">' + Math.round((right / n) * 100) + "%</span></div>"
+        : '<p class="hint">' + icon("info") + "<span>問題" + s.from + "〜" + s.to + "の答えを選んで「採点する」を押してください。</span></p>") +
+      '<div class="ms-sheet">' + rows + "</div>" +
+      "</main>" +
+      '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
+    );
+  }
+
   /* ---------------- 過去問題 ---------------- */
   function examIdsOf(fieldId) { return examsByField[fieldId] || []; }
   function allExamIds() {
@@ -4021,13 +5009,29 @@ window.KaigoStore = (function () {
       return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
     }).join("");
 
+    var tab = Store.getPref("examTab", "past");
+    var seg =
+      '<div class="seg" role="group" aria-label="過去問題の種類">' +
+      '<button class="seg__btn" data-action="exam-tab" data-tab="past" aria-pressed="' + (tab === "past") + '">年度別（本試験）</button>' +
+      '<button class="seg__btn" data-action="exam-tab" data-tab="original" aria-pressed="' + (tab === "original") + '">オリジナル問題</button>' +
+      "</div>";
+    if (tab === "past") {
+      return (
+        topbar("国家試験", "過去問題", "home") +
+        '<main class="content">' + seg +
+        '<div class="rows">' + renderPastYears() + "</div>" +
+        '<p class="hint">' + icon("info") + "<span>試験センターが公開している直近3回分です。問題は公式PDFで読み、答えをアプリで選ぶと採点・合否判定ができます。</span></p>" +
+        '<p class="notice">出典：<a href="' + esc(PAST.source) + '" target="_blank" rel="noopener">社会福祉振興・試験センター 過去の試験問題</a></p>' +
+        "</main>"
+      );
+    }
     return (
       topbar("国家試験形式", "過去問題", "home") +
-      '<main class="content">' +
+      '<main class="content">' + seg +
       '<div class="panel review-sum"><div><p class="stat__label">全科目 ' + all.length + "問</p>" +
       '<p class="stat__value">' + (allSt.answered ? Math.round((allSt.correct / allSt.answered) * 100) + "<small>%</small>" : "−") + "</p></div>" +
       '<button class="btn btn--primary" data-action="exam-random">' + icon("quiz") + "ランダム20問</button></div>" +
-      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式のオリジナル問題です。実際の過去問は、社会福祉振興・試験センターが公開しています。</span></p>" +
+      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式で、頻出事項を問うオリジナル問題です。</span></p>" +
       groups +
       "</main>"
     );
@@ -4062,7 +5066,8 @@ window.KaigoStore = (function () {
         return '<button class="seg__btn" data-action="review-mode" data-mode="' + k + '" aria-pressed="' + (k === modeKey) + '">' + REVIEW_MODES[k].label + "</button>";
       }).join("") + "</div>";
 
-    if (!all.length && !allExam.length) {
+    var pastWrong = pastWrongList();
+    if (!all.length && !allExam.length && !pastWrong.length) {
       return (
         topbar("復習", "過去に間違えた問題", "home") +
         '<main class="content">' + seg +
@@ -4105,9 +5110,21 @@ window.KaigoStore = (function () {
       );
     }).join("");
 
+    var pastRows = pastWrong.map(function (w) {
+      return (
+        '<button class="row" data-action="open-past-wrong" data-year="' + w.year.id + '" data-index="' + w.index + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(w.year.name) + " ・ " + esc(w.subject.name) + "</span>" +
+        '<span class="row__sub">問' + w.qs.slice(0, 8).join("・問") + (w.qs.length > 8 ? " ほか" : "") + "</span></span>" +
+        '<span class="row__aside"><span class="chip chip--ng">' + w.qs.length + "問</span>" + icon("chev", "row__chev") + "</span></button>"
+      );
+    }).join("");
+
     return (
       topbar("復習", "過去に間違えた問題", "home") +
       '<main class="content">' + seg +
+      (pastRows
+        ? '<section class="section"><h2 class="section__label">本試験（年度別）</h2><div class="rows">' + pastRows + "</div></section>"
+        : "") +
       (examRows
         ? '<section class="section"><h2 class="section__label">過去問題（' + allExam.length + "）</h2>" +
           '<div class="rows">' + examRows + "</div></section>"
@@ -4193,6 +5210,21 @@ window.KaigoStore = (function () {
     themeRows.sort(function (a, b) { return a.st.rate - b.st.rate || b.st.wrong - a.st.wrong; });
     var focus = themeRows.slice(0, 3);
 
+    // 本試験（年度別）の科目別
+    var pst = pastFieldStats();
+    var pastRowsA = Object.keys(pst).map(function (fid) {
+      var r = pst[fid];
+      return { field: fieldById[fid], r: r, rate: Math.round((r.right / r.total) * 100) };
+    }).filter(function (x) { return x.field; }).sort(function (a, b) { return a.rate - b.rate; });
+    var pastMeters = pastRowsA.length
+      ? '<section class="section"><h2 class="section__label">本試験（年度別）の科目別正答率（低い順）</h2><div class="panel meters">' +
+        pastRowsA.map(function (x) { return meter(esc(x.field.name), x.r.right + " / " + x.r.total + "問", x.rate); }).join("") +
+        "</div></section>"
+      : "";
+    var advPast = pastRowsA.length && pastRowsA[0].rate < 60
+      ? "本試験では「" + pastRowsA[0].field.name + "」の正答率が " + pastRowsA[0].rate + "% です。この科目の基礎学習から見直しましょう。"
+      : null;
+
     // 過去問題の科目別
     var examFieldRows = DATA.fields.map(function (f) {
       return { field: f, st: Store.examStats(examIdsOf(f.id)) };
@@ -4229,6 +5261,7 @@ window.KaigoStore = (function () {
     if (notStudied.length) {
       advice.push("重点ポイントのうち " + notStudied.length + " テーマは、基礎学習がまだ完了していません。問題を解く前に、カードで一通り見ておくと効果的です。");
     }
+    if (advPast) advice.push(advPast);
     if (typeof advExam === "string") advice.push(advExam);
     if (repeat.length) {
       advice.push(repeat.length + " 語を2回以上間違えています。覚え違いをしている可能性があるので、説明とポイントを読み直しましょう。");
@@ -4286,6 +5319,7 @@ window.KaigoStore = (function () {
       fieldRows.map(function (r) { return meter(esc(r.field.name), r.st.answered + "語・" + r.st.total + "回", r.st.rate); }).join("") +
       (untried.length ? '<p class="meter__sub">未挑戦：' + untried.map(esc).join("、") + "</p>" : "") +
       "</div></section>" +
+      pastMeters +
       examMeters +
       ((t2d.total || d2t.total)
         ? '<section class="section"><h2 class="section__label">出題形式別の正答率</h2><div class="panel meters">' +
@@ -4335,7 +5369,7 @@ window.KaigoStore = (function () {
     var sheet = $app.querySelector(".read-sheet");
     if (!sheet) return;
     var dock = $app.querySelector(".dock");
-    var bottom = (dock ? dock.getBoundingClientRect().top : window.innerHeight) - 2;
+    var bottom = dock ? dock.getBoundingClientRect().top : window.innerHeight;
     var top = sheet.getBoundingClientRect().top + window.scrollY;
     var room = bottom - top;
     var size = READ_MAX;
@@ -4364,6 +5398,8 @@ window.KaigoStore = (function () {
       case "quiz": html = renderQuiz(); break;
       case "review": html = renderReview(); break;
       case "exams": html = renderExams(); break;
+      case "pastYear": html = renderPastYear(); break;
+      case "pastSheet": html = renderPastSheet(); break;
       case "analysis": html = renderAnalysis(); break;
       default: html = renderHome();
     }
@@ -4455,6 +5491,32 @@ window.KaigoStore = (function () {
     "back-review": function () { quiz = null; go({ name: "review" }); },
     "back-exams": function () { quiz = null; go({ name: "exams" }); },
     "open-exams": function () { go({ name: "exams" }); },
+    "exam-tab": function (el) { Store.setPref("examTab", el.dataset.tab); render(); },
+    "open-past-wrong": function (el) {
+      go({ name: "pastSheet", yearId: el.dataset.year, subjectIndex: parseInt(el.dataset.index, 10), from: "review" });
+    },
+    "open-past-year": function (el) { go({ name: "pastYear", yearId: el.dataset.id }); },
+    "back-past-year": function () { go({ name: "pastYear", yearId: view.yearId }); },
+    "open-past-sheet": function (el) {
+      go({ name: "pastSheet", yearId: view.yearId, subjectIndex: parseInt(el.dataset.index, 10) });
+    },
+    "past-mark": function (el) {
+      Store.setPastAnswer(view.yearId, parseInt(el.dataset.q, 10), parseInt(el.dataset.k, 10));
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
+    "past-grade": function () {
+      Store.gradePast(view.yearId, view.subjectIndex);
+      render();
+      window.scrollTo(0, 0);
+    },
+    "past-reset": function () {
+      var s = pastById[view.yearId].subjects[view.subjectIndex];
+      Store.resetPast(view.yearId, view.subjectIndex, s.from, s.to);
+      render();
+      window.scrollTo(0, 0);
+    },
     "exam-field": function (el) {
       var f = fieldById[el.dataset.id];
       startExam(examIdsOf(f.id), f.name, "過去問題");

@@ -136,6 +136,35 @@ window.KaigoStore = (function () {
       return state.answers || {};
     },
 
+    /* ---------- 年度別の本試験（マークシート） ---------- */
+    getPast: function (yearId) {
+      state.past = state.past || {};
+      return state.past[yearId] || { answers: {}, graded: {} };
+    },
+    setPastAnswer: function (yearId, q, choice) {
+      state.past = state.past || {};
+      var p = state.past[yearId] || { answers: {}, graded: {} };
+      p.answers[q] = choice;
+      state.past[yearId] = p;
+      save();
+    },
+    gradePast: function (yearId, subjectIndex) {
+      state.past = state.past || {};
+      var p = state.past[yearId] || { answers: {}, graded: {} };
+      p.graded[subjectIndex] = Date.now();
+      state.past[yearId] = p;
+      log("past_graded", { year: yearId, subject: subjectIndex });
+      save();
+    },
+    resetPast: function (yearId, subjectIndex, from, to) {
+      state.past = state.past || {};
+      var p = state.past[yearId];
+      if (!p) return;
+      for (var q = from; q <= to; q++) delete p.answers[q];
+      delete p.graded[subjectIndex];
+      save();
+    },
+
     /* ---------- 過去問題 ---------- */
     recordExam: function (qid, correct) {
       state.exams = state.exams || {};

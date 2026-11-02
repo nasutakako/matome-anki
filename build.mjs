@@ -13,6 +13,7 @@ const scripts = [
   "./src/data/materials.js",
   ...fieldFiles.map((f) => "./src/data/fields/" + f),
   "./src/data/exams.js",
+  "./src/data/pastExams.js",
   "./src/store.js",
   "./src/app.js",
 ].map(read);
