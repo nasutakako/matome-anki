@@ -560,10 +560,10 @@
    * 入れ替えられる語がなければ null。
    */
   var SWAP_PAIRS = [
-    ["健側", "患側"], ["上顎", "下顎", /顎呼吸/], ["末梢", "中枢"], ["目頭", "目尻"], ["時計回り", "反時計回り"],
+    ["健側", "患側"], ["上顎", "下顎", /顎呼吸/], ["末梢", "中枢", /(呼吸|咳|体温調節)の中枢/], ["目頭", "目尻"], ["時計回り", "反時計回り"],
     ["副交感神経", "交感神経"], ["小腸", "大腸"], ["左側臥位", "右側臥位"], ["仰臥位", "側臥位"],
     ["増加", "減少"], ["高い", "低い"], ["浅い", "深い"], ["多い", "少ない"],
-    ["以上", "以下"], ["早朝", "夕方"], ["前傾", "後傾"], ["内側", "外側"], ["下から", "上から"],
+    ["以上", "以下", /[0-9０-９]つ以上|これ以上/], ["早朝", "夕方", /早朝覚醒/], ["前傾", "後傾"], ["内側", "外側"], ["下から", "上から"],
     ["急に", "徐々に"], ["市町村", "都道府県"], ["貸与", "購入"], ["名称独占", "業務独占"],
     ["共助", "公助"], ["陽性症状", "陰性症状"], ["流動性知能", "結晶性知能"], ["引き戸", "開き戸"],
     ["前から後ろ", "後ろから前"], ["近時記憶", "遠隔記憶"], ["保たれる", "失われる"],
@@ -588,11 +588,12 @@
       return { text: swapped, from: first[0], to: to };
     }
     // 数字を変える（範囲「〜」の一部や「1960年代」「1回の」は変えない）
-    var numRe = new RegExp("(^|[^0-9〜.])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の)");
+    var numRe = new RegExp("(^|[^0-9〜.])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の|量|目)");
     var nm = text.match(numRe);
     if (nm) {
       var n = parseInt(nm[2], 10);
       var alt2 = n >= 1900 ? n - 2 : n >= 100 ? n + Math.round(n * 0.2) : n >= 10 ? n + (n % 10 === 0 ? 10 : 5) : n + 1;
+      if (nm[3] === "時間" && n === 24) alt2 = 12; // 「29時間」のような、ありえない数にしない
       var at = nm.index + nm[1].length;
       return { text: text.slice(0, at) + alt2 + text.slice(at + nm[2].length), from: nm[2] + nm[3], to: alt2 + nm[3] };
     }
@@ -627,33 +628,44 @@
             choices.push({ text: stmt(t, trap.text) });
             notes.push("「" + t.term + "」は「" + trap.to + "」ではなく「" + trap.from + "」");
           }
-          var others = pickDistractors(termId, "t2d", 8).filter(function (id) {
-            var o = termById[id].term;
-            return o[key] && o[key].length >= 8 && o.term !== t.term;
-          });
-          for (var i = 0; i < others.length && choices.length < CHOICES; i++) {
-            var y = termById[others[i]].term;
-            var fy = makeFake(y[key]);
-            if (usedText[y.term]) continue;
-            if (fy && i % 2 === 0) {
+          // 誤りの選択肢は、まず「一語だけ違う」ひっかけ（本試験に近い）で作る。
+          // 同じ科目の近い用語について、同じ欄（説明／ポイント）→ もう一方の欄の順に試す
+          var others = pickDistractors(termId, "t2d", 14).filter(function (id) { return termById[id].term.term !== t.term; });
+          var other = key === "definition" ? "point" : "definition";
+          [key, other].forEach(function (k) {
+            others.forEach(function (id) {
+              if (choices.length >= CHOICES) return;
+              var y = termById[id].term;
+              if (usedText[y.term] || !y[k] || y[k].length < 8) return;
+              var fy = makeFake(y[k]);
+              if (!fy) return;
               usedText[y.term] = true;
               choices.push({ text: stmt(y, fy.text) });
               notes.push("「" + y.term + "」は「" + fy.to + "」ではなく「" + fy.from + "」");
-            } else {
-              var z = null;
+            });
+          });
+          // それでも足りないときだけ、別の用語の説明と組み合わせる（説明の問題のみ）。
+          // 似た用語どうし（例：法定後見と成年後見制度）は、入れ替えても正しくなりうるので使わない
+          var sharesWord = function (a, b) {
+            for (var i = 0; i < a.length - 1; i++) if (b.indexOf(a.substr(i, 2)) !== -1) return true;
+            return false;
+          };
+          if (key === "definition") {
+            others.forEach(function (id, i) {
+              if (choices.length >= CHOICES) return;
+              var y = termById[id].term;
+              if (usedText[y.term] || !y.definition) return;
               for (var j = 1; j < others.length; j++) {
-                var cand = termById[others[(i + j) % others.length]].term;
-                // 似た用語・似た説明（例：法定後見と成年後見制度）は、入れ替えても正しい記述になりうるので使わない
-                if (cand.term === y.term || usedText[cand.term] || !cand[key] || cand[key] === y[key] || cand[key] === text) continue;
-                if (similarity(cand.term, y.term) >= 0.2 || similarity(cand[key], y[key]) >= 0.3) continue;
-                if (cand[key].indexOf(y.term) !== -1 || y[key].indexOf(cand.term) !== -1) continue;
-                z = cand; break;
+                var z = termById[others[(i + j) % others.length]].term;
+                if (z.term === y.term || usedText[z.term] || !z.definition || z.definition === y.definition) continue;
+                if (sharesWord(z.term, y.term) || similarity(z.definition, y.definition) >= 0.3) continue;
+                if (z.definition.indexOf(y.term) !== -1 || y.definition.indexOf(z.term) !== -1) continue;
+                usedText[y.term] = usedText[z.term] = true;
+                choices.push({ text: stmt(y, z.definition) });
+                notes.push("「" + y.term + "」の記述は、「" + z.term + "」のもの");
+                return;
               }
-              if (!z) continue;
-              usedText[z.term] = true;
-              choices.push({ text: stmt(y, z[key]) });
-              notes.push("「" + y.term + "」の記述は、「" + z.term + "」のもの");
-            }
+            });
           }
           if (choices.length < CHOICES) return;
           var id = "gen." + (key === "definition" ? "d." : "p.") + termId;
@@ -671,6 +683,8 @@
     });
     Math.random = realRandom;
   })();
+  // 確認・テスト用（問題データの点検に使う）
+  window.KaigoDebug = { exams: function () { return examById; } };
 
   /**
    * 説明文・覚えるポイントの重要語を赤字にする（基礎学習・解説の表示用）。
