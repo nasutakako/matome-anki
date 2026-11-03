@@ -1389,11 +1389,12 @@
       return got;
     });
   }
-  /** お試しで解いたオリジナル問題の数（同じ問題を解き直しても増えない） */
-  function trialUsed() {
-    var ex = Store.getExamAnswers();
-    return allExamIds().filter(function (id) { return ex[id]; }).length;
-  }
+  /**
+   * お試しで使える問題（未購入の人は、この一覧に入った最大 FREE_TRIAL 問だけを解ける）。
+   * 有料化の前に解いた記録があっても、お試しの枠はこの一覧で数える
+   */
+  function trialIds() { return Store.getPref("trialIds", []); }
+  function trialUsed() { return trialIds().length; }
   function trialLeft() { return Math.max(0, FREE_TRIAL - trialUsed()); }
 
   function startPractice(scope) {
@@ -1411,14 +1412,14 @@
     }
     var trial = !owns("originals");
     if (trial) {
-      // 未購入：解いたことのない問題は、お試しの残り数まで
-      var ex = Store.getExamAnswers();
-      var left = trialLeft();
+      // 未購入：お試しの枠に入っている問題と、枠の残り数までの新しい問題だけ
+      var ids = trialIds().slice();
       qids = qids.filter(function (id) {
-        if (ex[id]) return true;
-        if (left > 0) { left--; return true; }
+        if (ids.indexOf(id) !== -1) return true;
+        if (ids.length < FREE_TRIAL) { ids.push(id); return true; }
         return false;
       });
+      Store.setPref("trialIds", ids);
       if (!qids.length) { go({ name: "paywall" }); return; }
     }
     startExam(qids, title, "オリジナル問題", null, ordered);
