@@ -1194,6 +1194,12 @@ a.btn { text-decoration: none; }
 .ex-note { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
 .ex-note b { color: var(--text, inherit); font-weight: 600; }
 
+/* 重要語の赤字 */
+:root { --kw: #d0312d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kw: #ff7b72; } }
+:root[data-theme="dark"] { --kw: #ff7b72; }
+em.kw { font-style: normal; color: var(--kw); font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -5291,6 +5297,7 @@ window.KaigoStore = (function () {
       else a.wrong++;
       a.last = correct;
       a.at = Date.now();
+      if (correct) a.okAt = a.at; // 最後に正解した時刻（オリジナル問題の入れ替えに使う）
       state.exams[qid] = a;
       log("exam_answer", { qid: qid, correct: correct });
       save();
@@ -5678,8 +5685,8 @@ window.KaigoStore = (function () {
       return (
         '<div class="rs-item' + (on ? " is-checked" : "") + '">' +
         '<button class="rs-item__body" data-action="open-term" data-id="' + t.id + '">' +
-        '<span class="rs-item__text"><b class="rs-item__term">' + esc(t.term) + "</b>" + esc(t.definition) + "</span>" +
-        (t.point ? '<span class="rs-item__point">' + esc(t.point) + "</span>" : "") +
+        '<span class="rs-item__text"><b class="rs-item__term">' + esc(t.term) + "</b>" + hl(t.definition) + "</span>" +
+        (t.point ? '<span class="rs-item__point">' + hl(t.point) + "</span>" : "") +
         "</button>" +
         '<button class="rs-item__check" data-action="toggle-check" data-id="' + t.id + '" aria-pressed="' + on + '" aria-label="' +
         esc(t.term) + (on ? "の確認を外す" : "を確認済みにする") + '">' + icon("check") + "</button>" +
@@ -5783,8 +5790,8 @@ window.KaigoStore = (function () {
       '<div class="sheet__body">' +
       (t.profile ? '<p class="sheet__person"><span>人物</span>' + esc(t.profile) + "</p>" : "") +
       (t.person ? '<p class="sheet__person"><span>提唱・開発</span>' + esc(t.person) + "</p>" : "") +
-      '<div><p class="sheet__label">説明</p><p class="sheet__def">' + esc(t.definition) + "</p></div>" +
-      (t.point ? '<div class="sheet__point"><p class="sheet__label">覚えるポイント</p><p>' + esc(t.point) + "</p></div>" : "") +
+      '<div><p class="sheet__label">説明</p><p class="sheet__def">' + hl(t.definition) + "</p></div>" +
+      (t.point ? '<div class="sheet__point"><p class="sheet__label">覚えるポイント</p><p>' + hl(t.point) + "</p></div>" : "") +
       (t.example ? '<div class="sheet__example"><p class="sheet__label">例</p><p>' + esc(t.example) + "</p></div>" : "") +
       "</div>" +
       '<div class="sheet__foot">' + foot + "</div>" +
@@ -6006,6 +6013,42 @@ window.KaigoStore = (function () {
     Math.random = realRandom;
   })();
 
+  /**
+   * 説明文・覚えるポイントの重要語を赤字にする（基礎学習・解説の表示用）。
+   * 対象：試験で問われやすい制度・給付・機関・職種の名前、ひっかけになりやすい語（健側⇄患側など）、
+   * 数値（歳・℃・回など）、「医療職に任せる」のような行動、「」でくくった語、してはいけないこと。
+   */
+  var KEYWORDS = [
+    "現物給付", "金銭給付", "介護給付", "訓練等給付", "予防給付", "自立支援給付", "地域生活支援事業",
+    "医療保険", "年金保険", "介護保険", "雇用保険", "労災保険", "後期高齢者医療制度", "社会保険", "公的扶助", "公費", "保険料",
+    "生存権", "措置", "契約", "応能負担", "応益負担", "保険者", "第1号被保険者", "第2号被保険者", "特定疾病",
+    "一次判定", "二次判定", "介護認定審査会", "主治医意見書", "要介護", "要支援",
+    "家庭裁判所", "社会福祉協議会", "地域包括支援センター", "福祉事務所", "保健所", "児童相談所", "厚生労働大臣",
+    "介護支援専門員", "ケアマネジャー", "サービス提供責任者", "相談支援専門員", "サービス管理責任者", "民生委員",
+    "医師", "看護師", "看護職", "医療職", "理学療法士", "作業療法士", "言語聴覚士", "管理栄養士", "薬剤師",
+    "麻痺側", "誤嚥", "窒息", "脱水", "転倒", "感染", "入浴後", "禁止", "努力義務", "義務", "原則", "罰則",
+    "秘密保持義務", "信用失墜行為", "誠実義務", "同意", "本人の意思", "自己決定", "通報", "届出",
+    "次亜塩素酸ナトリウム", "塩素系", "酸素系", "アルコール", "流水", "使い捨て", "手袋", "マスク",
+    "使わない", "入れない", "近づけない", "測らない", "持たない", "しない", "行わない", "避ける", "控える",
+  ];
+  var KW_RE = (function () {
+    var words = KEYWORDS.slice();
+    SWAP_PAIRS.forEach(function (p) { words.push(p[0], p[1]); });
+    words = words.filter(function (w, i) { return words.indexOf(w) === i; })
+      .sort(function (a, b) { return b.length - a.length; })
+      .map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); });
+    var action = "(?:医療職|医師|看護師|看護職|サービス提供責任者|上司|介護支援専門員|専門職|医療機関|管理栄養士|言語聴覚士)(?:に|へ|が)(?:相談|報告|連絡|連携|任せ|伝え|つな|行)[ぁ-ん]*";
+    var quote = "「[^」]{1,20}」";
+    var num = "[0-9０-９][0-9０-９.,〜~]*(?:" + NUM_UNITS + "|m|mmHg|kg|g|L)";
+    var notThis = "[一-龥ァ-ヶー]{1,6}ではない";
+    return new RegExp(action + "|" + quote + "|" + num + "|" + notThis + "|" + words.join("|"), "g");
+  })();
+  function hl(text) {
+    if (!text) return "";
+    var marked = String(text).replace(KW_RE, function (m) { return "\u0001" + m + "\u0002"; });
+    return esc(marked).replace(/\u0001/g, '<em class="kw">').replace(/\u0002/g, "</em>");
+  }
+
   /** 用語の5択（基礎問題） */
   function buildTermItem(termId, dir) {
     var t = termById[termId].term;
@@ -6026,8 +6069,8 @@ window.KaigoStore = (function () {
   }
 
   /** 過去問題の5択 */
-  function buildExamItems(qids) {
-    return shuffle(qids).map(function (qid) {
+  function buildExamItems(qids, ordered) {
+    return (ordered ? qids.slice() : shuffle(qids)).map(function (qid) {
       var q = examById[qid];
       var options = q.c.map(function (text, i) { return { text: text, correct: i === q.a - 1 }; });
       return { kind: "exam", qid: qid, options: shuffle(options), chosen: null };
@@ -6062,10 +6105,10 @@ window.KaigoStore = (function () {
     go({ name: "quiz", ctx: "review" });
   }
 
-  function startExam(qids, title, eyebrow, back) {
+  function startExam(qids, title, eyebrow, back, ordered) {
     quiz = {
       kind: "exam", qids: qids, title: title, eyebrow: eyebrow, back: back || "exams",
-      items: buildExamItems(qids), index: 0, saved: false, full: false,
+      items: buildExamItems(qids, ordered), index: 0, saved: false, full: false,
     };
     go({ name: "quiz", ctx: "exam" });
   }
@@ -6135,8 +6178,8 @@ window.KaigoStore = (function () {
           ? '<p class="q-feedback__trap">ひっかけ：「' + esc(chosen.fake.to) + "」ではなく「" + esc(chosen.fake.from) + "」</p>"
           : "") +
         '<p class="q-feedback__term">' + esc(t.term) + "</p>" +
-        (item.dir === "d2t" ? "" : '<p class="q-feedback__def">' + esc(t.definition) + "</p>") +
-        (t.point ? '<p class="q-feedback__point">' + esc(t.point) + "</p>" : "");
+        (item.dir === "d2t" ? "" : '<p class="q-feedback__def">' + hl(t.definition) + "</p>") +
+        (t.point ? '<p class="q-feedback__point">' + hl(t.point) + "</p>" : "");
     }
 
     var longText = item.kind === "exam" || item.dir === "t2d";
@@ -6199,14 +6242,14 @@ window.KaigoStore = (function () {
       var t = termById[it.termId].term;
       return (
         '<div class="read-item read-item--static"><span class="read-item__term">' + esc(t.term) + "</span>" +
-        '<span class="read-item__def">' + esc(t.definition) + "</span>" +
-        (t.point ? '<span class="read-item__point">' + esc(t.point) + "</span>" : "") + "</div>"
+        '<span class="read-item__def">' + hl(t.definition) + "</span>" +
+        (t.point ? '<span class="read-item__point">' + hl(t.point) + "</span>" : "") + "</div>"
       );
     }).join("");
 
     var sub = quiz.kind === "theme"
       ? (quiz.full ? "全問に挑戦しました" : "間違えた問題の解き直し")
-      : quiz.practice ? "正解した問題は次から出題されません"
+      : quiz.practice ? "正解した問題は、新しい問題に入れ替わります"
       : wrong.length ? "正解した問題は「まだ正解していない」から外れます" : "すべて正解しました";
 
     var buttons;
@@ -6216,10 +6259,8 @@ window.KaigoStore = (function () {
         '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "基礎学習で見直す</button>" +
         '<button class="btn btn--text" data-action="back-themes">テーマ一覧へ</button>';
     } else if (quiz.kind === "exam" && quiz.practice) {
-      var leftN = unsolvedIds(quiz.practice === "all" ? allExamIds() : examIdsOf(quiz.practice)).length;
       buttons =
-        (leftN ? '<button class="btn btn--primary" data-action="practice-next">' + icon("quiz") + "次の問題へ（残り " + leftN + "問）</button>"
-               : '<p class="hint">' + icon("info") + "<span>この範囲の問題はすべて正解しました。</span></p>") +
+        '<button class="btn btn--primary" data-action="practice-next">' + icon("quiz") + "次の問題を解く</button>" +
         '<button class="btn btn--text" data-action="back-exams">オリジナル問題の一覧へ</button>';
     } else if (quiz.kind === "exam") {
       buttons =
@@ -6459,7 +6500,7 @@ window.KaigoStore = (function () {
       items +=
         '<article class="ex-item">' +
         '<div class="ex-head"><span class="ex-q">問' + q + '</span><span class="ex-ans">正解 ' + ansText + "</span>" + mine + "</div>" +
-        '<p class="ex-main">' + esc(e[0]) + "</p>" +
+        '<p class="ex-main">' + hl(e[0]) + "</p>" +
         '<p class="ex-note">' + (e[1] ? '<b>' + e[1] + " は誤り：</b>" : "<b>ポイント：</b>") + esc(e[2]) + "</p>" +
         "</article>";
     }
@@ -6474,49 +6515,94 @@ window.KaigoStore = (function () {
 
   /* ---------------- 過去問題 ---------------- */
   function examIdsOf(fieldId) { return examsByField[fieldId] || []; }
-  var PRACTICE_N = 10;
-  /** まだ一度も正解していない問題（手作りの問題を先に、自動作成の問題を後に） */
-  function unsolvedIds(qids) {
+  /**
+   * オリジナル問題の練習（本試験と同じ13科目・125問の構成）
+   * 科目ごとに本試験の問題数ぶん（尊厳と自立2問…総合問題12問）を「いまの問題」として出す。
+   * 正解した問題は次から新しい問題に入れ替わり、まちがえた問題は正解するまで残る。
+   * 科目の問題をすべて正解したら、その科目は最初の問題に戻る（終わりがない）。
+   * 総合問題は、各科目のいまの問題に入らなかった問題から、事例問題を優先して出す。
+   */
+  function practiceLayout() {
+    var y = PAST.years[0];
+    return y ? y.subjects.map(function (s) { return { field: s.field, name: s.name, n: s.to - s.from + 1 }; }) : [];
+  }
+  function strHash(str) {
+    var h = 5381;
+    for (var i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+  function practiceQueue(fieldId) {
     var ex = Store.getExamAnswers();
-    return qids.filter(function (id) { return !(ex[id] && ex[id].correct > 0); });
+    var round = Store.getPref("practiceRound", {});
+    var ids = examIdsOf(fieldId);
+    var solved = function (id) {
+      var a = ex[id];
+      var okAt = a ? (a.okAt || (a.correct > 0 ? 1 : 0)) : 0;
+      return okAt > (round[fieldId] || 0);
+    };
+    var left = ids.filter(function (id) { return !solved(id); });
+    if (!left.length && ids.length) {
+      // すべて正解したら最初に戻る
+      round[fieldId] = Date.now();
+      Store.setPref("practiceRound", round);
+      left = ids.slice();
+    }
+    return left.sort(function (a, b) {
+      return (examById[a].gen ? 1 : 0) - (examById[b].gen ? 1 : 0) || strHash(a) - strHash(b);
+    });
   }
-  function nextPractice(fieldId) {
-    var left = unsolvedIds(fieldId ? examIdsOf(fieldId) : allExamIds());
-    var hand = left.filter(function (id) { return !examById[id].gen; });
-    var gen = left.filter(function (id) { return examById[id].gen; });
-    return shuffle(hand).concat(shuffle(gen)).slice(0, PRACTICE_N);
+  function practiceSet() {
+    var set = {}, rest = [];
+    var layout = practiceLayout();
+    layout.forEach(function (s) {
+      if (s.field === "general") return;
+      var q = practiceQueue(s.field);
+      set[s.field] = q.slice(0, s.n);
+      rest = rest.concat(q.slice(s.n));
+    });
+    layout.forEach(function (s) {
+      if (s.field !== "general") return;
+      rest.sort(function (a, b) {
+        return (examById[b].case ? 1 : 0) - (examById[a].case ? 1 : 0) ||
+          (examById[a].gen ? 1 : 0) - (examById[b].gen ? 1 : 0) || strHash(a) - strHash(b);
+      });
+      set.general = rest.slice(0, s.n);
+    });
+    return set;
   }
-  function startPractice(fieldId) {
-    var qids = nextPractice(fieldId);
-    if (!qids.length) { go({ name: "exams" }); return; }
-    startExam(qids, fieldId ? fieldById[fieldId].name : "全科目", "オリジナル問題");
-    quiz.practice = fieldId || "all";
+  function startPractice(scope) {
+    var set = practiceSet();
+    var layout = practiceLayout();
+    if (scope === "all") {
+      var all = layout.reduce(function (acc, s) { return acc.concat(set[s.field] || []); }, []);
+      startExam(all, "125問を通して解く", "オリジナル問題", null, true);
+    } else {
+      var sub = layout.filter(function (s) { return s.field === scope; })[0];
+      startExam(set[scope] || [], sub ? sub.name : "", "オリジナル問題");
+    }
+    quiz.practice = scope;
   }
   function allExamIds() {
     return DATA.fields.reduce(function (acc, f) { return acc.concat(examIdsOf(f.id)); }, []);
   }
 
   function renderExams() {
-    var all = allExamIds();
-    var allLeft = unsolvedIds(all).length;
-    var groups = DATA.areas.map(function (area) {
-      var rows = area.fields.map(function (id) {
-        var f = fieldById[id];
-        var qids = examIdsOf(id);
-        if (!f || !qids.length) return "";
-        var left = unsolvedIds(qids).length;
-        var solved = qids.length - left;
-        return (
-          '<button class="row" data-action="exam-field" data-id="' + f.id + '"' + (left ? "" : " disabled") + ">" +
-          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
-          '<span class="row__sub">正解済み ' + solved + " / " + qids.length + "問</span>" +
-          bar(solved, qids.length) + "</span>" +
-          '<span class="row__aside">' + (left ? '<span class="chip">残り ' + left + "</span>" : '<span class="chip chip--done">全問正解</span>') +
-          icon("chev", "row__chev") + "</span></button>"
-        );
-      }).join("");
-      return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
+    var ex = Store.getExamAnswers();
+    var set = practiceSet();
+    var layout = practiceLayout();
+    var everSolved = allExamIds().filter(function (id) { return ex[id] && ex[id].correct > 0; }).length;
+    var rows = layout.map(function (sub) {
+      var qids = set[sub.field] || [];
+      var review = qids.filter(function (id) { return ex[id] && ex[id].last === false; }).length;
+      return (
+        '<button class="row" data-action="exam-field" data-id="' + sub.field + '">' +
+        '<span class="row__body"><span class="row__title">' + esc(sub.name) + "</span>" +
+        '<span class="row__sub">' + sub.n + "問</span></span>" +
+        '<span class="row__aside">' + (review ? '<span class="chip chip--ng">復習 ' + review + "</span>" : '<span class="chip">新しい問題</span>') +
+        icon("chev", "row__chev") + "</span></button>"
+      );
     }).join("");
+    var groups = '<section class="section"><h2 class="section__label">科目ごとに解く</h2><div class="rows">' + rows + "</div></section>";
 
     var tab = Store.getPref("examTab", "past");
     var seg =
@@ -6537,10 +6623,11 @@ window.KaigoStore = (function () {
     return (
       topbar("国家試験形式", "過去問題", "home") +
       '<main class="content">' + seg +
-      '<div class="panel review-sum"><div><p class="stat__label">正解済み ' + (all.length - allLeft) + " / " + all.length + "問</p>" +
-      '<p class="stat__value">残り ' + allLeft + "<small>問</small></p></div>" +
-      '<button class="btn btn--primary" data-action="exam-next"' + (allLeft ? "" : " disabled") + ">" + icon("quiz") + "続きを" + PRACTICE_N + "問</button></div>" +
-      '<p class="hint">' + icon("info") + "<span>国家試験と同じ5択形式のオリジナル問題です。一度正解した問題は出題されず、解くほど新しい問題が出てきます。</span></p>" +
+      '<div class="panel review-sum"><div><p class="stat__label">本試験と同じ13科目</p>' +
+      '<p class="stat__value">全125<small>問</small></p></div>' +
+      '<button class="btn btn--primary" data-action="exam-next">' + icon("quiz") + "125問を解く</button></div>" +
+      '<p class="hint">' + icon("info") + "<span>正解した問題は、次から新しい問題に入れ替わります。まちがえた問題は正解するまで残ります。" +
+      (everSolved ? "これまでに正解した問題：" + everSolved + "問" : "") + "</span></p>" +
       groups +
       "</main>"
     );
@@ -6808,8 +6895,8 @@ window.KaigoStore = (function () {
         '<div class="read-item read-item--static"><span class="read-item__head"><span class="read-item__term">' + esc(e.term.term) + "</span>" +
         '<span class="chip chip--ng">' + answers[id].wrong + "回</span></span>" +
         '<span class="read-item__reading">' + esc(fieldOfTheme[e.theme.id].name + " ・ " + e.theme.name) + "</span>" +
-        '<span class="read-item__def">' + esc(e.term.definition) + "</span>" +
-        (e.term.point ? '<span class="read-item__point">' + esc(e.term.point) + "</span>" : "") + "</div>"
+        '<span class="read-item__def">' + hl(e.term.definition) + "</span>" +
+        (e.term.point ? '<span class="read-item__point">' + hl(e.term.point) + "</span>" : "") + "</div>"
       );
     }).join("");
 
@@ -7034,8 +7121,8 @@ window.KaigoStore = (function () {
       window.scrollTo(0, 0);
     },
     "exam-field": function (el) { startPractice(el.dataset.id); },
-    "exam-next": function () { startPractice(null); },
-    "practice-next": function () { startPractice(quiz && quiz.practice !== "all" ? quiz.practice : null); },
+    "exam-next": function () { startPractice("all"); },
+    "practice-next": function () { startPractice(quiz && quiz.practice ? quiz.practice : "all"); },
     "review-exam-field": function (el) {
       var f = fieldById[el.dataset.id];
       startExam(wrongExamIds(examIdsOf(f.id)), f.name, "過去に間違えた問題", "review");

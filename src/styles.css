@@ -1170,3 +1170,9 @@ a.btn { text-decoration: none; }
 .ex-main { margin: 0 0 4px; font-size: var(--fs-md); line-height: 1.5; }
 .ex-note { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
 .ex-note b { color: var(--text, inherit); font-weight: 600; }
+
+/* 重要語の赤字 */
+:root { --kw: #d0312d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kw: #ff7b72; } }
+:root[data-theme="dark"] { --kw: #ff7b72; }
+em.kw { font-style: normal; color: var(--kw); font-weight: 600; }

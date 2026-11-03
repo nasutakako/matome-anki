@@ -173,6 +173,7 @@ window.KaigoStore = (function () {
       else a.wrong++;
       a.last = correct;
       a.at = Date.now();
+      if (correct) a.okAt = a.at; // 最後に正解した時刻（オリジナル問題の入れ替えに使う）
       state.exams[qid] = a;
       log("exam_answer", { qid: qid, correct: correct });
       save();
