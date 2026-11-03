@@ -1358,3 +1358,15 @@ body { background: var(--bg); }
 .paywall .btn { width: 100%; }
 .paywall__owned { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ok); font-weight: 700; }
 .paywall__owned svg { width: 18px; height: 18px; }
+
+/* ---------- ふりがな ---------- */
+ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none; user-select: none; font-weight: 400; line-height: 1; }
+.furi-btn {
+  margin-left: auto; flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 52px; height: 40px; padding: 2px 8px; border-radius: 12px; border: 1.5px solid currentColor;
+  background: transparent; color: var(--brand-ink, #23436f); font: inherit; cursor: pointer; opacity: 0.75;
+}
+.furi-btn__rt { font-size: 9px; line-height: 1.1; }
+.furi-btn__base { font-size: 12px; font-weight: 700; line-height: 1.2; }
+.furi-btn.is-on { background: var(--brand-ink, #23436f); color: #fff; border-color: var(--brand-ink, #23436f); opacity: 1; }
+.read-sheet ruby rt { font-size: 0.44em; }

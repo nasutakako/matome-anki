@@ -162,6 +162,97 @@
     go({ name: "study", themeId: themeId, pageIndex: pi });
   }
 
+  /* ---------------- ふりがな（試験版：辞書 KAIGO_FURI があるときだけ） ---------------- */
+  var Furi = (function () {
+    var D = window.KAIGO_FURI;
+    if (!D) return null;
+    var KJ = /[\u4e00-\u9fff々〆ヶ]/;
+    var idx = {}, cnt = {};
+    Object.keys(D).forEach(function (k) {
+      var tgt = idx, key = k;
+      if (k.charAt(0) === "#") { tgt = cnt; key = k.slice(1); }
+      var c = key.charAt(0);
+      (tgt[c] = tgt[c] || []).push(key);
+    });
+    [idx, cnt].forEach(function (m) {
+      Object.keys(m).forEach(function (c) { m[c].sort(function (a, b) { return b.length - a.length; }); });
+    });
+    function ruby(enc) {
+      return esc(enc).replace(/([\u4e00-\u9fff々〆ヶ]+)\{([^}]*)\}/g, "<ruby>$1<rt>$2</rt></ruby>");
+    }
+    function longestAt(text, i) {
+      var list = idx[text.charAt(i)] || [];
+      for (var k = 0; k < list.length; k++) if (text.startsWith(list[k], i)) return list[k].length;
+      return 0;
+    }
+    function convert(text) {
+      var out = "", i = 0, hit = false;
+      while (i < text.length) {
+        var c = text.charAt(i), found = null, enc = null;
+        var afterNum = i > 0 && /[0-9０-９〜~]/.test(text.charAt(i - 1));
+        if (afterNum && cnt[c]) {
+          for (var a = 0; a < cnt[c].length; a++) if (text.startsWith(cnt[c][a], i)) { found = cnt[c][a]; enc = D["#" + found]; break; }
+        }
+        if (!found && idx[c]) {
+          for (var b = 0; b < idx[c].length; b++) if (text.startsWith(idx[c][b], i)) { found = idx[c][b]; enc = D[found]; break; }
+          // 「の中」など、かな・数字で始まる語は、次の漢字から始まるもっと長い語（「の中心」の「中心」）を優先する
+          if (found && !KJ.test(c) && longestAt(text, i + 1) > found.length - 1) { found = null; }
+        }
+        if (found) { out += ruby(enc); hit = true; i += found.length; }
+        else { out += esc(c); i++; }
+      }
+      return hit ? out : null;
+    }
+    var SKIP = { RUBY: 1, RT: 1, SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, TITLE: 1 };
+    function apply(root) {
+      if (!root) return;
+      var nodes = [], w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+      while ((n = w.nextNode())) {
+        if (!KJ.test(n.nodeValue)) continue;
+        var p = n.parentNode, ok = true;
+        while (p && p !== root) { if (SKIP[p.nodeName] || (p.classList && p.classList.contains("no-furi"))) { ok = false; break; } p = p.parentNode; }
+        if (ok) nodes.push(n);
+      }
+      nodes.forEach(function (t) {
+        var html = convert(t.nodeValue);
+        if (!html) return;
+        var tpl = document.createElement("template");
+        tpl.innerHTML = html;
+        t.parentNode.replaceChild(tpl.content, t);
+      });
+    }
+    function strip(root) {
+      if (!root) return;
+      Array.prototype.slice.call(root.querySelectorAll("ruby")).forEach(function (r) {
+        Array.prototype.slice.call(r.querySelectorAll("rt")).forEach(function (rt) { rt.remove(); });
+        r.replaceWith(document.createTextNode(r.textContent));
+      });
+      root.normalize();
+    }
+    return { apply: apply, strip: strip };
+  })();
+  function furiOn() { return Boolean(Furi) && Store.getPref("furigana", false); }
+  function furiButton() {
+    if (!Furi) return "";
+    var on = furiOn();
+    return '<button class="furi-btn' + (on ? " is-on" : "") + '" data-action="toggle-furi" aria-pressed="' + on + '" aria-label="ふりがな">' +
+      '<span class="furi-btn__rt">ふりがな</span><span class="furi-btn__base">' + (on ? "ON" : "OFF") + "</span></button>";
+  }
+  if (Furi) {
+    // コピーしたときは、ふりがなを外して漢字だけにする（翻訳アプリに貼りやすくする）
+    document.addEventListener("copy", function (e) {
+      var sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0 || !e.clipboardData) return;
+      var box = document.createElement("div");
+      for (var i = 0; i < sel.rangeCount; i++) box.appendChild(sel.getRangeAt(i).cloneContents());
+      if (!box.querySelector("rt")) return;
+      Array.prototype.slice.call(box.querySelectorAll("rt, rp")).forEach(function (n) { n.remove(); });
+      e.clipboardData.setData("text/plain", box.textContent);
+      e.preventDefault();
+    });
+    new MutationObserver(function () { if (furiOn()) Furi.apply($sheet); }).observe($sheet, { childList: true, subtree: true });
+  }
+
   /* ---------------- 共通パーツ ---------------- */
   function topbar(eyebrow, title, backAction) {
     return (
@@ -172,7 +263,7 @@
       '<div class="topbar__titles">' +
       (eyebrow ? '<p class="topbar__eyebrow">' + esc(eyebrow) + "</p>" : "") +
       '<h1 class="topbar__title">' + esc(title) + "</h1>" +
-      "</div></header>"
+      "</div>" + furiButton() + "</header>"
     );
   }
 
@@ -1817,8 +1908,8 @@
     var bottom = dock ? dock.getBoundingClientRect().top : window.innerHeight;
     var top = sheet.getBoundingClientRect().top + window.scrollY;
     var room = bottom - top;
-    var size = READ_MAX;
-    for (; size > READ_MIN; size -= 0.5) {
+    var size = READ_MAX, min = furiOn() ? READ_MIN - 1 : READ_MIN; // ふりがなの分だけ小さくしてもよい
+    for (; size > min; size -= 0.5) {
       sheet.style.fontSize = size + "px";
       if (sheet.offsetHeight <= room) break;
     }
@@ -1968,12 +2059,20 @@
       default: html = renderHome();
     }
     $app.innerHTML = html;
+    if (furiOn()) Furi.apply($app);
     fitAll();
     justChecked = null;
   }
 
   /* ---------------- 操作 ---------------- */
   var actions = {
+    "toggle-furi": function () {
+      Store.setPref("furigana", !furiOn());
+      if (!furiOn()) Furi.strip($sheet); else Furi.apply($sheet);
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
     home: function () { go({ name: "home" }); },
     "open-fields": function (el) { go({ name: "fields", ctx: el.dataset.ctx }); },
     fields: function () { go({ name: "fields", ctx: view.ctx || "study" }); },

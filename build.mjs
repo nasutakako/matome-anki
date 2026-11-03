@@ -23,9 +23,12 @@ const TITLE = "介護福祉士 キソマナ 国家試験対策アプリ";
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">`;
-const body = `<div id="app" class="app" lang="ja"></div>
+const mkBody = (list) => `<div id="app" class="app" lang="ja"></div>
 <div id="sheet-root" lang="ja"></div>
-${scripts.map((s) => `<script>\n${s}\n</script>`).join("\n")}`;
+${list.map((s) => `<script>\n${s}\n</script>`).join("\n")}`;
+// ふりがな辞書（src/data/furigana.js）も一緒に入れる
+const body = mkBody([read("./src/data/furigana.js"), ...scripts]);
+const bodyArt = body;
 
 /* ---------- 1ファイル版（アーティファクト用。外枠はアーティファクト側が付ける） ---------- */
 const artifact = `<meta charset="utf-8">
@@ -35,7 +38,7 @@ ${fonts}
 <style>
 ${css}
 </style>
-${body}
+${bodyArt}
 `;
 mkdirSync(url("./dist/"), { recursive: true });
 writeFileSync(url("./dist/kaigo-study.html"), artifact);
