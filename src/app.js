@@ -765,15 +765,18 @@
    */
   var SWAP_PAIRS = [
     ["健側", "患側"], ["上顎", "下顎", /顎呼吸/], ["末梢", "中枢", /(呼吸|咳|体温調節)の中枢/], ["目頭", "目尻"], ["時計回り", "反時計回り"],
-    ["副交感神経", "交感神経"], ["小腸", "大腸"], ["左側臥位", "右側臥位"], ["仰臥位", "側臥位"],
+    ["副交感神経", "交感神経"], ["小腸", "大腸"], ["左側臥位", "右側臥位"], ["仰臥位", "側臥位", /[左右]側臥位|を下にした側臥位|側臥位から/],
     ["増加", "減少"], ["高い", "低い"], ["浅い", "深い"], ["多い", "少ない"],
     ["以上", "以下", /[0-9０-９]つ以上|これ以上/], ["早朝", "夕方", /早朝覚醒/], ["前傾", "後傾"], ["内側", "外側"], ["下から", "上から"],
-    ["急に", "徐々に"], ["市町村", "都道府県"], ["貸与", "購入"], ["名称独占", "業務独占"],
+    ["急に", "徐々に"], ["市町村", "都道府県", /知事|都道府県長|市町村長|12\.5/], ["貸与", "購入"], ["名称独占", "業務独占"],
     ["共助", "公助"], ["陽性症状", "陰性症状"], ["流動性知能", "結晶性知能"], ["引き戸", "開き戸"],
     ["前から後ろ", "後ろから前"], ["近時記憶", "遠隔記憶"], ["保たれる", "失われる"],
   ];
   var NUM_UNITS = "歳|℃|万円|日間|日|回|時間|割|年|分|秒|%|％|cm|ml|か月|段階|項目|点|人";
+  // 一部を変えても正しいままになりうる・あいまいになる文は、ひっかけを作らない
+  var NO_FAKE_RE = /意欲的に働いていた人が|生後3か月で出生時|食前＝食事の約30分前/;
   function makeFake(text) {
+    if (NO_FAKE_RE.test(text)) return null;
     var pairs = shuffle(SWAP_PAIRS);
     for (var i = 0; i < pairs.length; i++) {
       var a = pairs[i][0], b = pairs[i][1], skip = pairs[i][2];
@@ -792,13 +795,16 @@
       return { text: swapped, from: first[0], to: to };
     }
     // 数字を変える（範囲「〜」の一部や「1960年代」「1回の」は変えない）
-    var numRe = new RegExp("(^|[^0-9〜.])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の|量|目)");
+    var numRe = new RegExp("(^|[^0-9〜.,])([0-9]+)(" + NUM_UNITS + ")(?!〜|代|の|量|目)");
     var nm = text.match(numRe);
+    // 「1歳〜1歳3か月」のような範囲の中の数は変えない
+    if (nm && text.slice(Math.max(0, nm.index - 5), nm.index + 1).indexOf("〜") !== -1) nm = null;
     if (nm) {
       var n = parseInt(nm[2], 10);
       var alt2 = n >= 1900 ? n - 2 : n >= 100 ? n + Math.round(n * 0.2) : n >= 10 ? n + (n % 10 === 0 ? 10 : 5) : n + 1;
       if (nm[3] === "時間" && n === 24) alt2 = 12; // 「29時間」のような、ありえない数にしない
       var at = nm.index + nm[1].length;
+      if (text.indexOf(alt2 + nm[3]) !== -1) return null; // 「2割・3割」→「3割・3割」のように同じ数が並ぶ文にしない
       return { text: text.slice(0, at) + alt2 + text.slice(at + nm[2].length), from: nm[2] + nm[3], to: alt2 + nm[3] };
     }
     return null;
@@ -809,6 +815,15 @@
    * オリジナル問題に加える。ID は gen.d.<用語ID>（説明から）と gen.p.<用語ID>（覚えるポイントから）。
    * 誤りの選択肢は、一部を入れ替えた「ひっかけ」と、別の用語の説明を組み合わせたもの。
    */
+  // 組み合わせると正しくも読めてしまう「用語←別の用語の説明」
+  var MISMATCH_BLOCK = {
+    "半側空間無視←高次脳機能障害": 1, "介護記録←SOAP": 1, "アセスメント←情報収集": 1,
+    "障害者総合支援法←介護給付と訓練等給付": 1, "障害者総合支援法←同行援護": 1, "障害者総合支援法←行動援護": 1,
+    "自立支援←自己決定": 1, "エンパワメント←ストレングス": 1, "ラポール←共感": 1,
+    "情報収集←アセスメント": 1, "自立支援←リハビリテーション": 1,
+  };
+  // 法律の名前や「基本」のように広い用語は、ほかの用語の説明を組み合わせても正しく読めてしまうので使わない
+  var MISMATCH_NO_TARGET = { "障害者総合支援法": 1, "コミュニケーションの基本": 1 };
   (function generateExams() {
     // 毎回同じ問題になるよう、作成中だけ乱数を固定する（問題数や選択肢が起動ごとに変わらない）
     var realRandom = Math.random, seed = 20260125;
@@ -858,10 +873,15 @@
             others.forEach(function (id, i) {
               if (choices.length >= CHOICES) return;
               var y = termById[id].term;
-              if (usedText[y.term] || !y.definition) return;
+              if (usedText[y.term] || !y.definition || MISMATCH_NO_TARGET[y.term]) return;
               for (var j = 1; j < others.length; j++) {
                 var z = termById[others[(i + j) % others.length]].term;
                 if (z.term === y.term || usedText[z.term] || !z.definition || z.definition === y.definition) continue;
+                // 「医師の指示に従う」のような短い説明は、どの用語に付けても正しく読めてしまうので使わない
+                if (z.definition.length < 20) continue;
+                // 用語の説明・ポイントに、組み合わせる用語の名前が出てくる（関係が深い）ものは使わない
+                if (((y.definition || "") + (y.point || "")).indexOf(z.term) !== -1) continue;
+                if (MISMATCH_BLOCK[y.term + "←" + z.term]) continue;
                 if (sharesWord(z.term, y.term) || similarity(z.definition, y.definition) >= 0.3) continue;
                 if (z.definition.indexOf(y.term) !== -1 || y.definition.indexOf(z.term) !== -1) continue;
                 usedText[y.term] = usedText[z.term] = true;

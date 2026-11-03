@@ -1397,3 +1397,4 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .is-furi .notice,
 .is-furi .hint { line-height: 2; }
 .is-furi .btn { line-height: 1.6; }
+.q-prompt--def, .read-item__def { white-space: pre-line; }
