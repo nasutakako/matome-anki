@@ -41,6 +41,8 @@
     pin: '<path d="M9 3.5h6l-.8 5.2 3.3 3.3H6.5l3.3-3.3L9 3.5z"/><path d="M12 12v8"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
     save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
+    bag: '<path d="M5 8h14l-1.2 11.2a1 1 0 01-1 .8H7.2a1 1 0 01-1-.8L5 8z"/><path d="M9 10V7a3 3 0 016 0v3"/>',
+    crown: '<path d="M4 18h16M5 16l-1-9 5 4 3-6 3 6 5-4-1 9H5z"/>',
   };
   function icon(name, cls) {
     return (
@@ -259,7 +261,7 @@
   }
 
   /* ---------------- 共通パーツ ---------------- */
-  function topbar(eyebrow, title, backAction) {
+  function topbar(eyebrow, title, backAction, extra) {
     return (
       '<header class="topbar">' +
       (backAction
@@ -268,7 +270,7 @@
       '<div class="topbar__titles">' +
       (eyebrow ? '<p class="topbar__eyebrow">' + esc(eyebrow) + "</p>" : "") +
       '<h1 class="topbar__title">' + esc(title) + "</h1>" +
-      "</div>" + furiButton() + "</header>"
+      "</div>" + (extra || "") + furiButton() + "</header>"
     );
   }
 
@@ -328,7 +330,7 @@
     var other = MENU.filter(function (m) { return m.group === "other"; }).map(menuRow).join("");
 
     return (
-      topbar("介護福祉士 国家試験対策", "キソマナ", null) +
+      topbar("介護福祉士 国家試験対策", "キソマナ", null, shopButton()) +
       '<main class="content content--home">' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
@@ -419,7 +421,10 @@
     return (
       topbar("自分専用の教科書", "マイ教科書", "home") +
       '<main class="content">' +
-      (total ? '<p class="hint">' + icon("pin") + "<span>ピックアップした " + total + " 語を、基礎学習と同じ形でまとめています。</span></p>" + groups : empty) +
+      (total ? '<p class="hint">' + icon("pin") + "<span>ピックアップした " + total + " 語を、基礎学習と同じ形でまとめています。" +
+        (mineUnlimited() ? "" : "（無料で" + MINE_FREE + "語まで・あと" + Math.max(0, MINE_FREE - total) + "語）") + "</span></p>" +
+        (!mineUnlimited() && total >= MINE_FREE ? '<button class="btn btn--ghost mine-more" data-action="open-shop">' + icon("crown") + "プレミアムで無制限にする</button>" : "") +
+        groups : empty) +
       "</main>"
     );
   }
@@ -636,7 +641,8 @@
       '<p class="confirm__icon">' + icon("pin") + "</p>" +
       '<h2 class="confirm__title" id="pick-title">' + (picked ? "マイ教科書から外しますか？" : "マイ教科書に追加しますか？") + "</h2>" +
       '<p class="confirm__term">' + esc(t.term) + "</p>" +
-      '<p class="confirm__sub">' + (picked ? "基礎学習のカードはそのまま残ります。" : "ホームの「マイ教科書」で、基礎学習と同じ形で見返せます。") + "</p>" +
+      '<p class="confirm__sub">' + (picked ? "基礎学習のカードはそのまま残ります。" : "ホームの「マイ教科書」で、基礎学習と同じ形で見返せます。" +
+        (mineUnlimited() ? "" : "<br>無料で入れられるのは、あと" + Math.max(0, MINE_FREE - Store.countPicked(allTermIds())) + "語です。")) + "</p>" +
       "</div>" +
       '<div class="sheet__foot">' +
       '<button class="btn btn--primary" data-action="pick-confirm" data-autofocus>' + (picked ? "外す" : "追加する") + "</button>" +
@@ -1478,10 +1484,20 @@
    * 購入・復元・価格の取得はアプリ側（window.KaigoNative）が行う。
    *   purchase(productId) → Promise<boolean>、restorePurchases() → Promise<string[]>、price(productId) → 表示用の価格（任意）
    */
-  var PRODUCTS = { originals: "originals_unlock", adFree: "remove_ads" };
-  var OWN_PREF = { originals: "ownOriginals", adFree: "adFree" };
+  var PRODUCTS = { premium: "premium_unlock", originals: "originals_unlock", adFree: "remove_ads" };
+  var OWN_PREF = { premium: "ownPremium", originals: "ownOriginals", adFree: "adFree" };
   var FREE_TRIAL = 20;
-  function owns(key) { return !!Store.getPref(OWN_PREF[key], false); }
+  var MINE_FREE = 50; // マイ教科書に無料で入れられる用語の数（プレミアムで無制限）
+  /** 購入済みか。プレミアムは、オリジナル問題・広告なしを含む */
+  function owns(key) {
+    if (Store.getPref(OWN_PREF[key], false)) return true;
+    return key !== "premium" && !!Store.getPref(OWN_PREF.premium, false);
+  }
+  function mineUnlimited() { return owns("premium"); }
+  /** マイ教科書に、この用語を新しく追加できるか（外すのはいつでもできる） */
+  function canPick(termId) {
+    return Store.isPicked(termId) || mineUnlimited() || Store.countPicked(allTermIds()) < MINE_FREE;
+  }
   function canBuy() { var N = window.KaigoNative; return !!(N && (N.purchase || N.purchaseAdFree)); }
   function priceOf(key) {
     var N = window.KaigoNative;
@@ -1536,7 +1552,7 @@
         return false;
       });
       Store.setPref("trialIds", ids);
-      if (!qids.length) { go({ name: "paywall" }); return; }
+      if (!qids.length) { openShop("originals"); return; }
     }
     startExam(qids, title, "オリジナル問題", null, ordered);
     quiz.practice = scope;
@@ -1954,19 +1970,9 @@
   var settingsMsg = "";
   function renderSettings() {
     var N = window.KaigoNative || null;
-    var adFree = Store.getPref("adFree", false);
-    var ads = canBuy()
-      ? '<section class="section"><h2 class="section__label">購入</h2><div class="panel set-panel">' +
-        (owns("originals")
-          ? "<p>オリジナル問題：購入済み</p>"
-          : "<p>オリジナル問題：無料のお試し 残り " + trialLeft() + "問</p>" +
-            '<button class="btn btn--ghost" data-action="open-paywall">オリジナル問題を解放する</button>') +
-        (adFree
-          ? "<p>広告：非表示（購入済み）</p>"
-          : "<p>広告：買い切りの購入で表示されなくなります。</p>" +
-            '<button class="btn btn--ghost" data-action="ad-purchase">広告を非表示にする（買い切り）</button>') +
-        '<button class="btn btn--text" data-action="ad-restore">購入を復元</button></div></section>'
-      : "";
+    var ads = '<section class="section"><h2 class="section__label">購入</h2><div class="panel set-panel">' +
+      "<p>" + purchaseSummary() + "</p>" +
+      '<button class="btn btn--ghost" data-action="open-shop">' + icon("bag") + "ショップを開く</button></div></section>";
     var link = function (path, label) {
       return '<a class="row" href="' + SITE + path + '" target="_blank" rel="noopener"><span class="row__body"><span class="row__title">' +
         label + "</span></span>" + icon("chev", "row__chev") + "</a>";
@@ -2020,7 +2026,7 @@
   var appStartedAt = Date.now();
   function maybeShowAd() {
     var N = window.KaigoNative;
-    if (!N || !N.showInterstitial || Store.getPref("adFree", false)) return;
+    if (!N || !N.showInterstitial || owns("adFree")) return;
     var now = Date.now();
     if (now - appStartedAt < AD_GRACE) return;
     if (now - Store.getPref("adLastAt", 0) < AD_INTERVAL) return;
@@ -2028,38 +2034,75 @@
     try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
   }
 
-  /* ---------------- 購入画面（オリジナル問題） ---------------- */
-  var paywallMsg = "";
-  function renderPaywall() {
-    var owned = owns("originals");
-    var price = priceOf("originals");
-    var points = [
-      ["本試験と同じ125問構成", "人間の尊厳と自立2問、生活支援技術26問…と、本番と同じ科目・問題数で練習"],
-      ["正解した問題は入れ替わる", "まちがえた問題は正解するまで残り、正解した問題は新しい問題に。終わりなく練習できる"],
-      ["本番に近いひっかけ", "「正しいものを1つ選びなさい」形式。一語だけ違う選択肢で、2択で迷う力をきたえる"],
-      ["買い切り", "一度の購入で、追加料金なしにずっと使える"],
-    ].map(function (p) {
-      return '<li><span class="paywall__check">' + icon("check") + "</span><span><b>" + esc(p[0]) + "</b>" + esc(p[1]) + "</span></li>";
-    }).join("");
-    var actions = owned
-      ? '<p class="paywall__owned">' + icon("check") + "購入済みです。すべての問題を解けます。</p>" +
-        '<button class="btn btn--primary" data-action="back-exams">オリジナル問題へ</button>'
-      : canBuy()
-      ? '<button class="btn btn--primary" data-action="buy-originals">' + (price ? price + "で" : "") + "すべての問題を解放する（買い切り）</button>" +
-        '<button class="btn btn--text" data-action="restore-purchases">購入を復元</button>'
-      : '<p class="hint">' + icon("info") + "<span>購入は、ストア版のアプリ（App Store・Google Play）でできます。</span></p>";
+  /* ---------------- ショップ（買い切りの購入をまとめた画面） ---------------- */
+  var shopMsg = "";
+  function shopButton() {
+    if (owns("premium")) return "";
+    return '<button class="shop-btn" data-action="open-shop" aria-label="ショップ">' + icon("bag") + '<span class="shop-btn__label">ショップ</span></button>';
+  }
+  function purchaseSummary() {
+    if (owns("premium")) return "プレミアム：購入済み（すべての機能が使えます）";
+    var parts = [];
+    parts.push("オリジナル問題：" + (owns("originals") ? "購入済み" : "お試し 残り" + trialLeft() + "問"));
+    parts.push("マイ教科書：" + Store.countPicked(allTermIds()) + " / " + MINE_FREE + "語（無料）");
+    parts.push("広告：" + (owns("adFree") ? "非表示（購入済み）" : "表示あり"));
+    return parts.join("<br>");
+  }
+  /** ショップを開く。reason はどこから来たか（originals・mine・ads） */
+  function openShop(reason) {
+    var back = view;
+    if (!back || back.name === "quiz" || back.name === "shop") back = back && back.name === "shop" ? back.back : { name: "exams" };
+    quiz = null;
+    shopMsg = "";
+    closeSheet(true);
+    go({ name: "shop", reason: reason || "", back: back });
+  }
+  function renderShop() {
+    var reason = {
+      originals: trialLeft() > 0
+        ? "オリジナル問題は無料で" + FREE_TRIAL + "問まで試せます（残り" + trialLeft() + "問）。"
+        : "オリジナル問題の無料お試し（" + FREE_TRIAL + "問）を使い切りました。",
+      mine: "マイ教科書に無料で入れられるのは" + MINE_FREE + "語までです。",
+    }[view.reason] || "";
+    var item = function (key, title, lead, points, primary) {
+      var owned = owns(key);
+      var price = priceOf(key);
+      var btn = owned
+        ? '<p class="shop__owned">' + icon("check") + "購入済み</p>"
+        : canBuy()
+        ? '<button class="btn ' + (primary ? "btn--primary" : "btn--ghost") + '" data-action="shop-buy" data-key="' + key + '">' +
+          (price ? price + "で" : "") + "購入する（買い切り）</button>"
+        : "";
+      return '<section class="panel shop__item' + (primary ? " shop__item--main" : "") + '">' +
+        (primary ? '<p class="shop__badge">' + icon("crown") + "いちばんお得</p>" : "") +
+        '<h2 class="shop__title">' + esc(title) + "</h2>" +
+        '<p class="shop__lead">' + esc(lead) + "</p>" +
+        '<ul class="paywall__list">' + points.map(function (p) {
+          return '<li><span class="paywall__check">' + icon("check") + "</span><span><b>" + esc(p[0]) + "</b>" + esc(p[1]) + "</span></li>";
+        }).join("") + "</ul>" + btn + "</section>";
+    };
     return (
-      topbar("オリジナル問題", "すべての問題を解放", "back-exams") +
+      topbar("キソマナ", "ショップ", "shop-back") +
       '<main class="content">' +
-      '<section class="panel paywall">' +
-      '<p class="paywall__icon">' + icon("quiz") + "</p>" +
-      '<h2 class="paywall__title">解くほど新しい問題が出る<br>オリジナル問題</h2>' +
-      '<ul class="paywall__list">' + points + "</ul>" +
-      (owned ? "" : '<p class="paywall__trial">無料のお試し：残り ' + trialLeft() + " / " + FREE_TRIAL + "問</p>") +
-      actions +
-      (paywallMsg ? '<p class="set-msg" role="status">' + esc(paywallMsg) + "</p>" : "") +
-      "</section>" +
-      '<p class="notice">基礎学習・基礎問題・過去問題（年度別）・マイ教科書などは、購入しなくてもすべて使えます。</p>' +
+      (reason ? '<p class="shop__reason">' + icon("info") + "<span>" + esc(reason) + "</span></p>" : "") +
+      item("premium", "プレミアム", "すべての有料機能が使える、いちばんお得なセット。", [
+        ["オリジナル問題がすべて解ける", "本試験と同じ125問構成。事例問題も収録し、正解した問題は新しい問題に入れ替わる"],
+        ["マイ教科書が無制限", "無料は" + MINE_FREE + "語まで。好きなだけ用語を集めて、自分だけの1冊に"],
+        ["広告なし", "学習の区切りに出る広告が表示されなくなる"],
+      ], true) +
+      item("originals", "オリジナル問題", "オリジナル問題だけを解放します。", [
+        ["本試験と同じ125問構成", "人間の尊厳と自立2問、生活支援技術26問…と、本番と同じ科目・問題数で練習"],
+        ["解くほど新しい問題が出る", "まちがえた問題は正解するまで残り、正解した問題は新しい問題に入れ替わる"],
+      ], false) +
+      item("adFree", "広告なし", "広告だけを非表示にします。", [
+        ["広告が出なくなる", "問題の結果画面などに出る広告が表示されなくなる"],
+      ], false) +
+      (canBuy()
+        ? '<button class="btn btn--text shop__restore" data-action="restore-purchases">購入を復元</button>'
+        : '<p class="hint">' + icon("info") + "<span>購入は、ストア版のアプリ（App Store・Google Play）でできます。</span></p>") +
+      (shopMsg ? '<p class="set-msg" role="status">' + esc(shopMsg) + "</p>" : "") +
+      '<p class="notice">どれも買い切りで、追加料金はかかりません。オリジナル問題や広告なしを購入済みの方も、プレミアムを購入すると残りの機能が使えるようになります。' +
+      "基礎学習・基礎問題・過去問題（年度別・解説つき）・苦手傾向分析は、購入しなくてもすべて使えます。</p>" +
       "</main>"
     );
   }
@@ -2081,7 +2124,8 @@
       case "pastExplain": html = renderPastExplain(); break;
       case "analysis": html = renderAnalysis(); break;
       case "settings": html = renderSettings(); break;
-      case "paywall": html = renderPaywall(); break;
+      case "paywall": view = { name: "shop", reason: "originals", back: { name: "exams" } }; html = renderShop(); break;
+      case "shop": html = renderShop(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -2218,16 +2262,19 @@
         setMsg(got.length ? "購入を復元しました。" : "復元できる購入が見つかりませんでした。");
       });
     },
-    "open-paywall": function () { paywallMsg = ""; quiz = null; go({ name: "paywall" }); },
-    "buy-originals": function () {
-      buy("originals").then(function (ok) {
-        paywallMsg = ok ? "購入が完了しました。すべての問題を解けます。" : "";
+    "open-paywall": function () { openShop("originals"); },
+    "open-shop": function () { openShop(""); },
+    "shop-back": function () { var b = view.back || { name: "home" }; go(b); },
+    "shop-buy": function (el) {
+      var key = el.dataset.key;
+      buy(key).then(function (ok) {
+        shopMsg = ok ? "購入が完了しました。ありがとうございます。" : "";
         render();
       });
     },
     "restore-purchases": function () {
       restorePurchases().then(function (got) {
-        paywallMsg = got.indexOf("originals") !== -1 ? "購入を復元しました。" : "復元できる購入が見つかりませんでした。";
+        shopMsg = got.length ? "購入を復元しました。" : "復元できる購入が見つかりませんでした。";
         render();
       });
     },
@@ -2283,6 +2330,7 @@
     "open-mine-theme": function (el) { go({ name: "study", themeId: el.dataset.id, pageIndex: 0, mine: true }); },
     "toggle-pick": function () {
       var id = openTermId;
+      if (!canPick(id)) { openShop("mine"); return; }
       Store.setPicked(id, !Store.isPicked(id));
       if (view.mine && !Store.isPicked(id)) {
         closeSheet(true);
@@ -2299,6 +2347,7 @@
     "pick-cancel": function () { closeSheet(true); },
     "pick-confirm": function () {
       var id = pickConfirmId;
+      if (!canPick(id)) { openShop("mine"); return; }
       Store.setPicked(id, !Store.isPicked(id));
       closeSheet(true);
       normalizeMineView();

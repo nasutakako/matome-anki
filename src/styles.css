@@ -1398,3 +1398,26 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .is-furi .hint { line-height: 2; }
 .is-furi .btn { line-height: 1.6; }
 .q-prompt--def, .read-item__def { white-space: pre-line; }
+
+/* ---------- ショップ ---------- */
+.shop-btn {
+  margin-left: auto; flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 52px; height: 40px; padding: 2px 8px; border-radius: 12px; border: 1.5px solid currentColor;
+  background: transparent; color: var(--brand-ink, #23436f); font: inherit; cursor: pointer; opacity: 0.75;
+}
+.shop-btn svg { width: 17px; height: 17px; }
+.shop-btn__label { font-size: 9px; line-height: 1.1; font-weight: 700; }
+.shop-btn + .furi-btn { margin-left: 6px; }
+.shop__reason { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 12px; padding: 10px 12px; border-radius: 14px; background: var(--pin-soft, #fdeee9); color: var(--pin-ink, #b2452f); font-size: var(--fs-sm); font-weight: 700; }
+.shop__reason svg { flex: none; width: 18px; height: 18px; margin-top: 1px; }
+.shop__item { display: flex; flex-direction: column; gap: 8px; padding: 16px; margin-bottom: 12px; }
+.shop__item--main { border: 2px solid var(--accent); }
+.shop__badge { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin: 0; padding: 2px 10px; border-radius: 999px; background: var(--accent); color: #fff; font-size: var(--fs-xs); font-weight: 700; }
+.shop__badge svg { width: 14px; height: 14px; }
+.shop__title { margin: 0; font-family: var(--title-font); font-size: 19px; color: var(--brand-ink); }
+.shop__lead { margin: 0; font-size: var(--fs-sm); color: var(--muted); }
+.shop__item .btn { width: 100%; }
+.shop__owned { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ok); font-weight: 700; }
+.shop__owned svg { width: 18px; height: 18px; }
+.shop__restore { display: block; margin: 0 auto 8px; }
+.mine-more { width: 100%; margin-bottom: 12px; }
