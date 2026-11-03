@@ -1144,3 +1144,29 @@ a.btn { text-decoration: none; }
 .ms-row.is-ng .ms-mark { color: var(--ng); }
 .btn:disabled { opacity: 0.5; cursor: default; }
 .rs-item__body { padding-top: 0.38em; padding-bottom: 0.42em; }
+
+/* 過去問題の解説 */
+.btn-row { display: flex; gap: 8px; }
+.btn-row > .btn { flex: 1 1 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+.ex-list { display: flex; flex-direction: column; gap: 8px; }
+.ex-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.ex-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ex-q { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ex-ans { font-weight: 700; color: var(--brand); }
+.ex-head .chip { margin-left: auto; }
+.ex-main { margin: 0 0 4px; font-size: var(--fs-md); line-height: 1.5; }
+.ex-note { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
+.ex-note b { color: var(--text); font-weight: 600; }
+
+/* 過去問題の解説 */
+.btn-row { display: flex; gap: 8px; }
+.btn-row > .btn { flex: 1 1 0; min-width: 0; padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+.ex-list { display: flex; flex-direction: column; gap: 8px; }
+.ex-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.ex-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.ex-q { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ex-ans { font-weight: 700; color: var(--brand); }
+.ex-head .chip { margin-left: auto; }
+.ex-main { margin: 0 0 4px; font-size: var(--fs-md); line-height: 1.5; }
+.ex-note { margin: 0; font-size: var(--fs-sm); line-height: 1.5; color: var(--muted); }
+.ex-note b { color: var(--text, inherit); font-weight: 600; }

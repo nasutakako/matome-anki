@@ -14,6 +14,7 @@ const scripts = [
   ...fieldFiles.map((f) => "./src/data/fields/" + f),
   "./src/data/exams.js",
   "./src/data/pastExams.js",
+  "./src/data/pastExplain.js",
   "./src/store.js",
   "./src/app.js",
 ].map(read);
