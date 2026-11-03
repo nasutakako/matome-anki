@@ -6315,7 +6315,7 @@ window.KaigoStore = (function () {
       '<main class="content">' +
       (total ? '<p class="hint">' + icon("pin") + "<span>ピックアップした " + total + " 語を、基礎学習と同じ形でまとめています。" +
         (mineUnlimited() ? "" : "（無料で" + MINE_FREE + "語まで・あと" + Math.max(0, MINE_FREE - total) + "語）") + "</span></p>" +
-        (!mineUnlimited() && total >= MINE_FREE ? '<button class="btn btn--ghost mine-more" data-action="open-shop">' + icon("crown") + "プレミアムで無制限にする</button>" : "") +
+        (!mineUnlimited() && total >= MINE_FREE ? '<button class="btn btn--ghost mine-more" data-action="open-mine-shop">' + icon("crown") + "マイ教科書を無制限にする</button>" : "") +
         groups : empty) +
       "</main>"
     );
@@ -7376,8 +7376,8 @@ window.KaigoStore = (function () {
    * 購入・復元・価格の取得はアプリ側（window.KaigoNative）が行う。
    *   purchase(productId) → Promise<boolean>、restorePurchases() → Promise<string[]>、price(productId) → 表示用の価格（任意）
    */
-  var PRODUCTS = { premium: "premium_unlock", originals: "originals_unlock", adFree: "remove_ads" };
-  var OWN_PREF = { premium: "ownPremium", originals: "ownOriginals", adFree: "adFree" };
+  var PRODUCTS = { premium: "premium_unlock", originals: "originals_unlock", mine: "mine_unlimited", adFree: "remove_ads" };
+  var OWN_PREF = { premium: "ownPremium", originals: "ownOriginals", mine: "ownMine", adFree: "adFree" };
   var FREE_TRIAL = 20;
   var MINE_FREE = 50; // マイ教科書に無料で入れられる用語の数（プレミアムで無制限）
   /** 購入済みか。プレミアムは、オリジナル問題・広告なしを含む */
@@ -7385,7 +7385,7 @@ window.KaigoStore = (function () {
     if (Store.getPref(OWN_PREF[key], false)) return true;
     return key !== "premium" && !!Store.getPref(OWN_PREF.premium, false);
   }
-  function mineUnlimited() { return owns("premium"); }
+  function mineUnlimited() { return owns("mine"); }
   /** マイ教科書に、この用語を新しく追加できるか（外すのはいつでもできる） */
   function canPick(termId) {
     return Store.isPicked(termId) || mineUnlimited() || Store.countPicked(allTermIds()) < MINE_FREE;
@@ -7936,7 +7936,7 @@ window.KaigoStore = (function () {
     if (owns("premium")) return "プレミアム：購入済み（すべての機能が使えます）";
     var parts = [];
     parts.push("オリジナル問題：" + (owns("originals") ? "購入済み" : "お試し 残り" + trialLeft() + "問"));
-    parts.push("マイ教科書：" + Store.countPicked(allTermIds()) + " / " + MINE_FREE + "語（無料）");
+    parts.push("マイ教科書：" + (owns("mine") ? "無制限（購入済み）" : Store.countPicked(allTermIds()) + " / " + MINE_FREE + "語（無料）"));
     parts.push("広告：" + (owns("adFree") ? "非表示（購入済み）" : "表示あり"));
     return parts.join("<br>");
   }
@@ -7986,6 +7986,9 @@ window.KaigoStore = (function () {
         ["本試験と同じ125問構成", "人間の尊厳と自立2問、生活支援技術26問…と、本番と同じ科目・問題数で練習"],
         ["解くほど新しい問題が出る", "まちがえた問題は正解するまで残り、正解した問題は新しい問題に入れ替わる"],
       ], false) +
+      item("mine", "マイ教科書 無制限", "マイ教科書に入れられる用語の数の上限をなくします。", [
+        ["好きなだけ用語を集められる", "無料は" + MINE_FREE + "語まで。苦手な用語をすべて集めて、自分だけの1冊に"],
+      ], false) +
       item("adFree", "広告なし", "広告だけを非表示にします。", [
         ["広告が出なくなる", "問題の結果画面などに出る広告が表示されなくなる"],
       ], false) +
@@ -7993,7 +7996,7 @@ window.KaigoStore = (function () {
         ? '<button class="btn btn--text shop__restore" data-action="restore-purchases">購入を復元</button>'
         : '<p class="hint">' + icon("info") + "<span>購入は、ストア版のアプリ（App Store・Google Play）でできます。</span></p>") +
       (shopMsg ? '<p class="set-msg" role="status">' + esc(shopMsg) + "</p>" : "") +
-      '<p class="notice">どれも買い切りで、追加料金はかかりません。オリジナル問題や広告なしを購入済みの方も、プレミアムを購入すると残りの機能が使えるようになります。' +
+      '<p class="notice">どれも買い切りで、追加料金はかかりません。ほかのアイテムを購入済みの方も、プレミアムを購入すると残りの機能が使えるようになります。' +
       "基礎学習・基礎問題・過去問題（年度別・解説つき）・苦手傾向分析は、購入しなくてもすべて使えます。</p>" +
       "</main>"
     );
@@ -8156,6 +8159,7 @@ window.KaigoStore = (function () {
     },
     "open-paywall": function () { openShop("originals"); },
     "open-shop": function () { openShop(""); },
+    "open-mine-shop": function () { openShop("mine"); },
     "shop-back": function () { var b = view.back || { name: "home" }; go(b); },
     "shop-buy": function (el) {
       var key = el.dataset.key;
