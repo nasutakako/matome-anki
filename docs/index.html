@@ -6315,7 +6315,7 @@ window.KaigoStore = (function () {
       '<main class="content">' +
       (total ? '<p class="hint">' + icon("pin") + "<span>ピックアップした " + total + " 語を、基礎学習と同じ形でまとめています。" +
         (mineUnlimited() ? "" : "（無料で" + MINE_FREE + "語まで・あと" + Math.max(0, MINE_FREE - total) + "語）") + "</span></p>" +
-        (!mineUnlimited() && total >= MINE_FREE ? '<button class="btn btn--ghost mine-more" data-action="open-mine-shop">' + icon("crown") + "マイ教科書を無制限にする</button>" : "") +
+        (!mineUnlimited() && total >= MINE_FREE ? '<button class="btn btn--ghost mine-more" data-action="open-mine-shop">' + icon("crown") + "プレミアムで無制限にする</button>" : "") +
         groups : empty) +
       "</main>"
     );
@@ -7376,6 +7376,7 @@ window.KaigoStore = (function () {
    * 購入・復元・価格の取得はアプリ側（window.KaigoNative）が行う。
    *   purchase(productId) → Promise<boolean>、restorePurchases() → Promise<string[]>、price(productId) → 表示用の価格（任意）
    */
+  // ショップで売るのはプレミアムと広告なしの2つ。originals・mine は以前の単品（購入の復元にだけ使う）
   var PRODUCTS = { premium: "premium_unlock", originals: "originals_unlock", mine: "mine_unlimited", adFree: "remove_ads" };
   var OWN_PREF = { premium: "ownPremium", originals: "ownOriginals", mine: "ownMine", adFree: "adFree" };
   var FREE_TRIAL = 20;
@@ -7966,7 +7967,7 @@ window.KaigoStore = (function () {
           (price ? price + "で" : "") + "購入する（買い切り）</button>"
         : "";
       return '<section class="panel shop__item' + (primary ? " shop__item--main" : "") + '">' +
-        (primary ? '<p class="shop__badge">' + icon("crown") + "いちばんお得</p>" : "") +
+        (primary ? '<p class="shop__badge">' + icon("crown") + "おすすめ</p>" : "") +
         '<h2 class="shop__title">' + esc(title) + "</h2>" +
         '<p class="shop__lead">' + esc(lead) + "</p>" +
         '<ul class="paywall__list">' + points.map(function (p) {
@@ -7977,18 +7978,11 @@ window.KaigoStore = (function () {
       topbar("キソマナ", "ショップ", "shop-back") +
       '<main class="content">' +
       (reason ? '<p class="shop__reason">' + icon("info") + "<span>" + esc(reason) + "</span></p>" : "") +
-      item("premium", "プレミアム", "すべての有料機能が使える、いちばんお得なセット。", [
+      item("premium", "プレミアム", "オリジナル問題・マイ教科書・広告なしが、すべてそろうセット。", [
         ["オリジナル問題がすべて解ける", "本試験と同じ125問構成。事例問題も収録し、正解した問題は新しい問題に入れ替わる"],
         ["マイ教科書が無制限", "無料は" + MINE_FREE + "語まで。好きなだけ用語を集めて、自分だけの1冊に"],
         ["広告なし", "学習の区切りに出る広告が表示されなくなる"],
       ], true) +
-      item("originals", "オリジナル問題", "オリジナル問題だけを解放します。", [
-        ["本試験と同じ125問構成", "人間の尊厳と自立2問、生活支援技術26問…と、本番と同じ科目・問題数で練習"],
-        ["解くほど新しい問題が出る", "まちがえた問題は正解するまで残り、正解した問題は新しい問題に入れ替わる"],
-      ], false) +
-      item("mine", "マイ教科書 無制限", "マイ教科書に入れられる用語の数の上限をなくします。", [
-        ["好きなだけ用語を集められる", "無料は" + MINE_FREE + "語まで。苦手な用語をすべて集めて、自分だけの1冊に"],
-      ], false) +
       item("adFree", "広告なし", "広告だけを非表示にします。", [
         ["広告が出なくなる", "問題の結果画面などに出る広告が表示されなくなる"],
       ], false) +
@@ -7996,7 +7990,7 @@ window.KaigoStore = (function () {
         ? '<button class="btn btn--text shop__restore" data-action="restore-purchases">購入を復元</button>'
         : '<p class="hint">' + icon("info") + "<span>購入は、ストア版のアプリ（App Store・Google Play）でできます。</span></p>") +
       (shopMsg ? '<p class="set-msg" role="status">' + esc(shopMsg) + "</p>" : "") +
-      '<p class="notice">どれも買い切りで、追加料金はかかりません。ほかのアイテムを購入済みの方も、プレミアムを購入すると残りの機能が使えるようになります。' +
+      '<p class="notice">どれも買い切りで、追加料金はかかりません。広告なしを購入済みの方も、プレミアムを購入すると残りの機能が使えるようになります。' +
       "基礎学習・基礎問題・過去問題（年度別・解説つき）・苦手傾向分析は、購入しなくてもすべて使えます。</p>" +
       "</main>"
     );

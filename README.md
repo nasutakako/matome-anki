@@ -22,7 +22,7 @@
 - コピーしたときは、ふりがなを外して漢字だけにする
 
 ## 有料機能・広告（ストアのアプリ版）
-- 買い切りは4つ。プレミアム（`premium_unlock`：オリジナル問題＋マイ教科書の無制限＋広告なし）、オリジナル問題（`originals_unlock`）、マイ教科書の無制限（`mine_unlimited`）、広告なし（`remove_ads`）。購入はホーム右上の「ショップ」にまとめている
+- 買い切りは2つ。プレミアム（`premium_unlock`：オリジナル問題＋マイ教科書の無制限＋広告なし）と広告なし（`remove_ads`）。`originals_unlock`・`mine_unlimited` は以前の単品で、購入の復元にだけ対応している。購入はホーム右上の「ショップ」にまとめている
 - オリジナル問題は未購入でも20問まで無料（`FREE_TRIAL`）。マイ教科書は50語まで無料（`MINE_FREE`）。上限に達するとショップに案内する。Web版にも同じ制限がかかり、購入はストアのアプリ版でのみできる
 - 広告は学習の途中では出さず、区切りの画面（問題の結果・テーマの完了・過去問の採点）でだけ、前回の広告から5分以上たっていれば表示する。起動から5分間は出さない（`app.js` の `maybeShowAd`）
 - 広告の表示・購入はアプリ側が `window.KaigoNative` として用意する（`showInterstitial()`、`purchase(productId)`、`restorePurchases()`（購入済みの商品IDの配列を返す）、任意で `price(productId)`・`saveFile(name, text)`）。Web版ではこれがないため広告は出ず、購入もできない
