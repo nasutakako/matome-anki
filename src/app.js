@@ -939,7 +939,10 @@
       '<div><p class="stat__label">採点済み</p><p class="stat__value">' + sm.gradedQ + "<small>問</small></p></div>" +
       bar(sm.total, 125) + "</div>" +
       verdict +
-      '<p class="hint">' + icon("info") + "<span>問題は試験センター公式サイトのPDFで読み、答えの番号をアプリで選んで採点します。合格には、合格点に加えて11の科目群すべてで得点があることが必要です。</span></p>" +
+      '<p class="hint">' + icon("info") + "<span>" + (y.read
+        ? "公式サイトでの公開が終わった回です。問題は" + esc(y.read.label) + "の掲載ページで読み、答えの番号をアプリで選んで採点します。"
+        : "問題は試験センター公式サイトのPDFで読み、答えの番号をアプリで選んで採点します。") +
+        "合格には、合格点に加えて11の科目群すべてで得点があることが必要です。</span></p>" +
       '<div class="rows">' + rows + "</div>" +
       '<p class="notice">正答は社会福祉振興・試験センター／厚生労働省が公表した正答によります。試験問題の著作権は社会福祉振興・試験センターに帰属します。</p>' +
       "</main>"
@@ -983,7 +986,9 @@
     return (
       topbar(y.name + "（" + y.nendo + "）", s.name, view.from === "review" ? "open-review" : "back-past-year") +
       '<main class="content content--with-dock">' +
-      '<a class="btn btn--ghost" href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + icon("doc") + "問題を開く（公式PDF）</a>" +
+      (s.pdf
+        ? '<a class="btn btn--ghost" href="' + esc(s.pdf) + '" target="_blank" rel="noopener">' + icon("doc") + "問題を開く（公式PDF）</a>"
+        : '<a class="btn btn--ghost" href="' + esc(y.read.url) + '" target="_blank" rel="noopener">' + icon("doc") + "問題を開く（" + esc(y.read.label) + "）</a>") +
       (graded
         ? '<div class="panel ms-score"><b>' + right + "</b> / " + n + "問 正解" +
           '<span class="chip ' + (right / n >= 0.6 ? "chip--done" : "chip--ng") + '">' + Math.round((right / n) * 100) + "%</span></div>"
@@ -1031,7 +1036,7 @@
         topbar("国家試験", "過去問題", "home") +
         '<main class="content">' + seg +
         '<div class="rows">' + renderPastYears() + "</div>" +
-        '<p class="hint">' + icon("info") + "<span>試験センターが公開している直近3回分です。問題は公式PDFで読み、答えをアプリで選ぶと採点・合否判定ができます。</span></p>" +
+        '<p class="hint">' + icon("info") + "<span>第34〜38回の5回分です。問題は公式PDF（第36回以降）または掲載ページ（第34・35回）で読み、答えをアプリで選ぶと採点・合否判定ができます。</span></p>" +
         '<p class="notice">出典：<a href="' + esc(PAST.source) + '" target="_blank" rel="noopener">社会福祉振興・試験センター 過去の試験問題</a></p>' +
         "</main>"
       );
