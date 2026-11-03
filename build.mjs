@@ -19,7 +19,7 @@ const scripts = [
   "./src/app.js",
 ].map(read);
 
-const TITLE = "まとめ暗記 介護福祉士";
+const TITLE = "見て覚える 介護福祉士 国家試験対策";
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap">`;
@@ -48,7 +48,7 @@ const app = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${TITLE}</title>
-<meta name="description" content="介護福祉士国家試験の重要用語を、カード一覧で繰り返し見て覚える学習アプリ">
+<meta name="description" content="介護福祉士国家試験の重要用語を1画面のカードで見て覚える学習アプリ。過去問5年分（解説つき）と練習問題つき">
 <meta name="theme-color" content="#1b5fb5">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
@@ -56,7 +56,7 @@ const app = `<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="まとめ暗記">
+<meta name="apple-mobile-web-app-title" content="見て覚える">
 ${fonts}
 <style>
 html { color-scheme: light; }

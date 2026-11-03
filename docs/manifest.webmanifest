@@ -1,7 +1,7 @@
 {
-  "name": "まとめ暗記 介護福祉士",
-  "short_name": "まとめ暗記",
-  "description": "介護福祉士国家試験の重要用語を、カード一覧で繰り返し見て覚える学習アプリ",
+  "name": "見て覚える 介護福祉士 国家試験対策",
+  "short_name": "見て覚える",
+  "description": "介護福祉士国家試験の重要用語を1画面のカードで見て覚える。過去問5年分（解説つき）と、解くほど新しい問題が出る練習問題つき",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,26 @@
   "background_color": "#ffffff",
   "theme_color": "#1b5fb5",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
