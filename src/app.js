@@ -1703,7 +1703,7 @@
    * 前回の広告から一定時間たっていれば表示する。起動直後も出さない。
    * 広告の表示そのものはアプリ側（window.KaigoNative.showInterstitial）が行う。
    */
-  var AD_INTERVAL = 10 * 60 * 1000;
+  var AD_INTERVAL = 5 * 60 * 1000;
   var AD_GRACE = 5 * 60 * 1000;
   var appStartedAt = Date.now();
   function maybeShowAd() {
