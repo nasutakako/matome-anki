@@ -1446,6 +1446,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .shop__restore { display: block; margin: 0 auto 8px; }
 .mine-more { width: 100%; margin-bottom: 12px; }
 .seg--analysis { margin-bottom: 14px; display: grid; grid-template-columns: repeat(3, 1fr); }
+.seg--analysis.seg--n4 { grid-template-columns: repeat(4, 1fr); }
 .seg--analysis .seg__btn { padding-inline: 4px; white-space: nowrap; font-size: 13px; }
 
 </style>
@@ -7643,16 +7644,173 @@ window.KaigoStore = (function () {
   }
 
   /** 苦手傾向分析：基礎問題・過去問題（年度別）・オリジナル問題を切り替えて分析する */
-  var ANALYSIS_SRC = [["basic", "基礎問題"], ["past", "過去問題"], ["original", "オリジナル問題"]];
+  // 「総合」は3つの記録をまとめて分析する（オリジナル問題はプレミアム購入者のみ）
+  function analysisSources() {
+    var list = [["all", "総合"], ["basic", "基礎問題"], ["past", "過去問題"]];
+    if (owns("originals")) list.push(["original", "オリジナル"]);
+    return list;
+  }
   function renderAnalysis() {
-    var src = Store.getPref("analysisSrc", "basic");
-    if (!ANALYSIS_SRC.some(function (x) { return x[0] === src; })) src = "basic";
-    var tabs = '<div class="seg seg--analysis" role="group" aria-label="分析する問題">' +
+    var ANALYSIS_SRC = analysisSources();
+    var src = Store.getPref("analysisSrc", "all");
+    if (!ANALYSIS_SRC.some(function (x) { return x[0] === src; })) src = "all";
+    var tabs = '<div class="seg seg--analysis seg--n' + ANALYSIS_SRC.length + '" role="group" aria-label="分析する問題">' +
       ANALYSIS_SRC.map(function (x) {
         return '<button class="seg__btn" data-action="analysis-src" data-src="' + x[0] + '" aria-pressed="' + (src === x[0]) + '">' + x[1] + "</button>";
       }).join("") + "</div>";
-    var body = src === "past" ? analysisPast() : src === "original" ? analysisOriginal() : analysisBasic();
+    var body = src === "all" ? analysisAll() : src === "past" ? analysisPast() : src === "original" ? analysisOriginal() : analysisBasic();
     return topbar("分析", "苦手傾向分析", "home") + '<main class="content">' + tabs + body + "</main>";
+  }
+
+  /** 過去問題（年度別）の科目ごとの正解数・問題数（総合問題は general） */
+  function pastStatsByField() {
+    var st = {};
+    PAST.years.forEach(function (y) {
+      var rec = Store.getPast(y.id);
+      y.subjects.forEach(function (s, si) {
+        if (!rec.graded[si]) return;
+        var r = st[s.field] || (st[s.field] = { c: 0, w: 0 });
+        for (var q = s.from; q <= s.to; q++) {
+          if (rec.answers[q] && isRight(y, q, rec.answers[q])) r.c++; else r.w++;
+        }
+      });
+    });
+    return st;
+  }
+  /** オリジナル問題の正誤（延べ） */
+  function originalCW(ids) {
+    var ex = Store.getExamAnswers(), c = 0, w = 0;
+    ids.forEach(function (id) { var a = ex[id]; if (a) { c += a.correct; w += a.wrong; } });
+    return { c: c, w: w };
+  }
+  /** オリジナル問題を、関連する用語のテーマごとに集計 */
+  function originalThemeStats() {
+    var ex = Store.getExamAnswers(), byTheme = {};
+    DATA.fields.forEach(function (f) {
+      examIdsOf(f.id).forEach(function (id) {
+        var a = ex[id], q = examById[id];
+        if (!a || !q) return;
+        var seen = {};
+        (q.termIds || []).forEach(function (tid) {
+          var e = termById[tid];
+          if (!e || seen[e.theme.id]) return;
+          seen[e.theme.id] = 1;
+          var t = byTheme[e.theme.id] || (byTheme[e.theme.id] = { c: 0, w: 0, terms: {} });
+          t.c += a.correct; t.w += a.wrong;
+          if (a.wrong) t.terms[tid] = (t.terms[tid] || 0) + a.wrong;
+        });
+      });
+    });
+    return byTheme;
+  }
+  function pct(c, w) { return c + w ? Math.round((c / (c + w)) * 100) : null; }
+
+  /** 総合：基礎問題・過去問題・オリジナル問題（購入者のみ）の記録をまとめて分析する */
+  function analysisAll() {
+    var useOrig = owns("originals");
+    var answers = Store.getAnswers();
+    var past = pastStatsByField();
+    var oTheme = useOrig ? originalThemeStats() : {};
+    var srcNames = useOrig ? "基礎問題・過去問題・オリジナル問題" : "基礎問題・過去問題";
+    // 全体
+    var tot = { b: { c: 0, w: 0 }, p: { c: 0, w: 0 }, o: { c: 0, w: 0 } };
+    var fields = DATA.fields.map(function (f) {
+      var b = attemptStats(fieldTermIds(f));
+      var pr = past[f.id] || { c: 0, w: 0 };
+      var o = useOrig ? originalCW(examIdsOf(f.id)) : { c: 0, w: 0 };
+      tot.b.c += b.correct; tot.b.w += b.wrong; tot.p.c += pr.c; tot.p.w += pr.w; tot.o.c += o.c; tot.o.w += o.w;
+      var c = b.correct + pr.c + o.c, w = b.wrong + pr.w + o.w;
+      return { field: f, b: { c: b.correct, w: b.wrong }, p: pr, o: o, c: c, w: w, rate: pct(c, w) };
+    });
+    if (past.general) { tot.p.c += past.general.c; tot.p.w += past.general.w; }
+    var allC = tot.b.c + tot.p.c + tot.o.c, allW = tot.b.w + tot.p.w + tot.o.w;
+    if (allC + allW < ANALYSIS_MIN) {
+      return analysisEmpty("あと " + (ANALYSIS_MIN - allC - allW) + " 問解くと分析できます",
+        srcNames + "の記録をまとめて、苦手な科目・テーマと、重点的に勉強するポイントを示します。",
+        bar(allC + allW, ANALYSIS_MIN) +
+        '<button class="btn btn--primary" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題を解く</button>" +
+        '<button class="btn btn--ghost" data-action="analysis-open-exams" data-tab="past">' + icon("doc") + "過去問題を解く</button>");
+    }
+    var tried = fields.filter(function (r) { return r.c + r.w; }).sort(function (a, b) { return a.rate - b.rate; });
+    var untried = fields.filter(function (r) { return !(r.c + r.w); }).map(function (r) { return r.field.name; });
+    var srcRate = function (x) { var v = pct(x.c, x.w); return v === null ? "－" : v + "%"; };
+    var breakdown = function (r) {
+      var parts = [];
+      if (r.b.c + r.b.w) parts.push("基礎 " + srcRate(r.b));
+      if (r.p.c + r.p.w) parts.push("過去問 " + srcRate(r.p));
+      if (useOrig && r.o.c + r.o.w) parts.push("オリジナル " + srcRate(r.o));
+      return parts.join("・") + "（" + (r.c + r.w) + "回）";
+    };
+    // テーマ別：基礎問題＋オリジナル問題（過去問題はテーマが分からないため科目単位のみ）
+    var themes = readyThemes().map(function (t) {
+      var ids = themeTermIds(t);
+      var b = attemptStats(ids);
+      var o = oTheme[t.id] || { c: 0, w: 0, terms: {} };
+      var c = b.correct + o.c, w = b.wrong + o.w;
+      var weak = {};
+      ids.forEach(function (id) { if (answers[id] && answers[id].wrong) weak[id] = answers[id].wrong; });
+      Object.keys(o.terms).forEach(function (id) { weak[id] = (weak[id] || 0) + o.terms[id]; });
+      return { theme: t, c: c, w: w, total: c + w, rate: pct(c, w), weak: weak };
+    }).filter(function (x) { return x.total >= 3 && x.rate < 80; })
+      .sort(function (a, b) { return a.rate - b.rate || b.w - a.w; }).slice(0, 3);
+    // アドバイス
+    var advice = [];
+    var rate = pct(allC, allW);
+    advice.push(srcNames + "の記録をまとめた正答率は " + rate + "% です。" + (rate >= 60 ? "合格の目安（6割程度）を上回っています。" : "合格の目安（6割程度）に向けて、苦手な科目から取り組みましょう。"));
+    if (tried.length && tried[0].rate < 70) advice.push("いちばん苦手な科目は「" + tried[0].field.name + "」（" + tried[0].rate + "%）です。");
+    // 基礎はできているのに本番形式で落としている科目
+    var gap = fields.filter(function (r) {
+      var bp = pct(r.b.c, r.b.w), pp = pct(r.p.c + r.o.c, r.p.w + r.o.w);
+      return r.b.c + r.b.w >= 5 && r.p.c + r.p.w + r.o.c + r.o.w >= 5 && bp - pp >= 20;
+    }).sort(function (a, b) { return pct(a.p.c + a.o.c, a.p.w + a.o.w) - pct(b.p.c + b.o.c, b.p.w + b.o.w); })[0];
+    if (gap) advice.push("「" + gap.field.name + "」は、用語は覚えている（基礎問題 " + srcRate(gap.b) + "）のに、試験形式の問題で点が取れていません。解説を読み、事例の中で用語がどう問われるかを確認しましょう。");
+    // 基礎が弱い科目
+    var weakBasic = fields.filter(function (r) { return r.b.c + r.b.w >= 5 && pct(r.b.c, r.b.w) < 60; })
+      .sort(function (a, b) { return pct(a.b.c, a.b.w) - pct(b.b.c, b.b.w); })[0];
+    if (weakBasic) advice.push("「" + weakBasic.field.name + "」は基礎問題の正答率も低め（" + srcRate(weakBasic.b) + "）です。問題を解く前に、基礎学習のカードで用語を固めましょう。");
+    if (!(tot.p.c + tot.p.w)) advice.push("過去問題（年度別）をまだ採点していません。本番の問題で実力を確かめると、分析がより正確になります。");
+    if (!(tot.b.c + tot.b.w)) advice.push("基礎問題をまだ解いていません。用語の覚え具合がわかると、苦手の原因がはっきりします。");
+    if (untried.length) advice.push("まだ問題を解いていない科目が " + untried.length + " あります。");
+    var themeHtml = themes.length ? themes.map(function (x, i) {
+      var t = x.theme;
+      var names = Object.keys(x.weak).sort(function (a, b) { return x.weak[b] - x.weak[a]; }).slice(0, 4).map(function (id) { return termById[id].term.term; });
+      return (
+        '<div class="focus">' +
+        '<div class="focus__head"><span class="focus__rank">' + (i + 1) + "</span>" +
+        '<div class="focus__titles"><p class="focus__meta">' + esc(fieldOfTheme[t.id].name) + "</p>" +
+        '<p class="focus__title">' + esc(t.name) + "</p></div>" +
+        '<span class="chip ' + (x.rate < 60 ? "chip--ng" : "chip--progress") + '">' + x.rate + "%</span></div>" +
+        (names.length ? '<p class="focus__terms"><span>間違えやすい用語</span>' + names.map(esc).join("・") + "</p>" : "") +
+        '<p class="focus__why">' + x.total + "回解いて " + x.w + "回不正解。" +
+        (Store.isThemeCompleted(t.id) ? "「説明つきで読む」で説明とポイントを読み直しましょう。" : "基礎学習がまだ完了していません。まずカードで一通り見ましょう。") + "</p>" +
+        '<div class="focus__actions">' +
+        '<button class="btn btn--ghost btn--sm" data-action="open-theme" data-id="' + t.id + '">' + icon("grid") + "カードで見直す</button>" +
+        '<button class="btn btn--primary btn--sm" data-action="open-review">' + icon("redo") + "間違えた問題へ</button>" +
+        "</div></div>"
+      );
+    }).join("") : '<p class="empty__text">正答率80%未満のテーマはありません。</p>';
+    return (
+      '<div class="panel stats">' +
+      '<div><p class="stat__label">延べ解答数</p><p class="stat__value">' + (allC + allW) + "<small>回</small></p></div>" +
+      '<div><p class="stat__label">正解</p><p class="stat__value">' + allC + "<small>回</small></p></div>" +
+      '<div><p class="stat__label">正答率</p><p class="stat__value">' + rate + "<small>%</small></p></div>" +
+      "</div>" +
+      '<section class="section"><h2 class="section__label">あなたの傾向</h2><ul class="advice">' + advice.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + "</ul></section>" +
+      '<section class="section"><h2 class="section__label">重点的に勉強する科目</h2>' +
+      weakFieldFocus(tried, function (r) { return r.rate; }, function (r) { return breakdown(r); }) + "</section>" +
+      '<section class="section"><h2 class="section__label">重点的に勉強するテーマ</h2>' + themeHtml + "</section>" +
+      '<section class="section"><h2 class="section__label">科目別の正答率（低い順）</h2><div class="panel meters">' +
+      tried.map(function (r) { return meter(esc(r.field.name), esc(breakdown(r)), r.rate); }).join("") +
+      (untried.length ? '<p class="meter__sub">未挑戦：' + untried.map(esc).join("、") + "</p>" : "") +
+      "</div></section>" +
+      '<section class="section"><h2 class="section__label">問題の種類別の正答率</h2><div class="panel meters">' +
+      (tot.b.c + tot.b.w ? meter("基礎問題", (tot.b.c + tot.b.w) + "回", pct(tot.b.c, tot.b.w)) : "") +
+      (tot.p.c + tot.p.w ? meter("過去問題（年度別）", (tot.p.c + tot.p.w) + "問", pct(tot.p.c, tot.p.w)) : "") +
+      (useOrig && tot.o.c + tot.o.w ? meter("オリジナル問題", (tot.o.c + tot.o.w) + "回", pct(tot.o.c, tot.o.w)) : "") +
+      "</div></section>" +
+      '<p class="notice">' + srcNames + "の解答記録をまとめて集計しています（過去問題は採点した科目のみ）。" +
+      (useOrig ? "" : "オリジナル問題はプレミアムで解けるようになり、分析にも加わります。") + "上のボタンで、問題の種類ごとの分析も見られます。</p>"
+    );
   }
 
   function analysisEmpty(title, text, action, label, ic) {
