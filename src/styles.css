@@ -1241,3 +1241,51 @@ body { background: var(--bg); }
   .topbar__title { font-size: 18px; }
   .page-tag__title { font-size: 15.5px; }
 }
+
+/* ==========================================================================
+   マイ教科書（ピックアップ）
+   ========================================================================== */
+:root { --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; } }
+:root[data-theme="dark"] { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; }
+
+/* 説明つきで読む：右にスライドすると左にピンが出る */
+.rs-item { overflow: hidden; }
+.rs-item__slide { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; align-items: stretch; background: var(--surface); touch-action: pan-y; }
+.rs-item.is-checked .rs-item__slide { background: var(--ok-soft); }
+.rs-item__pin {
+  position: absolute; z-index: 0; left: 0; top: 0; bottom: 0; width: 72px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 0; background: var(--pin); color: #fff; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+}
+.rs-item__pin svg { width: 18px; height: 18px; }
+.rs-item.is-picked .rs-item__pin { background: var(--faint); }
+.pin-mark { display: inline-flex; vertical-align: -0.12em; margin-right: 0.15em; color: var(--pin); }
+.pin-mark svg { width: 0.95em; height: 0.95em; }
+
+/* カード：ピックアップ済みの印 */
+.term__pin { position: absolute; top: 6px; left: 8px; color: var(--pin); display: inline-flex; }
+.term__pin svg { width: 13px; height: 13px; }
+
+/* 確認画面のボタン */
+.btn--pin { background: var(--surface); color: var(--pin-ink); border: 1px solid var(--pin); }
+.btn--pin svg { width: 18px; height: 18px; }
+.btn--pin.is-picked { background: var(--pin-soft); border-color: var(--pin-soft); }
+.chip--pin { display: inline-flex; align-items: center; gap: 3px; background: var(--pin-soft) !important; color: var(--pin-ink); }
+.chip--pin svg { width: 11px; height: 11px; }
+
+/* 追加・削除の確認 */
+.sheet--confirm .confirm { padding: 18px 20px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.confirm__icon { width: 48px; height: 48px; border-radius: 50%; background: var(--pin-soft); color: var(--pin); display: flex; align-items: center; justify-content: center; margin: 0; }
+.confirm__icon svg { width: 24px; height: 24px; }
+.confirm__title { margin: 4px 0 0; font-family: var(--title-font); font-size: 18px; }
+.confirm__term { margin: 0; font-size: var(--fs-lg); font-weight: 700; color: var(--accent); }
+.confirm__sub { margin: 0; font-size: var(--fs-sm); color: var(--muted); }
+
+/* マイ教科書が空のとき */
+.mine-empty { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 16px; }
+.mine-empty p { margin: 0; font-size: var(--fs-sm); color: var(--muted); line-height: 1.6; }
+.mine-empty b { color: var(--ink); font-size: var(--fs-md); }
+.mine-empty__icon { width: 52px; height: 52px; border-radius: 50%; background: var(--pin-soft); color: var(--pin) !important; display: flex; align-items: center; justify-content: center; }
+.mine-empty__icon svg { width: 26px; height: 26px; }
+.mine-empty__how { margin: 0; padding-left: 1.2em; text-align: left; font-size: var(--fs-sm); color: var(--muted); line-height: 1.7; }

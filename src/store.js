@@ -61,6 +61,25 @@ window.KaigoStore = (function () {
       return obj.exportedAt || null;
     },
 
+    /* ---------- マイ教科書（ピックアップした用語） ---------- */
+    isPicked: function (termId) {
+      return Boolean(state.picks && state.picks[termId]);
+    },
+
+    setPicked: function (termId, value) {
+      state.picks = state.picks || {};
+      if (value) state.picks[termId] = Date.now();
+      else delete state.picks[termId];
+      log(value ? "term_picked" : "term_unpicked", { termId: termId });
+      save();
+    },
+
+    countPicked: function (termIds) {
+      var p = state.picks || {}, n = 0;
+      for (var i = 0; i < termIds.length; i++) if (p[termIds[i]]) n++;
+      return n;
+    },
+
     isChecked: function (termId) {
       return Boolean(state.checked[termId]);
     },

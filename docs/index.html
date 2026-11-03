@@ -1266,6 +1266,54 @@ body { background: var(--bg); }
   .page-tag__title { font-size: 15.5px; }
 }
 
+/* ==========================================================================
+   マイ教科書（ピックアップ）
+   ========================================================================== */
+:root { --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; } }
+:root[data-theme="dark"] { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; }
+
+/* 説明つきで読む：右にスライドすると左にピンが出る */
+.rs-item { overflow: hidden; }
+.rs-item__slide { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; align-items: stretch; background: var(--surface); touch-action: pan-y; }
+.rs-item.is-checked .rs-item__slide { background: var(--ok-soft); }
+.rs-item__pin {
+  position: absolute; z-index: 0; left: 0; top: 0; bottom: 0; width: 72px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 0; background: var(--pin); color: #fff; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+}
+.rs-item__pin svg { width: 18px; height: 18px; }
+.rs-item.is-picked .rs-item__pin { background: var(--faint); }
+.pin-mark { display: inline-flex; vertical-align: -0.12em; margin-right: 0.15em; color: var(--pin); }
+.pin-mark svg { width: 0.95em; height: 0.95em; }
+
+/* カード：ピックアップ済みの印 */
+.term__pin { position: absolute; top: 6px; left: 8px; color: var(--pin); display: inline-flex; }
+.term__pin svg { width: 13px; height: 13px; }
+
+/* 確認画面のボタン */
+.btn--pin { background: var(--surface); color: var(--pin-ink); border: 1px solid var(--pin); }
+.btn--pin svg { width: 18px; height: 18px; }
+.btn--pin.is-picked { background: var(--pin-soft); border-color: var(--pin-soft); }
+.chip--pin { display: inline-flex; align-items: center; gap: 3px; background: var(--pin-soft) !important; color: var(--pin-ink); }
+.chip--pin svg { width: 11px; height: 11px; }
+
+/* 追加・削除の確認 */
+.sheet--confirm .confirm { padding: 18px 20px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.confirm__icon { width: 48px; height: 48px; border-radius: 50%; background: var(--pin-soft); color: var(--pin); display: flex; align-items: center; justify-content: center; margin: 0; }
+.confirm__icon svg { width: 24px; height: 24px; }
+.confirm__title { margin: 4px 0 0; font-family: var(--title-font); font-size: 18px; }
+.confirm__term { margin: 0; font-size: var(--fs-lg); font-weight: 700; color: var(--accent); }
+.confirm__sub { margin: 0; font-size: var(--fs-sm); color: var(--muted); }
+
+/* マイ教科書が空のとき */
+.mine-empty { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 16px; }
+.mine-empty p { margin: 0; font-size: var(--fs-sm); color: var(--muted); line-height: 1.6; }
+.mine-empty b { color: var(--ink); font-size: var(--fs-md); }
+.mine-empty__icon { width: 52px; height: 52px; border-radius: 50%; background: var(--pin-soft); color: var(--pin) !important; display: flex; align-items: center; justify-content: center; }
+.mine-empty__icon svg { width: 26px; height: 26px; }
+.mine-empty__how { margin: 0; padding-left: 1.2em; text-align: left; font-size: var(--fs-sm); color: var(--muted); line-height: 1.7; }
+
 </style>
 </head>
 <body>
@@ -5252,6 +5300,25 @@ window.KaigoStore = (function () {
       return obj.exportedAt || null;
     },
 
+    /* ---------- マイ教科書（ピックアップした用語） ---------- */
+    isPicked: function (termId) {
+      return Boolean(state.picks && state.picks[termId]);
+    },
+
+    setPicked: function (termId, value) {
+      state.picks = state.picks || {};
+      if (value) state.picks[termId] = Date.now();
+      else delete state.picks[termId];
+      log(value ? "term_picked" : "term_unpicked", { termId: termId });
+      save();
+    },
+
+    countPicked: function (termIds) {
+      var p = state.picks || {}, n = 0;
+      for (var i = 0; i < termIds.length; i++) if (p[termIds[i]]) n++;
+      return n;
+    },
+
     isChecked: function (termId) {
       return Boolean(state.checked[termId]);
     },
@@ -5458,12 +5525,13 @@ window.KaigoStore = (function () {
   /* ---------------- 学習メニュー（将来の機能はここに追加） ---------------- */
   var MENU = [
     { id: "study", title: "基礎学習", sub: "テーマごとに重要用語を一覧で覚える", icon: "grid", ready: true },
+    { id: "mine", title: "マイ教科書", sub: "ピックアップした用語だけで作る、自分専用の教科書", icon: "pin", ready: true, action: "open-mine" },
     { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
     { id: "past-exams", title: "過去問題", sub: "国家試験と同じ5択形式で、科目ごとに解く", icon: "doc", ready: true, action: "open-exams" },
     { id: "review", title: "過去に間違えた問題", sub: "間違えた問題を科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
     { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis" },
   ];
-  var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題" };
+  var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題", mine: "マイ教科書" };
 
   /* ---------------- アイコン ---------------- */
   var ICONS = {
@@ -5481,6 +5549,7 @@ window.KaigoStore = (function () {
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
     chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+    pin: '<path d="M9 3.5h6l-.8 5.2 3.3 3.3H6.5l3.3-3.3L9 3.5z"/><path d="M12 12v8"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
     save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
   };
@@ -5564,9 +5633,17 @@ window.KaigoStore = (function () {
     return 0;
   }
 
+  /** マイ教科書：テーマのページから、ピックアップした用語だけを残したページ（空のページは除く） */
+  function minePages(theme) {
+    return theme.pages.map(function (p) {
+      return { title: p.title, lead: p.lead, terms: p.terms.filter(function (t) { return Store.isPicked(t.id); }) };
+    }).filter(function (p) { return p.terms.length > 0; });
+  }
+
   /* ---------------- 状態とナビゲーション ---------------- */
   var view = { name: "home" };
   var openTermId = null;
+  var pickConfirmId = null;
   var lastTrigger = null;
   var justChecked = null;
 
@@ -5698,6 +5775,7 @@ window.KaigoStore = (function () {
 
   function renderFields() {
     var ctx = view.ctx;
+    if (ctx === "mine") return renderMineFields();
     var groups = DATA.areas.map(function (area) {
       var rows = area.fields.map(function (id) {
         var f = fieldById[id];
@@ -5732,10 +5810,58 @@ window.KaigoStore = (function () {
     );
   }
 
+  /* ---------------- マイ教科書（分野一覧） ---------------- */
+  function renderMineFields() {
+    var total = Store.countPicked(allTermIds());
+    var groups = DATA.areas.map(function (area) {
+      var rows = area.fields.map(function (id) {
+        var f = fieldById[id];
+        if (!f) return "";
+        var n = Store.countPicked(fieldTermIds(f));
+        if (!n) return "";
+        return (
+          '<button class="row" data-action="open-field" data-id="' + f.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(f.name) + "</span>" +
+          '<span class="row__sub">' + esc(f.description) + "</span></span>" +
+          '<span class="row__aside"><span class="chip chip--pin">' + icon("pin") + n + "語</span>" + icon("chev", "row__chev") + "</span>" +
+          "</button>"
+        );
+      }).join("");
+      return rows ? '<section class="section"><h2 class="section__label">' + esc(area.name) + '</h2><div class="rows">' + rows + "</div></section>" : "";
+    }).join("");
+    var empty =
+      '<div class="panel mine-empty">' +
+      '<p class="mine-empty__icon">' + icon("pin") + "</p>" +
+      "<p><b>まだピックアップした用語がありません</b></p>" +
+      "<p>基礎学習で、覚えたい用語を追加すると、ここに基礎学習と同じ科目・テーマ・ページの形でまとまります。</p>" +
+      '<ul class="mine-empty__how"><li>カードで覚える：カードを開いて「マイ教科書に追加」</li><li>説明つきで読む：用語を右にスライドして、ピンをタップ</li></ul>' +
+      '<button class="btn btn--primary" data-action="open-fields" data-ctx="study">' + icon("grid") + "基礎学習へ</button></div>";
+    return (
+      topbar("自分専用の教科書", "マイ教科書", "home") +
+      '<main class="content">' +
+      (total ? '<p class="hint">' + icon("pin") + "<span>ピックアップした " + total + " 語を、基礎学習と同じ形でまとめています。</span></p>" + groups : empty) +
+      "</main>"
+    );
+  }
+
   /* ---------------- 3. テーマ一覧 ---------------- */
   function renderThemes() {
     var f = fieldById[view.fieldId];
     var ctx = view.ctx;
+    if (ctx === "mine") {
+      var mrows = f.themes.map(function (t) {
+        var n = Store.countPicked(themeTermIds(t));
+        if (!n) return "";
+        var pages = minePages(t).length;
+        return (
+          '<button class="row" data-action="open-mine-theme" data-id="' + t.id + '">' +
+          '<span class="row__body"><span class="row__title">' + esc(t.name) + "</span>" +
+          '<span class="row__sub">' + n + "語" + (pages > 1 ? " ・ " + pages + "ページ" : "") + "</span></span>" +
+          '<span class="row__aside"><span class="chip chip--pin">' + icon("pin") + n + "</span>" + icon("chev", "row__chev") + "</span></button>"
+        );
+      }).join("");
+      return topbar("マイ教科書", f.name, "fields") + '<main class="content"><div class="rows">' + mrows + "</div></main>";
+    }
     var rows = f.themes.map(function (t) {
       var ready = isReady(t);
       var count = themeTermIds(t).length;
@@ -5772,28 +5898,35 @@ window.KaigoStore = (function () {
   function renderStudy() {
     var theme = themeById[view.themeId];
     var field = fieldOfTheme[theme.id];
-    var page = theme.pages[view.pageIndex];
+    var mine = !!view.mine;
+    var pages = mine ? minePages(theme) : theme.pages;
+    var page = pages[view.pageIndex];
     var ids = pageTermIds(page);
     var done = Store.countChecked(ids);
     var total = ids.length;
     var allDone = done === total;
-    var multi = theme.pages.length > 1;
-    var isLastPage = view.pageIndex === theme.pages.length - 1;
+    var multi = pages.length > 1;
+    var isLastPage = view.pageIndex === pages.length - 1;
 
     var mode = Store.getPref("studyMode", "cards");
 
     // 説明つきで読む：用語・説明・ポイントを1画面に収めた「まとめシート」
+    // 右にスライドすると左側にピンが出る（マイ教科書への追加・削除）
     var list = page.terms.map(function (t) {
       var on = Store.isChecked(t.id);
+      var picked = Store.isPicked(t.id);
       return (
-        '<div class="rs-item' + (on ? " is-checked" : "") + '">' +
+        '<div class="rs-item' + (on ? " is-checked" : "") + (picked ? " is-picked" : "") + '" data-id="' + t.id + '">' +
+        '<button class="rs-item__pin" data-action="ask-pick" data-id="' + t.id + '" tabindex="-1" aria-label="' +
+        esc(t.term) + (picked ? "をマイ教科書から外す" : "をマイ教科書に追加") + '">' + icon("pin") + "<span>" + (picked ? "外す" : "追加") + "</span></button>" +
+        '<div class="rs-item__slide">' +
         '<button class="rs-item__body" data-action="open-term" data-id="' + t.id + '">' +
-        '<span class="rs-item__text"><b class="rs-item__term">' + esc(t.term) + "</b>" + hl(t.definition) + "</span>" +
+        '<span class="rs-item__text"><b class="rs-item__term">' + (picked ? '<span class="pin-mark">' + icon("pin") + "</span>" : "") + esc(t.term) + "</b>" + hl(t.definition) + "</span>" +
         (t.point ? '<span class="rs-item__point">' + hl(t.point) + "</span>" : "") +
         "</button>" +
         '<button class="rs-item__check" data-action="toggle-check" data-id="' + t.id + '" aria-pressed="' + on + '" aria-label="' +
         esc(t.term) + (on ? "の確認を外す" : "を確認済みにする") + '">' + icon("check") + "</button>" +
-        "</div>"
+        "</div></div>"
       );
     }).join("");
 
@@ -5803,24 +5936,29 @@ window.KaigoStore = (function () {
         '<button class="term' + (on ? " is-checked" : "") + (justChecked === t.id ? " just-checked" : "") +
         '" data-action="open-term" data-id="' + t.id + '" aria-label="' + esc(t.term) + (on ? "（確認済み）" : "") + '">' +
         '<span class="term__check">' + icon("check") + "</span>" +
+        (Store.isPicked(t.id) ? '<span class="term__pin" aria-label="マイ教科書">' + icon("pin") + "</span>" : "") +
         '<span class="term__name">' + esc(t.term) + "</span>" +
         (t.reading ? '<span class="term__reading">' + esc(t.reading) + "</span>" : "") +
         "</button>"
       );
     }).join("");
 
-    var dock = allDone
+    var dock = mine
+      ? (isLastPage
+          ? '<button class="btn btn--ghost" data-action="back-themes">テーマ一覧へ</button>'
+          : '<button class="btn btn--primary" data-action="next-page">次のページへ' + icon("arrow") + "</button>")
+      : allDone
       ? '<button class="btn btn--primary" data-action="next-page">' +
         (isLastPage ? "学習を完了する" : "次のページへ") + icon("arrow") + "</button>"
       : '<p class="dock__status">すべて確認すると次へ進めます（あと ' + (total - done) + " 語）</p>";
 
     return (
-      topbar(field.name, theme.name, "back-themes") +
+      topbar(mine ? "マイ教科書 ・ " + field.name : field.name, theme.name, "back-themes") +
       '<main class="content content--with-dock' + (mode === "list" ? " content--read" : "") + '">' +
       '<div class="study-head">' +
       '<div class="study-head__row">' +
       (multi
-        ? '<div class="page-tabs" role="tablist" aria-label="ページ">' + theme.pages.map(function (p, i) {
+        ? '<div class="page-tabs" role="tablist" aria-label="ページ">' + pages.map(function (p, i) {
             var pIds = pageTermIds(p);
             var pDone = Store.countChecked(pIds) === pIds.length;
             return '<button class="page-tab' + (i === view.pageIndex ? " is-current" : "") + (pDone ? " is-done" : "") +
@@ -5838,9 +5976,9 @@ window.KaigoStore = (function () {
       "</div>" +
       (mode === "list"
         ? '<div class="read-sheet">' + list + "</div>" +
-          '<p class="hint">' + icon("info") + "<span>1画面のまとめとして、配置ごと目で覚えましょう。用語をタップすると確認画面が開きます。</span></p>"
+          '<p class="hint">' + icon("info") + "<span>1画面のまとめとして、配置ごと目で覚えましょう。用語を右にスライドすると、マイ教科書に追加できます。</span></p>"
         : '<div class="term-grid">' + cards + "</div>" +
-          '<p class="hint">' + icon("info") + "<span>用語を見て意味を思い出してから、カードをタップして説明を確認しましょう。</span></p>") +
+          '<p class="hint">' + icon("info") + "<span>用語を見て意味を思い出してから、カードをタップして説明を確認しましょう。確認画面から、マイ教科書に追加できます。</span></p>") +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
       "</main>" +
       '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
@@ -5858,6 +5996,7 @@ window.KaigoStore = (function () {
   }
 
   function closeSheet(silent) {
+    if (pickConfirmId) { pickConfirmId = null; $sheet.innerHTML = ""; document.body.classList.remove("is-locked"); }
     if (!openTermId) return;
     var id = openTermId;
     openTermId = null;
@@ -5874,11 +6013,14 @@ window.KaigoStore = (function () {
     if (!entry) return;
     var t = entry.term;
     var on = Store.isChecked(t.id);
+    var picked = Store.isPicked(t.id);
+    var pinBtn = '<button class="btn btn--pin' + (picked ? " is-picked" : "") + '" data-action="toggle-pick">' + icon("pin") +
+      (picked ? "マイ教科書に追加済み（外す）" : "マイ教科書に追加") + "</button>";
     var foot = on
-      ? '<p class="sheet__done">' + icon("check") + "確認済み</p>" +
+      ? '<p class="sheet__done">' + icon("check") + "確認済み</p>" + pinBtn +
         '<button class="btn btn--ghost" data-action="close-sheet" data-autofocus>一覧に戻る</button>' +
         '<button class="btn btn--text" data-action="uncheck">未確認に戻す</button>'
-      : '<button class="btn btn--ok" data-action="check" data-autofocus>' + icon("check") + "確認した</button>";
+      : '<button class="btn btn--ok" data-action="check" data-autofocus>' + icon("check") + "確認した</button>" + pinBtn;
 
     $sheet.innerHTML =
       '<div class="sheet-scrim" data-action="close-sheet"></div>' +
@@ -5899,6 +6041,44 @@ window.KaigoStore = (function () {
       "</div>" +
       '<div class="sheet__foot">' + foot + "</div>" +
       "</section>";
+  }
+
+  /* ---------------- マイ教科書：追加・削除の確認 ---------------- */
+  function openPickConfirm(termId) {
+    var t = termById[termId].term;
+    var picked = Store.isPicked(termId);
+    pickConfirmId = termId;
+    $sheet.innerHTML =
+      '<div class="sheet-scrim" data-action="pick-cancel"></div>' +
+      '<section class="sheet sheet--confirm" role="dialog" aria-modal="true" aria-labelledby="pick-title">' +
+      '<div class="sheet__grip"></div>' +
+      '<div class="confirm">' +
+      '<p class="confirm__icon">' + icon("pin") + "</p>" +
+      '<h2 class="confirm__title" id="pick-title">' + (picked ? "マイ教科書から外しますか？" : "マイ教科書に追加しますか？") + "</h2>" +
+      '<p class="confirm__term">' + esc(t.term) + "</p>" +
+      '<p class="confirm__sub">' + (picked ? "基礎学習のカードはそのまま残ります。" : "ホームの「マイ教科書」で、基礎学習と同じ形で見返せます。") + "</p>" +
+      "</div>" +
+      '<div class="sheet__foot">' +
+      '<button class="btn btn--primary" data-action="pick-confirm" data-autofocus>' + (picked ? "外す" : "追加する") + "</button>" +
+      '<button class="btn btn--text" data-action="pick-cancel">やめる</button></div>' +
+      "</section>";
+    document.body.classList.add("is-locked");
+    var b = $sheet.querySelector("[data-autofocus]");
+    if (b) b.focus({ preventScroll: true });
+  }
+
+  /** マイ教科書の画面で用語を外したとき、表示するページ・画面を整える */
+  function normalizeMineView() {
+    if (view.name !== "study" || !view.mine) return;
+    var theme = themeById[view.themeId];
+    var pages = minePages(theme);
+    if (!pages.length) {
+      var f = fieldOfTheme[theme.id];
+      if (Store.countPicked(fieldTermIds(f))) view = { name: "themes", fieldId: f.id, ctx: "mine" };
+      else view = { name: "fields", ctx: "mine" };
+    } else if (view.pageIndex >= pages.length) {
+      view.pageIndex = pages.length - 1;
+    }
   }
 
   /* ---------------- 5. 学習完了 ---------------- */
@@ -7176,6 +7356,7 @@ window.KaigoStore = (function () {
 
   /* ---------------- 描画 ---------------- */
   function render() {
+    openSwipeEl = null;
     var html;
     switch (view.name) {
       case "fields": html = renderFields(); break;
@@ -7273,7 +7454,7 @@ window.KaigoStore = (function () {
       startTheme(t.id, Store.countChecked(ids) === ids.length ? 0 : last.pageIndex);
     },
     "back-themes": function () {
-      var ctx = view.name === "quiz" ? "quiz" : "study";
+      var ctx = view.name === "quiz" ? "quiz" : view.mine ? "mine" : "study";
       var themeId = view.name === "quiz" && quiz ? quiz.themeId : view.themeId;
       if (ctx === "quiz") quiz = null;
       go({ name: "themes", fieldId: fieldOfTheme[themeId].id, ctx: ctx });
@@ -7368,8 +7549,36 @@ window.KaigoStore = (function () {
     },
     "goto-page": function (el) {
       var pi = parseInt(el.dataset.page, 10);
+      if (view.mine) { go({ name: "study", themeId: view.themeId, pageIndex: pi, mine: true }); return; }
       Store.setLast(view.themeId, pi);
       go({ name: "study", themeId: view.themeId, pageIndex: pi });
+    },
+    "open-mine": function () { go({ name: "fields", ctx: "mine" }); },
+    "open-mine-theme": function (el) { go({ name: "study", themeId: el.dataset.id, pageIndex: 0, mine: true }); },
+    "toggle-pick": function () {
+      var id = openTermId;
+      Store.setPicked(id, !Store.isPicked(id));
+      if (view.mine && !Store.isPicked(id)) {
+        closeSheet(true);
+        normalizeMineView();
+        render();
+        return;
+      }
+      renderSheet();
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
+    },
+    "ask-pick": function (el) { closeSwipe(); openPickConfirm(el.dataset.id); },
+    "pick-cancel": function () { closeSheet(true); },
+    "pick-confirm": function () {
+      var id = pickConfirmId;
+      Store.setPicked(id, !Store.isPicked(id));
+      closeSheet(true);
+      normalizeMineView();
+      var y = window.scrollY;
+      render();
+      window.scrollTo(0, y);
     },
     "toggle-check": function (el) {
       var id = el.dataset.id;
@@ -7423,6 +7632,7 @@ window.KaigoStore = (function () {
     },
     "next-page": function () {
       var theme = themeById[view.themeId];
+      if (view.mine) { go({ name: "study", themeId: theme.id, pageIndex: view.pageIndex + 1, mine: true }); return; }
       if (view.pageIndex < theme.pages.length - 1) {
         var pi = view.pageIndex + 1;
         Store.setLast(theme.id, pi);
@@ -7440,8 +7650,58 @@ window.KaigoStore = (function () {
     },
   };
 
+  /* 説明つきで読む：用語を右にスライドしてピンを出す */
+  var SWIPE_W = 72;
+  var swipe = null, openSwipeEl = null, suppressClickUntil = 0;
+  function setSlide(item, x, animate) {
+    var slide = item.querySelector(".rs-item__slide");
+    if (!slide) return;
+    slide.style.transition = animate ? "transform .18s ease" : "none";
+    slide.style.transform = x ? "translateX(" + x + "px)" : "";
+  }
+  function closeSwipe() {
+    if (openSwipeEl) { setSlide(openSwipeEl, 0, true); openSwipeEl.classList.remove("is-swiped"); openSwipeEl = null; }
+  }
+  $app.addEventListener("pointerdown", function (e) {
+    var item = e.target.closest(".rs-item");
+    if (openSwipeEl && openSwipeEl !== item) closeSwipe();
+    if (!item || e.target.closest(".rs-item__pin")) { swipe = null; return; }
+    swipe = { item: item, x: e.clientX, y: e.clientY, base: item === openSwipeEl ? SWIPE_W : 0, active: false };
+  });
+  $app.addEventListener("pointermove", function (e) {
+    if (!swipe) return;
+    var dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
+    if (!swipe.active) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { swipe = null; return; }
+      if (Math.abs(dx) < 10) return;
+      swipe.active = true;
+    }
+    setSlide(swipe.item, Math.max(0, Math.min(SWIPE_W + 16, swipe.base + dx)), false);
+  });
+  function endSwipe(e) {
+    if (!swipe) return;
+    if (swipe.active) {
+      var x = Math.max(0, swipe.base + (e.clientX - swipe.x));
+      suppressClickUntil = Date.now() + 80; // スライドを離した直後のクリックだけ無視する
+      if (x > SWIPE_W / 2) {
+        setSlide(swipe.item, SWIPE_W, true);
+        swipe.item.classList.add("is-swiped");
+        openSwipeEl = swipe.item;
+      } else {
+        setSlide(swipe.item, 0, true);
+        swipe.item.classList.remove("is-swiped");
+        if (openSwipeEl === swipe.item) openSwipeEl = null;
+      }
+    }
+    swipe = null;
+  }
+  $app.addEventListener("pointerup", endSwipe);
+  $app.addEventListener("pointercancel", function () { if (swipe) { setSlide(swipe.item, swipe.base, true); swipe = null; } });
+
   function onClick(e) {
+    if (Date.now() < suppressClickUntil && e.currentTarget === $app) { e.preventDefault(); return; }
     var el = e.target.closest("[data-action]");
+    if (openSwipeEl && (!el || el.dataset.action !== "ask-pick")) { closeSwipe(); if (el && el.closest(".rs-item")) return; }
     if (!el || el.disabled) return;
     var fn = actions[el.dataset.action];
     if (fn) fn(el);
