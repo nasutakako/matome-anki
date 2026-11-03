@@ -14,11 +14,11 @@
   /* ---------------- 学習メニュー（将来の機能はここに追加） ---------------- */
   var MENU = [
     { id: "study", title: "基礎学習", sub: "テーマごとに重要用語を一覧で覚える", icon: "grid", ready: true },
-    { id: "mine", title: "マイ教科書", sub: "ピックアップした用語だけで作る、自分専用の教科書", icon: "pin", ready: true, action: "open-mine" },
-    { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
+        { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
     { id: "past-exams", title: "過去問題", sub: "国家試験と同じ5択形式で、科目ごとに解く", icon: "doc", ready: true, action: "open-exams" },
     { id: "review", title: "過去に間違えた問題", sub: "間違えた問題を科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
-    { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis" },
+    { id: "mine", title: "マイ教科書", sub: "ピックアップした用語だけで作る、自分専用の教科書", icon: "pin", ready: true, action: "open-mine", group: "other" },
+    { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis", group: "other" },
   ];
   var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題", mine: "マイ教科書" };
 
@@ -221,7 +221,7 @@
     }
 
     var quizStats = Store.answerStats(ids);
-    var menu = MENU.map(function (m) {
+    var menuRow = function (m) {
       return (
         '<button class="row" ' + (m.ready ? 'data-action="' + (m.action || "open-fields") + '" data-ctx="' + m.id + '"' : "disabled") + ">" +
         '<span class="row__icon">' + icon(m.icon) + "</span>" +
@@ -230,7 +230,9 @@
         (m.ready ? icon("chev", "row__chev") : '<span class="chip">準備中</span>') +
         "</button>"
       );
-    }).join("");
+    };
+    var menu = MENU.filter(function (m) { return !m.group; }).map(menuRow).join("");
+    var other = MENU.filter(function (m) { return m.group === "other"; }).map(menuRow).join("");
 
     return (
       topbar("介護福祉士 国家試験対策", "見て覚える", null) +
@@ -245,6 +247,7 @@
       "</div></section>" +
       resume +
       '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
+      '<section class="section"><h2 class="section__label">その他</h2><div class="rows">' + other + "</div></section>" +
       '<div class="rows"><button class="row" data-action="open-settings">' +
       '<span class="row__icon">' + icon("gear") + "</span>" +
       '<span class="row__body"><span class="row__title">設定・このアプリについて</span>' +
