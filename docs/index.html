@@ -7395,9 +7395,12 @@ window.KaigoStore = (function () {
     return Store.isPicked(termId) || mineUnlimited() || Store.countPicked(allTermIds()) < MINE_FREE;
   }
   function canBuy() { var N = window.KaigoNative; return !!(N && (N.purchase || N.purchaseAdFree)); }
+  // 表示用の価格（ストアから価格を取れないときに使う。実際の価格は App Store・Google Play の管理画面で設定する）
+  var PRICE_DEFAULT = { premium: "980円", adFree: "380円" };
   function priceOf(key) {
-    var N = window.KaigoNative;
-    try { return N && N.price ? N.price(PRODUCTS[key]) || "" : ""; } catch (e) { return ""; }
+    var N = window.KaigoNative, v = "";
+    try { v = N && N.price ? N.price(PRODUCTS[key]) || "" : ""; } catch (e) { v = ""; }
+    return v || PRICE_DEFAULT[key] || "";
   }
   function buy(key) {
     var N = window.KaigoNative;
