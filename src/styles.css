@@ -1421,3 +1421,5 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .shop__owned svg { width: 18px; height: 18px; }
 .shop__restore { display: block; margin: 0 auto 8px; }
 .mine-more { width: 100%; margin-bottom: 12px; }
+.seg--analysis { margin-bottom: 14px; display: grid; grid-template-columns: repeat(3, 1fr); }
+.seg--analysis .seg__btn { padding-inline: 4px; white-space: nowrap; font-size: 13px; }
