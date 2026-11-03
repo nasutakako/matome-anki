@@ -232,7 +232,7 @@
     var other = MENU.filter(function (m) { return m.group === "other"; }).map(menuRow).join("");
 
     return (
-      topbar("介護福祉士 国家試験対策", "見て覚える", null) +
+      topbar("介護福祉士 国家試験対策", "キソマナ", null) +
       '<main class="content content--home">' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
@@ -1855,7 +1855,7 @@
         label + "</span></span>" + icon("chev", "row__chev") + "</a>";
     };
     return (
-      topbar("見て覚える", "設定・このアプリについて", "home") +
+      topbar("キソマナ", "設定・このアプリについて", "home") +
       '<main class="content">' +
       '<section class="section"><h2 class="section__label">学習記録のバックアップ</h2><div class="panel set-panel">' +
       "<p>学習記録はこの端末の中だけに保存されています。機種変更やアプリの削除の前に書き出しておくと、新しい端末で読み込んで続きから使えます。</p>" +
@@ -1872,7 +1872,7 @@
       link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
       "</div></section>" +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
-      '<p class="notice">見て覚える 介護福祉士 国家試験対策 ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
+      '<p class="notice">介護福祉士 キソマナ 国家試験対策アプリ ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
       "国家試験の問題の著作権は社会福祉振興・試験センターに帰属します。本アプリは公的機関とは関係のない個人が提供するものです。</p>" +
       "</main>"
     );

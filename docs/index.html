@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>見て覚える 介護福祉士 国家試験対策</title>
+<title>介護福祉士 キソマナ 国家試験対策アプリ</title>
 <meta name="description" content="介護福祉士国家試験の重要用語を1画面のカードで見て覚える学習アプリ。過去問5年分（解説つき）と練習問題つき">
 <meta name="theme-color" content="#e6effa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#163a6b" media="(prefers-color-scheme: dark)">
@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="見て覚える">
+<meta name="apple-mobile-web-app-title" content="キソマナ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">
@@ -5812,7 +5812,7 @@ window.KaigoStore = (function () {
     var other = MENU.filter(function (m) { return m.group === "other"; }).map(menuRow).join("");
 
     return (
-      topbar("介護福祉士 国家試験対策", "見て覚える", null) +
+      topbar("介護福祉士 国家試験対策", "キソマナ", null) +
       '<main class="content content--home">' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
@@ -7435,7 +7435,7 @@ window.KaigoStore = (function () {
         label + "</span></span>" + icon("chev", "row__chev") + "</a>";
     };
     return (
-      topbar("見て覚える", "設定・このアプリについて", "home") +
+      topbar("キソマナ", "設定・このアプリについて", "home") +
       '<main class="content">' +
       '<section class="section"><h2 class="section__label">学習記録のバックアップ</h2><div class="panel set-panel">' +
       "<p>学習記録はこの端末の中だけに保存されています。機種変更やアプリの削除の前に書き出しておくと、新しい端末で読み込んで続きから使えます。</p>" +
@@ -7452,7 +7452,7 @@ window.KaigoStore = (function () {
       link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
       "</div></section>" +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
-      '<p class="notice">見て覚える 介護福祉士 国家試験対策 ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
+      '<p class="notice">介護福祉士 キソマナ 国家試験対策アプリ ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
       "国家試験の問題の著作権は社会福祉振興・試験センターに帰属します。本アプリは公的機関とは関係のない個人が提供するものです。</p>" +
       "</main>"
     );

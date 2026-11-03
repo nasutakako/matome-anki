@@ -19,7 +19,7 @@ const scripts = [
   "./src/app.js",
 ].map(read);
 
-const TITLE = "見て覚える 介護福祉士 国家試験対策";
+const TITLE = "介護福祉士 キソマナ 国家試験対策アプリ";
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">`;
@@ -57,7 +57,7 @@ const app = `<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="見て覚える">
+<meta name="apple-mobile-web-app-title" content="キソマナ">
 ${fonts}
 <style>
 html { color-scheme: light; }
