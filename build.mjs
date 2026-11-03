@@ -22,7 +22,7 @@ const scripts = [
 const TITLE = "見て覚える 介護福祉士 国家試験対策";
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap">`;
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@700&display=swap">`;
 const body = `<div id="app" class="app" lang="ja"></div>
 <div id="sheet-root" lang="ja"></div>
 ${scripts.map((s) => `<script>\n${s}\n</script>`).join("\n")}`;
@@ -49,13 +49,14 @@ const app = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${TITLE}</title>
 <meta name="description" content="介護福祉士国家試験の重要用語を1画面のカードで見て覚える学習アプリ。過去問5年分（解説つき）と練習問題つき">
-<meta name="theme-color" content="#1b5fb5">
+<meta name="theme-color" content="#e6effa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#163a6b" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="見て覚える">
 ${fonts}
 <style>
