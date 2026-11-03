@@ -1176,3 +1176,12 @@ a.btn { text-decoration: none; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kw: #ff7b72; } }
 :root[data-theme="dark"] { --kw: #ff7b72; }
 em.kw { font-style: normal; color: var(--kw); font-weight: 600; }
+
+/* 設定 */
+.set-panel { display: flex; flex-direction: column; gap: 10px; }
+.set-panel p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; color: var(--muted); }
+.set-sub { font-weight: 700; color: var(--text, inherit) !important; margin-top: 6px !important; }
+.set-file { cursor: pointer; text-align: center; }
+.set-text { width: 100%; font: inherit; font-size: var(--fs-sm); padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: inherit; resize: vertical; }
+.set-msg { color: var(--brand) !important; font-weight: 700; }
+a.row { text-decoration: none; color: inherit; }

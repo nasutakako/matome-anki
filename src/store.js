@@ -44,6 +44,23 @@ window.KaigoStore = (function () {
   }
 
   return {
+    /* ---------- バックアップ ---------- */
+    /** 学習記録をまるごと文字列にする（ファイル保存・コピー用） */
+    exportData: function () {
+      return JSON.stringify({ app: "matome-anki", format: 1, exportedAt: new Date().toISOString(), data: state });
+    },
+
+    /** 書き出した文字列から学習記録を復元する。形式が違えば例外を投げる */
+    importData: function (text) {
+      var obj = JSON.parse(String(text).trim());
+      if (!obj || obj.app !== "matome-anki" || !obj.data || typeof obj.data.checked !== "object") {
+        throw new Error("format");
+      }
+      state = Object.assign(empty(), obj.data);
+      save();
+      return obj.exportedAt || null;
+    },
+
     isChecked: function (termId) {
       return Boolean(state.checked[termId]);
     },

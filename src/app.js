@@ -37,6 +37,8 @@
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
     chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
+    save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
   };
   function icon(name, cls) {
     return (
@@ -131,6 +133,18 @@
     window.scrollTo(0, 0);
   }
 
+  function fallbackCopy(text) {
+    var t = document.createElement("textarea");
+    t.value = text;
+    t.setAttribute("readonly", "");
+    t.style.position = "fixed";
+    t.style.opacity = "0";
+    document.body.appendChild(t);
+    t.select();
+    try { document.execCommand("copy"); } catch (e) { /* 何もしない */ }
+    t.remove();
+  }
+
   function startTheme(themeId, pageIndex) {
     var theme = themeById[themeId];
     var pi = typeof pageIndex === "number" ? pageIndex : firstOpenPage(theme);
@@ -221,6 +235,11 @@
       "</div></section>" +
       resume +
       '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
+      '<div class="rows"><button class="row" data-action="open-settings">' +
+      '<span class="row__icon">' + icon("gear") + "</span>" +
+      '<span class="row__body"><span class="row__title">設定・このアプリについて</span>' +
+      '<span class="row__sub">学習記録のバックアップ、プライバシーポリシー、お問い合わせ</span></span>' +
+      icon("chev", "row__chev") + "</button></div>" +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
       "</main>"
     );
@@ -1623,6 +1642,80 @@
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 
+  /* ---------------- 設定・このアプリについて ---------------- */
+  var SITE = "https://nasutakako.github.io/matome-anki/";
+  var settingsMsg = "";
+  function renderSettings() {
+    var N = window.KaigoNative || null;
+    var adFree = Store.getPref("adFree", false);
+    var ads = N && N.purchaseAdFree
+      ? '<section class="section"><h2 class="section__label">広告</h2><div class="panel set-panel">' +
+        (adFree
+          ? "<p>広告は非表示になっています。ご購入ありがとうございます。</p>"
+          : "<p>買い切りの購入で、広告が表示されなくなります。</p>" +
+            '<button class="btn btn--primary" data-action="ad-purchase">広告を非表示にする（買い切り）</button>') +
+        '<button class="btn btn--text" data-action="ad-restore">購入を復元</button></div></section>'
+      : "";
+    var link = function (path, label) {
+      return '<a class="row" href="' + SITE + path + '" target="_blank" rel="noopener"><span class="row__body"><span class="row__title">' +
+        label + "</span></span>" + icon("chev", "row__chev") + "</a>";
+    };
+    return (
+      topbar("まとめ暗記", "設定・このアプリについて", "home") +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">学習記録のバックアップ</h2><div class="panel set-panel">' +
+      "<p>学習記録はこの端末の中だけに保存されています。機種変更やアプリの削除の前に書き出しておくと、新しい端末で読み込んで続きから使えます。</p>" +
+      '<div class="btn-row"><button class="btn btn--primary" data-action="backup-download">' + icon("save") + "ファイルに保存</button>" +
+      '<button class="btn btn--ghost" data-action="backup-copy">コピー</button></div>' +
+      '<p class="set-sub">読み込む（いまの記録は置き換わります）</p>' +
+      '<label class="btn btn--ghost set-file">ファイルから読み込む<input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden></label>' +
+      '<textarea id="restore-text" class="set-text" rows="3" placeholder="コピーした記録をここに貼り付け"></textarea>' +
+      '<button class="btn btn--ghost" data-action="backup-paste">貼り付けた内容で読み込む</button>' +
+      (settingsMsg ? '<p class="set-msg" role="status">' + esc(settingsMsg) + "</p>" : "") +
+      "</div></section>" +
+      ads +
+      '<section class="section"><h2 class="section__label">このアプリについて</h2><div class="rows">' +
+      link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
+      "</div></section>" +
+      '<p class="notice">まとめ暗記 介護福祉士 ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
+      "国家試験の問題の著作権は社会福祉振興・試験センターに帰属します。本アプリは公的機関とは関係のない個人が提供するものです。</p>" +
+      "</main>"
+    );
+  }
+  function setMsg(text) {
+    settingsMsg = text;
+    var y = window.scrollY;
+    render();
+    window.scrollTo(0, y);
+  }
+  function restoreFrom(text) {
+    try {
+      var at = Store.importData(text);
+      setMsg("読み込みました" + (at ? "（" + at.slice(0, 10) + " に書き出した記録）" : "") + "。");
+    } catch (e) {
+      setMsg("読み込めませんでした。このアプリで書き出した記録か確認してください。");
+    }
+  }
+
+  /**
+   * 広告（ストアのアプリ版だけ）。
+   * 学習の途中では出さず、区切りの画面（問題の結果・テーマの完了・過去問の採点）でだけ、
+   * 前回の広告から一定時間たっていれば表示する。起動直後も出さない。
+   * 広告の表示そのものはアプリ側（window.KaigoNative.showInterstitial）が行う。
+   */
+  var AD_INTERVAL = 10 * 60 * 1000;
+  var AD_GRACE = 5 * 60 * 1000;
+  var appStartedAt = Date.now();
+  function maybeShowAd() {
+    var N = window.KaigoNative;
+    if (!N || !N.showInterstitial || Store.getPref("adFree", false)) return;
+    var now = Date.now();
+    if (now - appStartedAt < AD_GRACE) return;
+    if (now - Store.getPref("adLastAt", 0) < AD_INTERVAL) return;
+    Store.setPref("adLastAt", now);
+    try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
+  }
+
   /* ---------------- 描画 ---------------- */
   function render() {
     var html;
@@ -1638,6 +1731,7 @@
       case "pastSheet": html = renderPastSheet(); break;
       case "pastExplain": html = renderPastExplain(); break;
       case "analysis": html = renderAnalysis(); break;
+      case "settings": html = renderSettings(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -1676,6 +1770,7 @@
     },
     "quiz-next": function () {
       quiz.index++;
+      if (quiz.index >= quiz.items.length) maybeShowAd();
       render();
       window.scrollTo(0, 0);
     },
@@ -1726,6 +1821,51 @@
       go({ name: "themes", fieldId: fieldOfTheme[themeId].id, ctx: ctx });
     },
     "back-review": function () { quiz = null; go({ name: "review" }); },
+    "open-settings": function () { settingsMsg = ""; go({ name: "settings" }); },
+    "backup-download": function () {
+      var text = Store.exportData();
+      var name = "matome-anki-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      var N = window.KaigoNative;
+      if (N && N.saveFile) { N.saveFile(name, text); setMsg("保存しました。"); return; }
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+        setMsg("ファイル（" + name + "）を保存しました。保存できない場合は「コピー」を使ってください。");
+      } catch (e) {
+        setMsg("ファイルに保存できませんでした。「コピー」を使ってください。");
+      }
+    },
+    "backup-copy": function () {
+      var text = Store.exportData();
+      var done = function () { setMsg("記録をコピーしました。メモアプリなどに貼り付けて保管してください。"); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+      } else { fallbackCopy(text); done(); }
+    },
+    "backup-paste": function () {
+      var el = document.getElementById("restore-text");
+      if (!el || !el.value.trim()) { setMsg("貼り付け欄が空です。"); return; }
+      restoreFrom(el.value);
+    },
+    "ad-purchase": function () {
+      var N = window.KaigoNative;
+      if (!N || !N.purchaseAdFree) return;
+      Promise.resolve(N.purchaseAdFree()).then(function (ok) {
+        if (ok) { Store.setPref("adFree", true); setMsg("購入が完了しました。広告は表示されません。"); }
+      });
+    },
+    "ad-restore": function () {
+      var N = window.KaigoNative;
+      if (!N || !N.restorePurchases) return;
+      Promise.resolve(N.restorePurchases()).then(function (ok) {
+        if (ok) Store.setPref("adFree", true);
+        setMsg(ok ? "購入を復元しました。広告は表示されません。" : "復元できる購入が見つかりませんでした。");
+      });
+    },
     "back-exams": function () { quiz = null; go({ name: "exams" }); },
     "open-exams": function () { go({ name: "exams" }); },
     "exam-tab": function (el) { Store.setPref("examTab", el.dataset.tab); render(); },
@@ -1751,6 +1891,7 @@
     },
     "past-grade": function () {
       Store.gradePast(view.yearId, view.subjectIndex);
+      maybeShowAd();
       render();
       window.scrollTo(0, 0);
     },
@@ -1830,6 +1971,7 @@
         go({ name: "study", themeId: theme.id, pageIndex: pi });
       } else {
         Store.completeTheme(theme.id);
+        maybeShowAd();
         go({ name: "complete", themeId: theme.id });
       }
     },
@@ -1847,6 +1989,13 @@
     if (fn) fn(el);
   }
   $app.addEventListener("click", onClick);
+  $app.addEventListener("change", function (e) {
+    if (e.target && e.target.id === "restore-file" && e.target.files && e.target.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function () { restoreFrom(reader.result); };
+      reader.readAsText(e.target.files[0]);
+    }
+  });
   $sheet.addEventListener("click", onClick);
 
   document.addEventListener("keydown", function (e) {

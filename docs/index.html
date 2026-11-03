@@ -1200,6 +1200,15 @@ a.btn { text-decoration: none; }
 :root[data-theme="dark"] { --kw: #ff7b72; }
 em.kw { font-style: normal; color: var(--kw); font-weight: 600; }
 
+/* 設定 */
+.set-panel { display: flex; flex-direction: column; gap: 10px; }
+.set-panel p { margin: 0; font-size: var(--fs-sm); line-height: 1.6; color: var(--muted); }
+.set-sub { font-weight: 700; color: var(--text, inherit) !important; margin-top: 6px !important; }
+.set-file { cursor: pointer; text-align: center; }
+.set-text { width: 100%; font: inherit; font-size: var(--fs-sm); padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: inherit; resize: vertical; }
+.set-msg { color: var(--brand) !important; font-weight: 700; }
+a.row { text-decoration: none; color: inherit; }
+
 </style>
 </head>
 <body>
@@ -1495,7 +1504,7 @@ defineField({
             ["同行援護", "どうこうえんご", "視覚障害により移動が著しく困難な人に、外出時に同行して移動の援護や情報提供を行う。", "介護給付。"],
             ["行動援護", "こうどうえんご", "知的障害・精神障害で行動上著しい困難がある人に、危険を回避するための援護や外出の支援を行う。", "介護給付。"],
             ["地域生活支援事業", "", "市町村や都道府県が地域の実情に合わせて行う事業。", "移動支援、意思疎通支援、日常生活用具給付など。"],
-            ["就労継続支援", "", "一般企業での就労が難しい人に働く場を提供し、知識や能力向上のための訓練を行う。", "A型は雇用契約あり、B型は雇用契約なし。"],
+            ["就労継続支援", "", "一般企業での就労が難しい人に働く場を提供し、知識や能力向上のための訓練を行う。", "A型は雇用契約あり、B型は雇用契約なし。B型を新たに使う前には、原則として就労選択支援を利用する。"],
           ],
         },
         {
@@ -1506,6 +1515,7 @@ defineField({
             ["重度訪問介護", "じゅうどほうもんかいご", "重度の肢体不自由などで常に介護が必要な人に、自宅での介護と外出時の移動の支援を総合的に行う。", ""],
             ["地域移行支援", "ちいきいこうしえん", "障害者支援施設や精神科病院から、地域での生活に移るための相談や支援を行う。", ""],
             ["自立生活援助", "じりつせいかつえんじょ", "施設やグループホームから一人暮らしに移った人などを、定期的な訪問や随時の相談で支える。", "訓練等給付の一つ。"],
+            ["就労選択支援", "しゅうろうせんたくしえん", "就労アセスメントで本人の希望・能力・適性を整理し、働き方や就職先を選べるよう支援する。", "2025年10月に始まった訓練等給付。"],
             ["補装具", "ほそうぐ", "失われた体の機能を補う用具。義肢、装具、車椅子、電動車椅子、補聴器、歩行器など。", "自立支援給付の一つ。日常生活用具（地域生活支援事業）とは区別する。"],
             ["協議会", "きょうぎかい", "障害者総合支援法に基づき地方公共団体が置く会議。関係機関が地域の課題を共有し、支援体制を整える。", ""],
             ["障害児の支援", "", "児童福祉法に基づく。児童発達支援、放課後等デイサービス、保育所等訪問支援など。", "保育所等訪問支援は、保育所などを訪問して集団生活への適応を支援する。"],
@@ -1535,7 +1545,7 @@ defineField({
           title: "虐待の防止と差別の解消",
           lead: "虐待の種類と通報先",
           terms: [
-            ["高齢者虐待防止法", "", "高齢者虐待の防止と、養護者（家族など）への支援を定めた法律。", "身体的虐待・介護等放棄（ネグレクト）・心理的虐待・性的虐待・経済的虐待の5類型。"],
+            ["高齢者虐待防止法", "", "高齢者虐待の防止と、養護者（家族など）への支援を定めた法律。", "身体的虐待・介護等放棄（ネグレクト）・心理的虐待・性的虐待・経済的虐待の5類型。2024年度から、すべての介護サービス事業所で虐待防止の委員会・指針・研修・担当者の設置が義務化された。"],
             ["虐待の通報", "", "虐待を受けたと思われる高齢者を発見した人は、市町村に通報する。", "生命・身体に重大な危険がある場合は通報義務。施設職員は発見したら通報義務がある。通報は守秘義務違反にならない。"],
             ["養護者による虐待の傾向", "", "類型では身体的虐待が最も多い。虐待者の続柄では息子が最も多い。", "被虐待者は女性が多い。"],
             ["障害者虐待防止法", "", "障害者虐待の防止と、養護者への支援を定めた法律。", "高齢者と同じ5類型。使用者（雇い主）による虐待も対象。"],
@@ -1574,7 +1584,7 @@ defineField({
             ["有料老人ホーム", "", "高齢者が入居し、食事・介護・家事・健康管理のいずれかのサービスを受けられる施設。", "老人福祉法に基づき、都道府県等に届け出る。介護付・住宅型・健康型がある。"],
             ["定期巡回・随時対応型訪問介護看護", "", "日中・夜間を通じて、訪問介護と訪問看護が連携し、定期的な巡回と随時の対応を行う地域密着型サービス。", ""],
             ["福祉避難所", "ふくしひなんじょ", "災害時に、一般の避難所での生活が難しい高齢者や障害のある人などの要配慮者を受け入れる避難所。", ""],
-            ["障害者雇用促進法", "", "事業主に、一定割合以上の障害者を雇用することを義務づけている。", "民間企業の法定雇用率は2.5％（2024年4月〜）、2.7％（2026年7月〜）。"],
+            ["障害者雇用促進法", "", "事業主に、一定割合以上の障害者を雇用することを義務づけている。", "民間企業の法定雇用率は2.7％（2026年7月〜。それまでは2.5％）。"],
           ],
         },
       ],
@@ -2649,13 +2659,13 @@ defineField({
               term: "認知症施策推進大綱",
               reading: "にんちしょうしさくすいしんたいこう",
               definition: "2019年に国がまとめた認知症施策の方針。",
-              point: "「共生」と「予防」を車の両輪として施策を進める。"
+              point: "「共生」と「予防」が車の両輪。現在は基本計画（2024年12月・「新しい認知症観」）に引き継がれた。"
             },
             {
               id: "dementia-policy.law.new-orange",
               term: "新オレンジプラン",
               reading: "認知症施策推進総合戦略",
-              definition: "2015年策定の総合戦略。本人の意思が尊重され、住み慣れた地域で自分らしく暮らせる社会をめざした。",
+              definition: "2015年策定の総合戦略。住み慣れた地域で自分らしく暮らせる社会をめざした。",
               point: "柱の一つは「認知症の人やその家族の視点の重視」。前身は2012年のオレンジプラン。"
             },
             {
@@ -2663,13 +2673,13 @@ defineField({
               term: "認知症初期集中支援チーム",
               reading: "",
               definition: "医療と介護の専門職が、認知症が疑われる人や家族を訪問し、初期の支援を集中的に行う。",
-              point: "対象は40歳以上の在宅の人。期間はおおむね6か月。地域包括支援センターなどに配置。"
+              point: "40歳以上の在宅の人が対象。おおむね6か月。地域包括支援センターなどに置く。"
             },
             {
               id: "dementia-policy.local.medical-center",
               term: "認知症疾患医療センター",
               reading: "",
-              definition: "鑑別診断、専門医療相談、BPSD・身体合併症の急性期対応を行う専門医療機関。",
+              definition: "鑑別診断、専門医療相談、BPSD・合併症の急性期対応を行う医療機関。",
               point: "都道府県・指定都市が指定。"
             },
             {
@@ -2677,7 +2687,7 @@ defineField({
               term: "認知症サポーター",
               reading: "",
               definition: "養成講座を受け、地域で認知症の人や家族を温かく見守る応援者。",
-              point: "活動の義務はない。ステップアップ講座の修了者などが支援チーム（チームオレンジ）で活動する。"
+              point: "活動の義務はない。チームオレンジで活動することもある。"
             },
             {
               id: "dementia-policy.local.carepath",
@@ -5168,6 +5178,23 @@ window.KaigoStore = (function () {
   }
 
   return {
+    /* ---------- バックアップ ---------- */
+    /** 学習記録をまるごと文字列にする（ファイル保存・コピー用） */
+    exportData: function () {
+      return JSON.stringify({ app: "matome-anki", format: 1, exportedAt: new Date().toISOString(), data: state });
+    },
+
+    /** 書き出した文字列から学習記録を復元する。形式が違えば例外を投げる */
+    importData: function (text) {
+      var obj = JSON.parse(String(text).trim());
+      if (!obj || obj.app !== "matome-anki" || !obj.data || typeof obj.data.checked !== "object") {
+        throw new Error("format");
+      }
+      state = Object.assign(empty(), obj.data);
+      save();
+      return obj.exportedAt || null;
+    },
+
     isChecked: function (termId) {
       return Boolean(state.checked[termId]);
     },
@@ -5397,6 +5424,8 @@ window.KaigoStore = (function () {
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
     chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+    gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
+    save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
   };
   function icon(name, cls) {
     return (
@@ -5491,6 +5520,18 @@ window.KaigoStore = (function () {
     window.scrollTo(0, 0);
   }
 
+  function fallbackCopy(text) {
+    var t = document.createElement("textarea");
+    t.value = text;
+    t.setAttribute("readonly", "");
+    t.style.position = "fixed";
+    t.style.opacity = "0";
+    document.body.appendChild(t);
+    t.select();
+    try { document.execCommand("copy"); } catch (e) { /* 何もしない */ }
+    t.remove();
+  }
+
   function startTheme(themeId, pageIndex) {
     var theme = themeById[themeId];
     var pi = typeof pageIndex === "number" ? pageIndex : firstOpenPage(theme);
@@ -5581,6 +5622,11 @@ window.KaigoStore = (function () {
       "</div></section>" +
       resume +
       '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
+      '<div class="rows"><button class="row" data-action="open-settings">' +
+      '<span class="row__icon">' + icon("gear") + "</span>" +
+      '<span class="row__body"><span class="row__title">設定・このアプリについて</span>' +
+      '<span class="row__sub">学習記録のバックアップ、プライバシーポリシー、お問い合わせ</span></span>' +
+      icon("chev", "row__chev") + "</button></div>" +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
       "</main>"
     );
@@ -6983,6 +7029,80 @@ window.KaigoStore = (function () {
   });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 
+  /* ---------------- 設定・このアプリについて ---------------- */
+  var SITE = "https://nasutakako.github.io/matome-anki/";
+  var settingsMsg = "";
+  function renderSettings() {
+    var N = window.KaigoNative || null;
+    var adFree = Store.getPref("adFree", false);
+    var ads = N && N.purchaseAdFree
+      ? '<section class="section"><h2 class="section__label">広告</h2><div class="panel set-panel">' +
+        (adFree
+          ? "<p>広告は非表示になっています。ご購入ありがとうございます。</p>"
+          : "<p>買い切りの購入で、広告が表示されなくなります。</p>" +
+            '<button class="btn btn--primary" data-action="ad-purchase">広告を非表示にする（買い切り）</button>') +
+        '<button class="btn btn--text" data-action="ad-restore">購入を復元</button></div></section>'
+      : "";
+    var link = function (path, label) {
+      return '<a class="row" href="' + SITE + path + '" target="_blank" rel="noopener"><span class="row__body"><span class="row__title">' +
+        label + "</span></span>" + icon("chev", "row__chev") + "</a>";
+    };
+    return (
+      topbar("まとめ暗記", "設定・このアプリについて", "home") +
+      '<main class="content">' +
+      '<section class="section"><h2 class="section__label">学習記録のバックアップ</h2><div class="panel set-panel">' +
+      "<p>学習記録はこの端末の中だけに保存されています。機種変更やアプリの削除の前に書き出しておくと、新しい端末で読み込んで続きから使えます。</p>" +
+      '<div class="btn-row"><button class="btn btn--primary" data-action="backup-download">' + icon("save") + "ファイルに保存</button>" +
+      '<button class="btn btn--ghost" data-action="backup-copy">コピー</button></div>' +
+      '<p class="set-sub">読み込む（いまの記録は置き換わります）</p>' +
+      '<label class="btn btn--ghost set-file">ファイルから読み込む<input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden></label>' +
+      '<textarea id="restore-text" class="set-text" rows="3" placeholder="コピーした記録をここに貼り付け"></textarea>' +
+      '<button class="btn btn--ghost" data-action="backup-paste">貼り付けた内容で読み込む</button>' +
+      (settingsMsg ? '<p class="set-msg" role="status">' + esc(settingsMsg) + "</p>" : "") +
+      "</div></section>" +
+      ads +
+      '<section class="section"><h2 class="section__label">このアプリについて</h2><div class="rows">' +
+      link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
+      "</div></section>" +
+      '<p class="notice">まとめ暗記 介護福祉士 ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
+      "国家試験の問題の著作権は社会福祉振興・試験センターに帰属します。本アプリは公的機関とは関係のない個人が提供するものです。</p>" +
+      "</main>"
+    );
+  }
+  function setMsg(text) {
+    settingsMsg = text;
+    var y = window.scrollY;
+    render();
+    window.scrollTo(0, y);
+  }
+  function restoreFrom(text) {
+    try {
+      var at = Store.importData(text);
+      setMsg("読み込みました" + (at ? "（" + at.slice(0, 10) + " に書き出した記録）" : "") + "。");
+    } catch (e) {
+      setMsg("読み込めませんでした。このアプリで書き出した記録か確認してください。");
+    }
+  }
+
+  /**
+   * 広告（ストアのアプリ版だけ）。
+   * 学習の途中では出さず、区切りの画面（問題の結果・テーマの完了・過去問の採点）でだけ、
+   * 前回の広告から一定時間たっていれば表示する。起動直後も出さない。
+   * 広告の表示そのものはアプリ側（window.KaigoNative.showInterstitial）が行う。
+   */
+  var AD_INTERVAL = 10 * 60 * 1000;
+  var AD_GRACE = 5 * 60 * 1000;
+  var appStartedAt = Date.now();
+  function maybeShowAd() {
+    var N = window.KaigoNative;
+    if (!N || !N.showInterstitial || Store.getPref("adFree", false)) return;
+    var now = Date.now();
+    if (now - appStartedAt < AD_GRACE) return;
+    if (now - Store.getPref("adLastAt", 0) < AD_INTERVAL) return;
+    Store.setPref("adLastAt", now);
+    try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
+  }
+
   /* ---------------- 描画 ---------------- */
   function render() {
     var html;
@@ -6998,6 +7118,7 @@ window.KaigoStore = (function () {
       case "pastSheet": html = renderPastSheet(); break;
       case "pastExplain": html = renderPastExplain(); break;
       case "analysis": html = renderAnalysis(); break;
+      case "settings": html = renderSettings(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -7036,6 +7157,7 @@ window.KaigoStore = (function () {
     },
     "quiz-next": function () {
       quiz.index++;
+      if (quiz.index >= quiz.items.length) maybeShowAd();
       render();
       window.scrollTo(0, 0);
     },
@@ -7086,6 +7208,51 @@ window.KaigoStore = (function () {
       go({ name: "themes", fieldId: fieldOfTheme[themeId].id, ctx: ctx });
     },
     "back-review": function () { quiz = null; go({ name: "review" }); },
+    "open-settings": function () { settingsMsg = ""; go({ name: "settings" }); },
+    "backup-download": function () {
+      var text = Store.exportData();
+      var name = "matome-anki-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+      var N = window.KaigoNative;
+      if (N && N.saveFile) { N.saveFile(name, text); setMsg("保存しました。"); return; }
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+        setMsg("ファイル（" + name + "）を保存しました。保存できない場合は「コピー」を使ってください。");
+      } catch (e) {
+        setMsg("ファイルに保存できませんでした。「コピー」を使ってください。");
+      }
+    },
+    "backup-copy": function () {
+      var text = Store.exportData();
+      var done = function () { setMsg("記録をコピーしました。メモアプリなどに貼り付けて保管してください。"); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+      } else { fallbackCopy(text); done(); }
+    },
+    "backup-paste": function () {
+      var el = document.getElementById("restore-text");
+      if (!el || !el.value.trim()) { setMsg("貼り付け欄が空です。"); return; }
+      restoreFrom(el.value);
+    },
+    "ad-purchase": function () {
+      var N = window.KaigoNative;
+      if (!N || !N.purchaseAdFree) return;
+      Promise.resolve(N.purchaseAdFree()).then(function (ok) {
+        if (ok) { Store.setPref("adFree", true); setMsg("購入が完了しました。広告は表示されません。"); }
+      });
+    },
+    "ad-restore": function () {
+      var N = window.KaigoNative;
+      if (!N || !N.restorePurchases) return;
+      Promise.resolve(N.restorePurchases()).then(function (ok) {
+        if (ok) Store.setPref("adFree", true);
+        setMsg(ok ? "購入を復元しました。広告は表示されません。" : "復元できる購入が見つかりませんでした。");
+      });
+    },
     "back-exams": function () { quiz = null; go({ name: "exams" }); },
     "open-exams": function () { go({ name: "exams" }); },
     "exam-tab": function (el) { Store.setPref("examTab", el.dataset.tab); render(); },
@@ -7111,6 +7278,7 @@ window.KaigoStore = (function () {
     },
     "past-grade": function () {
       Store.gradePast(view.yearId, view.subjectIndex);
+      maybeShowAd();
       render();
       window.scrollTo(0, 0);
     },
@@ -7190,6 +7358,7 @@ window.KaigoStore = (function () {
         go({ name: "study", themeId: theme.id, pageIndex: pi });
       } else {
         Store.completeTheme(theme.id);
+        maybeShowAd();
         go({ name: "complete", themeId: theme.id });
       }
     },
@@ -7207,6 +7376,13 @@ window.KaigoStore = (function () {
     if (fn) fn(el);
   }
   $app.addEventListener("click", onClick);
+  $app.addEventListener("change", function (e) {
+    if (e.target && e.target.id === "restore-file" && e.target.files && e.target.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function () { restoreFrom(reader.result); };
+      reader.readAsText(e.target.files[0]);
+    }
+  });
   $sheet.addEventListener("click", onClick);
 
   document.addEventListener("keydown", function (e) {
