@@ -216,9 +216,11 @@
       nodes.forEach(function (t) {
         var html = convert(t.nodeValue);
         if (!html) return;
-        var tpl = document.createElement("template");
-        tpl.innerHTML = html;
-        t.parentNode.replaceChild(tpl.content, t);
+        // ひとまとまりの span で包む（ボタンなど flex の中で、ふりがなの前後に隙間ができないように）
+        var wrap = document.createElement("span");
+        wrap.className = "fr";
+        wrap.innerHTML = html;
+        t.parentNode.replaceChild(wrap, t);
       });
     }
     function strip(root) {
@@ -226,6 +228,9 @@
       Array.prototype.slice.call(root.querySelectorAll("ruby")).forEach(function (r) {
         Array.prototype.slice.call(r.querySelectorAll("rt")).forEach(function (rt) { rt.remove(); });
         r.replaceWith(document.createTextNode(r.textContent));
+      });
+      Array.prototype.slice.call(root.querySelectorAll("span.fr")).forEach(function (sp) {
+        sp.replaceWith(document.createTextNode(sp.textContent));
       });
       root.normalize();
     }
@@ -1908,7 +1913,8 @@
     var bottom = dock ? dock.getBoundingClientRect().top : window.innerHeight;
     var top = sheet.getBoundingClientRect().top + window.scrollY;
     var room = bottom - top;
-    var size = READ_MAX, min = furiOn() ? READ_MIN - 1 : READ_MIN; // ふりがなの分だけ小さくしてもよい
+    if (furiOn()) { sheet.style.fontSize = ""; return; } // ふりがなONのときは1画面に詰めず、読みやすさを優先する
+    var size = READ_MAX, min = READ_MIN;
     for (; size > min; size -= 0.5) {
       sheet.style.fontSize = size + "px";
       if (sheet.offsetHeight <= room) break;
@@ -2059,6 +2065,7 @@
       default: html = renderHome();
     }
     $app.innerHTML = html;
+    document.body.classList.toggle("is-furi", furiOn());
     if (furiOn()) Furi.apply($app);
     fitAll();
     justChecked = null;

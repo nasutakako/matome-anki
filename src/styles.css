@@ -1370,3 +1370,30 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .furi-btn__base { font-size: 12px; font-weight: 700; line-height: 1.2; }
 .furi-btn.is-on { background: var(--brand-ink, #23436f); color: #fff; border-color: var(--brand-ink, #23436f); opacity: 1; }
 .read-sheet ruby rt { font-size: 0.44em; }
+
+/* ---------- ふりがなON：詰め込まず、ゆったり読める表示に ---------- */
+.fr { display: inline; }
+.is-furi .topbar__eyebrow,
+.is-furi .resume--compact .resume__title,
+.is-furi .tile__title,
+.is-furi .tile__sub { overflow: visible; text-overflow: clip; white-space: normal; display: block; -webkit-line-clamp: unset; }
+.is-furi .topbar__title { line-height: 1.6; }
+.is-furi .content { line-height: 1.9; }
+.is-furi .section { margin-bottom: 14px; }
+.is-furi .tile { padding-block: 16px; align-items: flex-start; }
+.is-furi .tile__title { line-height: 1.7; }
+.is-furi .tile__sub { line-height: 1.85; margin-top: 2px; }
+.is-furi .stat__label { line-height: 1.9; }
+.is-furi .read-sheet { font-size: 15px; }
+.is-furi .rs-item__body { padding-top: 0.7em; padding-bottom: 0.7em; }
+.is-furi .rs-item__text { line-height: 2; }
+.is-furi .rs-item__point { line-height: 1.95; margin-top: 4px; }
+.is-furi .term__name { line-height: 1.6; }
+.is-furi .sheet__def,
+.is-furi .q-opt--def,
+.is-furi .q-opt,
+.is-furi .ex-main,
+.is-furi .ex-note,
+.is-furi .notice,
+.is-furi .hint { line-height: 2; }
+.is-furi .btn { line-height: 1.6; }

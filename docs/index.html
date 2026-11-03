@@ -1395,6 +1395,33 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .furi-btn.is-on { background: var(--brand-ink, #23436f); color: #fff; border-color: var(--brand-ink, #23436f); opacity: 1; }
 .read-sheet ruby rt { font-size: 0.44em; }
 
+/* ---------- ふりがなON：詰め込まず、ゆったり読める表示に ---------- */
+.fr { display: inline; }
+.is-furi .topbar__eyebrow,
+.is-furi .resume--compact .resume__title,
+.is-furi .tile__title,
+.is-furi .tile__sub { overflow: visible; text-overflow: clip; white-space: normal; display: block; -webkit-line-clamp: unset; }
+.is-furi .topbar__title { line-height: 1.6; }
+.is-furi .content { line-height: 1.9; }
+.is-furi .section { margin-bottom: 14px; }
+.is-furi .tile { padding-block: 16px; align-items: flex-start; }
+.is-furi .tile__title { line-height: 1.7; }
+.is-furi .tile__sub { line-height: 1.85; margin-top: 2px; }
+.is-furi .stat__label { line-height: 1.9; }
+.is-furi .read-sheet { font-size: 15px; }
+.is-furi .rs-item__body { padding-top: 0.7em; padding-bottom: 0.7em; }
+.is-furi .rs-item__text { line-height: 2; }
+.is-furi .rs-item__point { line-height: 1.95; margin-top: 4px; }
+.is-furi .term__name { line-height: 1.6; }
+.is-furi .sheet__def,
+.is-furi .q-opt--def,
+.is-furi .q-opt,
+.is-furi .ex-main,
+.is-furi .ex-note,
+.is-furi .notice,
+.is-furi .hint { line-height: 2; }
+.is-furi .btn { line-height: 1.6; }
+
 </style>
 </head>
 <body>
@@ -5813,9 +5840,11 @@ window.KaigoStore = (function () {
       nodes.forEach(function (t) {
         var html = convert(t.nodeValue);
         if (!html) return;
-        var tpl = document.createElement("template");
-        tpl.innerHTML = html;
-        t.parentNode.replaceChild(tpl.content, t);
+        // ひとまとまりの span で包む（ボタンなど flex の中で、ふりがなの前後に隙間ができないように）
+        var wrap = document.createElement("span");
+        wrap.className = "fr";
+        wrap.innerHTML = html;
+        t.parentNode.replaceChild(wrap, t);
       });
     }
     function strip(root) {
@@ -5823,6 +5852,9 @@ window.KaigoStore = (function () {
       Array.prototype.slice.call(root.querySelectorAll("ruby")).forEach(function (r) {
         Array.prototype.slice.call(r.querySelectorAll("rt")).forEach(function (rt) { rt.remove(); });
         r.replaceWith(document.createTextNode(r.textContent));
+      });
+      Array.prototype.slice.call(root.querySelectorAll("span.fr")).forEach(function (sp) {
+        sp.replaceWith(document.createTextNode(sp.textContent));
       });
       root.normalize();
     }
@@ -7505,7 +7537,8 @@ window.KaigoStore = (function () {
     var bottom = dock ? dock.getBoundingClientRect().top : window.innerHeight;
     var top = sheet.getBoundingClientRect().top + window.scrollY;
     var room = bottom - top;
-    var size = READ_MAX, min = furiOn() ? READ_MIN - 1 : READ_MIN; // ふりがなの分だけ小さくしてもよい
+    if (furiOn()) { sheet.style.fontSize = ""; return; } // ふりがなONのときは1画面に詰めず、読みやすさを優先する
+    var size = READ_MAX, min = READ_MIN;
     for (; size > min; size -= 0.5) {
       sheet.style.fontSize = size + "px";
       if (sheet.offsetHeight <= room) break;
@@ -7656,6 +7689,7 @@ window.KaigoStore = (function () {
       default: html = renderHome();
     }
     $app.innerHTML = html;
+    document.body.classList.toggle("is-furi", furiOn());
     if (furiOn()) Furi.apply($app);
     fitAll();
     justChecked = null;
