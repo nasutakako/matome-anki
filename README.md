@@ -14,9 +14,11 @@
 
 - **設定・このアプリについて**：学習記録の書き出し（ファイル保存・コピー）と読み込み（ファイル・貼り付け）、プライバシーポリシー・利用規約・お問い合わせへのリンク
 
-## 広告と買い切り（ストアのアプリ版）
+## 有料機能・広告（ストアのアプリ版）
+- オリジナル問題は有料（買い切り・商品ID `originals_unlock`）。未購入でも20問まで無料で試せる（`FREE_TRIAL`）。お試しの残りがなくなると購入画面を表示する。Web版にも同じ制限がかかり、購入はストアのアプリ版でのみできる
+- 広告の非表示も買い切り（商品ID `remove_ads`）
 - 広告は学習の途中では出さず、区切りの画面（問題の結果・テーマの完了・過去問の採点）でだけ、前回の広告から5分以上たっていれば表示する。起動から5分間は出さない（`app.js` の `maybeShowAd`）
-- 広告の表示・購入はアプリ側が `window.KaigoNative` として用意する（`showInterstitial()`、`purchaseAdFree()`、`restorePurchases()`、任意で `saveFile(name, text)`）。Web版ではこれがないため広告は出ない
+- 広告の表示・購入はアプリ側が `window.KaigoNative` として用意する（`showInterstitial()`、`purchase(productId)`、`restorePurchases()`（購入済みの商品IDの配列を返す）、任意で `price(productId)`・`saveFile(name, text)`）。Web版ではこれがないため広告は出ず、購入もできない
 - 買い切りで購入すると `adFree` が保存され、広告が表示されなくなる
 
 ## 動かし方

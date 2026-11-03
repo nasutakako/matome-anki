@@ -1289,3 +1289,72 @@ body { background: var(--bg); }
 .mine-empty__icon { width: 52px; height: 52px; border-radius: 50%; background: var(--pin-soft); color: var(--pin) !important; display: flex; align-items: center; justify-content: center; }
 .mine-empty__icon svg { width: 26px; height: 26px; }
 .mine-empty__how { margin: 0; padding-left: 1.2em; text-align: left; font-size: var(--fs-sm); color: var(--muted); line-height: 1.7; }
+
+/* ==========================================================================
+   ホーム：スクロールせずに全体が見えるコンパクトな配置
+   ========================================================================== */
+.content--home { gap: 10px; padding-top: 10px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+.content--home .section { gap: 5px; }
+.content--home .panel.stats { padding: 10px 14px; row-gap: 6px; }
+.content--home .stat__value { font-size: 19px; line-height: 1.25; }
+
+.resume--compact { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 12px 10px 14px; }
+.resume__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.resume--compact .resume__title { font-size: 16px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resume--compact .bar { margin-top: 3px; }
+.resume__btn { flex: none; min-height: 40px; padding: 0 14px; font-size: var(--fs-sm); }
+.resume__btn svg { width: 16px; height: 16px; }
+
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tile {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 9px; row-gap: 1px; align-items: center;
+  text-align: left; padding: 11px 12px; min-height: 66px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); color: var(--ink); font: inherit; cursor: pointer;
+}
+.tile:active { background: var(--accent-soft); }
+.tile__icon { grid-row: 1 / span 2; width: 34px; height: 34px; border-radius: 11px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; }
+.tile__icon svg { width: 18px; height: 18px; }
+.tile__title { font-family: var(--title-font); font-weight: 700; font-size: 15px; line-height: 1.3; }
+.tile__sub { font-size: 11px; line-height: 1.35; color: var(--muted); }
+.tile[data-ctx="mine"] .tile__icon { background: var(--pin-soft); color: var(--pin); }
+
+.home-link {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; margin-top: 2px;
+  border: 0; background: none; color: var(--muted); font: inherit; font-size: var(--fs-sm); cursor: pointer; border-radius: var(--radius-sm);
+}
+.home-link span { flex: 1; text-align: left; }
+.home-link svg { width: 16px; height: 16px; }
+.home-link:active { background: var(--tint); }
+@media (max-height: 700px) {
+  .content--home { gap: 7px; padding-top: 7px; }
+  .tile { min-height: 58px; padding: 8px 10px; }
+  .tile__sub { display: none; }
+}
+.resume--compact .resume__btn { width: auto; }
+.tile__title, .tile__sub { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content--home .stats .bar { margin-top: 2px; }
+.tile__sub { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+@media (max-height: 700px) { .tile__sub { display: -webkit-box; } }
+@media (max-height: 600px) { .tile__sub { display: none; } }
+.tile { align-content: center; }
+
+/* ==========================================================================
+   オリジナル問題の有料化（お試し表示・購入画面）
+   ========================================================================== */
+.trial { display: flex; flex-direction: column; gap: 6px; background: var(--pin-soft); border-color: transparent; }
+.trial__title { margin: 0; font-family: var(--title-font); font-weight: 700; font-size: 16px; color: var(--pin-ink); }
+.trial__sub { margin: 0; font-size: var(--fs-sm); color: var(--ink); }
+.trial .btn { min-height: 40px; }
+.paywall { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 20px 16px; text-align: center; }
+.paywall__icon { margin: 0; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; }
+.paywall__icon svg { width: 28px; height: 28px; }
+.paywall__title { margin: 0; font-family: var(--title-font); font-size: 20px; line-height: 1.4; color: var(--brand-ink); }
+.paywall__list { list-style: none; margin: 4px 0; padding: 0; display: flex; flex-direction: column; gap: 10px; text-align: left; width: 100%; }
+.paywall__list li { display: flex; gap: 10px; align-items: flex-start; font-size: var(--fs-sm); color: var(--muted); line-height: 1.55; }
+.paywall__list b { display: block; color: var(--ink); font-size: var(--fs-md); }
+.paywall__check { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--ok-soft); color: var(--ok); display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+.paywall__check svg { width: 14px; height: 14px; }
+.paywall__trial { margin: 0; font-size: var(--fs-sm); color: var(--pin-ink); font-weight: 700; }
+.paywall .btn { width: 100%; }
+.paywall__owned { margin: 0; display: flex; align-items: center; gap: 6px; color: var(--ok); font-weight: 700; }
+.paywall__owned svg { width: 18px; height: 18px; }

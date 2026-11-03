@@ -13,12 +13,12 @@
 
   /* ---------------- 学習メニュー（将来の機能はここに追加） ---------------- */
   var MENU = [
-    { id: "study", title: "基礎学習", sub: "テーマごとに重要用語を一覧で覚える", icon: "grid", ready: true },
-        { id: "quiz", title: "基礎問題", sub: "用語 ⇄ 説明を5択で答える", icon: "quiz", ready: true },
-    { id: "past-exams", title: "過去問題", sub: "国家試験と同じ5択形式で、科目ごとに解く", icon: "doc", ready: true, action: "open-exams" },
-    { id: "review", title: "過去に間違えた問題", sub: "間違えた問題を科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
-    { id: "mine", title: "マイ教科書", sub: "ピックアップした用語だけで作る、自分専用の教科書", icon: "pin", ready: true, action: "open-mine", group: "other" },
-    { id: "analysis", title: "苦手傾向分析", sub: "間違えやすい傾向から、重点的に勉強するポイントを示す", icon: "chart", ready: true, action: "open-analysis", group: "other" },
+    { id: "study", title: "基礎学習", sub: "重要用語を1画面で覚える", icon: "grid", ready: true },
+        { id: "quiz", title: "基礎問題", sub: "用語⇄説明の5択", icon: "quiz", ready: true },
+    { id: "past-exams", title: "過去問題", sub: "本試験5年分＋練習問題", icon: "doc", ready: true, action: "open-exams" },
+    { id: "review", title: "間違えた問題", sub: "科目・テーマごとに解き直す", icon: "redo", ready: true, action: "open-review" },
+    { id: "mine", title: "マイ教科書", sub: "選んだ用語だけの教科書", icon: "pin", ready: true, action: "open-mine", group: "other" },
+    { id: "analysis", title: "苦手傾向分析", sub: "重点ポイントがわかる", icon: "chart", ready: true, action: "open-analysis", group: "other" },
   ];
   var CTX_LABEL = { study: "基礎学習", quiz: "基礎問題", mine: "マイ教科書" };
 
@@ -210,24 +210,21 @@
       var finished = lDone === lIds.length;
       resume =
         '<section class="section"><h2 class="section__label">' + (finished ? "前回の学習" : "続きから") + "</h2>" +
-        '<div class="panel resume">' +
-        '<div><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + "</p>" +
-        '<p class="resume__title">' + esc(lastTheme.name) + "</p></div>" +
-        '<div class="progress"><div class="progress__text"><span>確認済み</span><span class="progress__count">' +
-        lDone + " / " + lIds.length + "</span></div>" + bar(lDone, lIds.length) + "</div>" +
-        '<button class="btn btn--primary" data-action="resume">' +
-        (finished ? "もう一度見る" : "続きから学習する") + icon("arrow") + "</button>" +
+        '<div class="panel resume resume--compact">' +
+        '<div class="resume__main"><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + " ・ 確認済み " + lDone + " / " + lIds.length + "</p>" +
+        '<p class="resume__title">' + esc(lastTheme.name) + "</p>" + bar(lDone, lIds.length) + "</div>" +
+        '<button class="btn btn--primary resume__btn" data-action="resume">' +
+        (finished ? "もう一度" : "続きから") + icon("arrow") + "</button>" +
         "</div></section>";
     }
 
     var quizStats = Store.answerStats(ids);
     var menuRow = function (m) {
       return (
-        '<button class="row" ' + (m.ready ? 'data-action="' + (m.action || "open-fields") + '" data-ctx="' + m.id + '"' : "disabled") + ">" +
-        '<span class="row__icon">' + icon(m.icon) + "</span>" +
-        '<span class="row__body"><span class="row__title">' + esc(m.title) + "</span>" +
-        '<span class="row__sub">' + esc(m.sub) + "</span></span>" +
-        (m.ready ? icon("chev", "row__chev") : '<span class="chip">準備中</span>') +
+        '<button class="tile" ' + (m.ready ? 'data-action="' + (m.action || "open-fields") + '" data-ctx="' + m.id + '"' : "disabled") + ">" +
+        '<span class="tile__icon">' + icon(m.icon) + "</span>" +
+        '<span class="tile__title">' + esc(m.title) + "</span>" +
+        '<span class="tile__sub">' + esc(m.sub) + "</span>" +
         "</button>"
       );
     };
@@ -236,7 +233,7 @@
 
     return (
       topbar("介護福祉士 国家試験対策", "見て覚える", null) +
-      '<main class="content">' +
+      '<main class="content content--home">' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
       '<div><p class="stat__label">確認した用語</p><p class="stat__value">' + checked + "<small>/ " + ids.length + "語</small></p></div>" +
@@ -246,14 +243,9 @@
       bar(checked, ids.length) +
       "</div></section>" +
       resume +
-      '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="rows">' + menu + "</div></section>" +
-      '<section class="section"><h2 class="section__label">その他</h2><div class="rows">' + other + "</div></section>" +
-      '<div class="rows"><button class="row" data-action="open-settings">' +
-      '<span class="row__icon">' + icon("gear") + "</span>" +
-      '<span class="row__body"><span class="row__title">設定・このアプリについて</span>' +
-      '<span class="row__sub">学習記録のバックアップ、プライバシーポリシー、お問い合わせ</span></span>' +
-      icon("chev", "row__chev") + "</button></div>" +
-      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
+      '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="tiles">' + menu + "</div></section>" +
+      '<section class="section"><h2 class="section__label">その他</h2><div class="tiles">' + other + "</div></section>" +
+      '<button class="home-link" data-action="open-settings">' + icon("gear") + "<span>設定・バックアップ・このアプリについて</span>" + icon("chev") + "</button>" +
       "</main>"
     );
   }
@@ -1048,8 +1040,12 @@
         '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "基礎学習で見直す</button>" +
         '<button class="btn btn--text" data-action="back-themes">テーマ一覧へ</button>';
     } else if (quiz.kind === "exam" && quiz.practice) {
+      var locked = quiz.trial && !owns("originals") && trialLeft() === 0;
       buttons =
-        '<button class="btn btn--primary" data-action="practice-next">' + icon("quiz") + "次の問題を解く</button>" +
+        (locked
+          ? '<p class="hint">' + icon("info") + "<span>無料のお試し（" + FREE_TRIAL + "問）が終わりました。続きは購入で解放できます。</span></p>" +
+            '<button class="btn btn--primary" data-action="open-paywall">すべての問題を解放する</button>'
+          : '<button class="btn btn--primary" data-action="practice-next">' + icon("quiz") + "次の問題を解く</button>") +
         '<button class="btn btn--text" data-action="back-exams">オリジナル問題の一覧へ</button>';
     } else if (quiz.kind === "exam") {
       buttons =
@@ -1359,17 +1355,75 @@
     });
     return set;
   }
+  /**
+   * 有料機能（ストアのアプリ版で買い切り購入）
+   *   originals：オリジナル問題のすべて（未購入でも FREE_TRIAL 問まで試せる）
+   *   adFree   ：広告の非表示
+   * 購入・復元・価格の取得はアプリ側（window.KaigoNative）が行う。
+   *   purchase(productId) → Promise<boolean>、restorePurchases() → Promise<string[]>、price(productId) → 表示用の価格（任意）
+   */
+  var PRODUCTS = { originals: "originals_unlock", adFree: "remove_ads" };
+  var OWN_PREF = { originals: "ownOriginals", adFree: "adFree" };
+  var FREE_TRIAL = 20;
+  function owns(key) { return !!Store.getPref(OWN_PREF[key], false); }
+  function canBuy() { var N = window.KaigoNative; return !!(N && (N.purchase || N.purchaseAdFree)); }
+  function priceOf(key) {
+    var N = window.KaigoNative;
+    try { return N && N.price ? N.price(PRODUCTS[key]) || "" : ""; } catch (e) { return ""; }
+  }
+  function buy(key) {
+    var N = window.KaigoNative;
+    if (!N) return Promise.resolve(false);
+    var p = N.purchase ? N.purchase(PRODUCTS[key]) : key === "adFree" && N.purchaseAdFree ? N.purchaseAdFree() : false;
+    return Promise.resolve(p).then(function (ok) { if (ok) Store.setPref(OWN_PREF[key], true); return !!ok; });
+  }
+  function restorePurchases() {
+    var N = window.KaigoNative;
+    if (!N || !N.restorePurchases) return Promise.resolve([]);
+    return Promise.resolve(N.restorePurchases()).then(function (res) {
+      var ids = Array.isArray(res) ? res : res ? [PRODUCTS.adFree] : [];
+      var got = [];
+      Object.keys(PRODUCTS).forEach(function (k) {
+        if (ids.indexOf(PRODUCTS[k]) !== -1) { Store.setPref(OWN_PREF[k], true); got.push(k); }
+      });
+      return got;
+    });
+  }
+  /** お試しで解いたオリジナル問題の数（同じ問題を解き直しても増えない） */
+  function trialUsed() {
+    var ex = Store.getExamAnswers();
+    return allExamIds().filter(function (id) { return ex[id]; }).length;
+  }
+  function trialLeft() { return Math.max(0, FREE_TRIAL - trialUsed()); }
+
   function startPractice(scope) {
     var set = practiceSet();
     var layout = practiceLayout();
+    var qids, title, ordered = false;
     if (scope === "all") {
-      var all = layout.reduce(function (acc, s) { return acc.concat(set[s.field] || []); }, []);
-      startExam(all, "125問を通して解く", "オリジナル問題", null, true);
+      qids = layout.reduce(function (acc, s) { return acc.concat(set[s.field] || []); }, []);
+      title = "125問を通して解く";
+      ordered = true;
     } else {
       var sub = layout.filter(function (s) { return s.field === scope; })[0];
-      startExam(set[scope] || [], sub ? sub.name : "", "オリジナル問題");
+      qids = set[scope] || [];
+      title = sub ? sub.name : "";
     }
+    var trial = !owns("originals");
+    if (trial) {
+      // 未購入：解いたことのない問題は、お試しの残り数まで
+      var ex = Store.getExamAnswers();
+      var left = trialLeft();
+      qids = qids.filter(function (id) {
+        if (ex[id]) return true;
+        if (left > 0) { left--; return true; }
+        return false;
+      });
+      if (!qids.length) { go({ name: "paywall" }); return; }
+    }
+    startExam(qids, title, "オリジナル問題", null, ordered);
     quiz.practice = scope;
+    quiz.trial = trial;
   }
   function allExamIds() {
     return DATA.fields.reduce(function (acc, f) { return acc.concat(examIdsOf(f.id)); }, []);
@@ -1412,6 +1466,11 @@
     return (
       topbar("国家試験形式", "過去問題", "home") +
       '<main class="content">' + seg +
+      (owns("originals") ? "" :
+        '<div class="panel trial">' +
+        '<p class="trial__title">オリジナル問題は有料です</p>' +
+        '<p class="trial__sub">無料で' + FREE_TRIAL + "問まで試せます（残り <b>" + trialLeft() + "</b> 問）</p>" +
+        '<button class="btn btn--primary" data-action="open-paywall">すべての問題を解放する</button></div>') +
       '<div class="panel review-sum"><div><p class="stat__label">本試験と同じ13科目</p>' +
       '<p class="stat__value">全125<small>問</small></p></div>' +
       '<button class="btn btn--primary" data-action="exam-next">' + icon("quiz") + "125問を解く</button></div>" +
@@ -1778,12 +1837,16 @@
   function renderSettings() {
     var N = window.KaigoNative || null;
     var adFree = Store.getPref("adFree", false);
-    var ads = N && N.purchaseAdFree
-      ? '<section class="section"><h2 class="section__label">広告</h2><div class="panel set-panel">' +
+    var ads = canBuy()
+      ? '<section class="section"><h2 class="section__label">購入</h2><div class="panel set-panel">' +
+        (owns("originals")
+          ? "<p>オリジナル問題：購入済み</p>"
+          : "<p>オリジナル問題：無料のお試し 残り " + trialLeft() + "問</p>" +
+            '<button class="btn btn--ghost" data-action="open-paywall">オリジナル問題を解放する</button>') +
         (adFree
-          ? "<p>広告は非表示になっています。ご購入ありがとうございます。</p>"
-          : "<p>買い切りの購入で、広告が表示されなくなります。</p>" +
-            '<button class="btn btn--primary" data-action="ad-purchase">広告を非表示にする（買い切り）</button>') +
+          ? "<p>広告：非表示（購入済み）</p>"
+          : "<p>広告：買い切りの購入で表示されなくなります。</p>" +
+            '<button class="btn btn--ghost" data-action="ad-purchase">広告を非表示にする（買い切り）</button>') +
         '<button class="btn btn--text" data-action="ad-restore">購入を復元</button></div></section>'
       : "";
     var link = function (path, label) {
@@ -1807,6 +1870,7 @@
       '<section class="section"><h2 class="section__label">このアプリについて</h2><div class="rows">' +
       link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
       "</div></section>" +
+      '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
       '<p class="notice">見て覚える 介護福祉士 国家試験対策 ・ 教材データ 第' + esc(String(DATA.version)) + "版 ・ 収録 " + allTermIds().length + "語。" +
       "国家試験の問題の著作権は社会福祉振興・試験センターに帰属します。本アプリは公的機関とは関係のない個人が提供するものです。</p>" +
       "</main>"
@@ -1846,6 +1910,42 @@
     try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
   }
 
+  /* ---------------- 購入画面（オリジナル問題） ---------------- */
+  var paywallMsg = "";
+  function renderPaywall() {
+    var owned = owns("originals");
+    var price = priceOf("originals");
+    var points = [
+      ["本試験と同じ125問構成", "人間の尊厳と自立2問、生活支援技術26問…と、本番と同じ科目・問題数で練習"],
+      ["正解した問題は入れ替わる", "まちがえた問題は正解するまで残り、正解した問題は新しい問題に。終わりなく練習できる"],
+      ["本番に近いひっかけ", "「正しいものを1つ選びなさい」形式。一語だけ違う選択肢で、2択で迷う力をきたえる"],
+      ["買い切り", "一度の購入で、追加料金なしにずっと使える"],
+    ].map(function (p) {
+      return '<li><span class="paywall__check">' + icon("check") + "</span><span><b>" + esc(p[0]) + "</b>" + esc(p[1]) + "</span></li>";
+    }).join("");
+    var actions = owned
+      ? '<p class="paywall__owned">' + icon("check") + "購入済みです。すべての問題を解けます。</p>" +
+        '<button class="btn btn--primary" data-action="back-exams">オリジナル問題へ</button>'
+      : canBuy()
+      ? '<button class="btn btn--primary" data-action="buy-originals">' + (price ? price + "で" : "") + "すべての問題を解放する（買い切り）</button>" +
+        '<button class="btn btn--text" data-action="restore-purchases">購入を復元</button>'
+      : '<p class="hint">' + icon("info") + "<span>購入は、ストア版のアプリ（App Store・Google Play）でできます。</span></p>";
+    return (
+      topbar("オリジナル問題", "すべての問題を解放", "back-exams") +
+      '<main class="content">' +
+      '<section class="panel paywall">' +
+      '<p class="paywall__icon">' + icon("quiz") + "</p>" +
+      '<h2 class="paywall__title">解くほど新しい問題が出る<br>オリジナル問題</h2>' +
+      '<ul class="paywall__list">' + points + "</ul>" +
+      (owned ? "" : '<p class="paywall__trial">無料のお試し：残り ' + trialLeft() + " / " + FREE_TRIAL + "問</p>") +
+      actions +
+      (paywallMsg ? '<p class="set-msg" role="status">' + esc(paywallMsg) + "</p>" : "") +
+      "</section>" +
+      '<p class="notice">基礎学習・基礎問題・過去問題（年度別）・マイ教科書などは、購入しなくてもすべて使えます。</p>' +
+      "</main>"
+    );
+  }
+
   /* ---------------- 描画 ---------------- */
   function render() {
     openSwipeEl = null;
@@ -1863,6 +1963,7 @@
       case "pastExplain": html = renderPastExplain(); break;
       case "analysis": html = renderAnalysis(); break;
       case "settings": html = renderSettings(); break;
+      case "paywall": html = renderPaywall(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -1983,18 +2084,24 @@
       restoreFrom(el.value);
     },
     "ad-purchase": function () {
-      var N = window.KaigoNative;
-      if (!N || !N.purchaseAdFree) return;
-      Promise.resolve(N.purchaseAdFree()).then(function (ok) {
-        if (ok) { Store.setPref("adFree", true); setMsg("購入が完了しました。広告は表示されません。"); }
-      });
+      buy("adFree").then(function (ok) { if (ok) setMsg("購入が完了しました。広告は表示されません。"); });
     },
     "ad-restore": function () {
-      var N = window.KaigoNative;
-      if (!N || !N.restorePurchases) return;
-      Promise.resolve(N.restorePurchases()).then(function (ok) {
-        if (ok) Store.setPref("adFree", true);
-        setMsg(ok ? "購入を復元しました。広告は表示されません。" : "復元できる購入が見つかりませんでした。");
+      restorePurchases().then(function (got) {
+        setMsg(got.length ? "購入を復元しました。" : "復元できる購入が見つかりませんでした。");
+      });
+    },
+    "open-paywall": function () { paywallMsg = ""; quiz = null; go({ name: "paywall" }); },
+    "buy-originals": function () {
+      buy("originals").then(function (ok) {
+        paywallMsg = ok ? "購入が完了しました。すべての問題を解けます。" : "";
+        render();
+      });
+    },
+    "restore-purchases": function () {
+      restorePurchases().then(function (got) {
+        paywallMsg = got.indexOf("originals") !== -1 ? "購入を復元しました。" : "復元できる購入が見つかりませんでした。";
+        render();
       });
     },
     "back-exams": function () { quiz = null; go({ name: "exams" }); },
