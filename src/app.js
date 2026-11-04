@@ -50,6 +50,7 @@
     { id: "dark", name: "ダーク", bg: "#142036", accent: "#7fb0f0", bar: "#163a6b" },
     { id: "pink", name: "ピンク", bg: "#fbe4ec", accent: "#d4567e", bar: "#fbe4ec" },
     { id: "green", name: "グリーン", bg: "#e2f0df", accent: "#3a8a5a", bar: "#e2f0df" },
+    { id: "flower", name: "フラワー", bg: "#fde6ee", accent: "#cf5f8c", bar: "#fde6ee", cls: "theme-pick__sw--flower" },
   ];
   /** 選んだテーマ（未選択なら端末のダークモード設定に合わせる） */
   function currentTheme() {
@@ -2328,7 +2329,7 @@
       '<section class="section"><h2 class="section__label">テーマカラー</h2><div class="theme-pick" role="group" aria-label="テーマカラー">' +
       THEMES.map(function (t) {
         return '<button class="theme-pick__btn" data-action="set-theme" data-id="' + t.id + '" aria-pressed="' + (currentTheme() === t.id) + '">' +
-          '<span class="theme-pick__sw" style="background:' + t.bg + ";--sw-accent:" + t.accent + '"></span>' + esc(t.name) + "</button>";
+          '<span class="theme-pick__sw' + (t.cls ? " " + t.cls : "") + '" style="background:' + t.bg + ";--sw-accent:" + t.accent + '"></span>' + esc(t.name) + "</button>";
       }).join("") + "</div></section>" +
       '<section class="section"><h2 class="section__label">学習記録のバックアップ</h2><div class="panel set-panel">' +
       "<p>学習記録はこの端末の中だけに保存されています。機種変更やアプリの削除の前に書き出しておくと、新しい端末で読み込んで続きから使えます。</p>" +
