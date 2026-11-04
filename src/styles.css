@@ -1474,3 +1474,10 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 :root[data-theme="flower"] .topbar .icon-btn:active { background: rgba(140, 51, 89, 0.08); }
 .theme-pick__sw--flower { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23fde6ee%22/%3E%3Cg transform=%22translate(20,20) rotate(10)%22 opacity=%221%22%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(0.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(72.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(144.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(216.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(288.0)%22/%3E%3Ccircle r=%224.2%22 fill=%22%23ffd36b%22/%3E%3Ccircle r=%221.82%22 fill=%22%23f2a93b%22 opacity=%22.6%22/%3E%3C/g%3E%3C/svg%3E") !important; background-size: cover; }
 .theme-pick__sw--flower::after { display: none; }
+:root[data-theme="purple"] {
+  --bg: #faf7fd; --surface: #fefdff; --tint: #f2edf9; --ink: #2f2a3d; --muted: #5d5670; --faint: #8b84a0;
+  --line: #e6def2; --accent: #7b5cc4; --accent-ink: #ffffff; --accent-soft: #efe9fa;
+  --brand: #ece4f8; --brand-ink: #4a3482; --brand-muted: #8a7aae; --label: #8a6bb8;
+  --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f;
+}
+:root[data-theme="purple"] .topbar .icon-btn:active { background: rgba(74, 52, 130, 0.08); }

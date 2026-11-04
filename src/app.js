@@ -47,29 +47,25 @@
   /* ---------------- テーマカラー ---------------- */
   var THEMES = [
     { id: "light", name: "いつもの色", bg: "#e6effa", accent: "#2f74cc", bar: "#e6effa" },
-    { id: "dark", name: "ダーク", bg: "#142036", accent: "#7fb0f0", bar: "#163a6b" },
+    { id: "purple", name: "パープル", bg: "#ece4f8", accent: "#7b5cc4", bar: "#ece4f8" },
     { id: "pink", name: "ピンク", bg: "#fbe4ec", accent: "#d4567e", bar: "#fbe4ec" },
     { id: "green", name: "グリーン", bg: "#e2f0df", accent: "#3a8a5a", bar: "#e2f0df" },
     { id: "flower", name: "フラワー", bg: "#fde6ee", accent: "#cf5f8c", bar: "#fde6ee", cls: "theme-pick__sw--flower" },
   ];
-  /** 選んだテーマ（未選択なら端末のダークモード設定に合わせる） */
+  /** 選んだテーマ（未選択はいつもの色） */
   function currentTheme() {
     var t = Store.getPref("theme", "");
-    if (t) return t;
-    var a = document.documentElement.getAttribute("data-theme");
-    if (a === "dark" || a === "light") return a;
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return THEMES.some(function (x) { return x.id === t; }) ? t : "light";
   }
   function applyTheme() {
-    var t = Store.getPref("theme", "");
+    // ダークは選べなくなったので、未選択・以前ダークを選んでいた人も「いつもの色」にする（端末のダークモードにも合わせない）
+    var t = currentTheme();
     var root = document.documentElement;
-    if (t) root.setAttribute("data-theme", t);
-    var th = THEMES.filter(function (x) { return x.id === currentTheme(); })[0] || THEMES[0];
+    root.setAttribute("data-theme", t);
+    root.style.colorScheme = "light";
+    var th = THEMES.filter(function (x) { return x.id === t; })[0] || THEMES[0];
     var metas = document.querySelectorAll('meta[name="theme-color"]');
-    for (var i = 0; i < metas.length; i++) {
-      if (t) { metas[i].removeAttribute("media"); metas[i].setAttribute("content", th.bar); }
-    }
-    if (t) root.style.colorScheme = t === "dark" ? "dark" : "light";
+    for (var i = 0; i < metas.length; i++) { metas[i].removeAttribute("media"); metas[i].setAttribute("content", th.bar); }
   }
   applyTheme();
 

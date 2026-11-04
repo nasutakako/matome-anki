@@ -1498,6 +1498,13 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 :root[data-theme="flower"] .topbar .icon-btn:active { background: rgba(140, 51, 89, 0.08); }
 .theme-pick__sw--flower { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%23fde6ee%22/%3E%3Cg transform=%22translate(20,20) rotate(10)%22 opacity=%221%22%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(0.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(72.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(144.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(216.0)%22/%3E%3Cellipse cx=%220%22 cy=%22-7.700000000000001%22 rx=%225.88%22 ry=%228.4%22 fill=%22%23f7a8c4%22 transform=%22rotate(288.0)%22/%3E%3Ccircle r=%224.2%22 fill=%22%23ffd36b%22/%3E%3Ccircle r=%221.82%22 fill=%22%23f2a93b%22 opacity=%22.6%22/%3E%3C/g%3E%3C/svg%3E") !important; background-size: cover; }
 .theme-pick__sw--flower::after { display: none; }
+:root[data-theme="purple"] {
+  --bg: #faf7fd; --surface: #fefdff; --tint: #f2edf9; --ink: #2f2a3d; --muted: #5d5670; --faint: #8b84a0;
+  --line: #e6def2; --accent: #7b5cc4; --accent-ink: #ffffff; --accent-soft: #efe9fa;
+  --brand: #ece4f8; --brand-ink: #4a3482; --brand-muted: #8a7aae; --label: #8a6bb8;
+  --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f;
+}
+:root[data-theme="purple"] .topbar .icon-btn:active { background: rgba(74, 52, 130, 0.08); }
 
 </style>
 </head>
@@ -5992,29 +5999,25 @@ window.KaigoStore = (function () {
   /* ---------------- テーマカラー ---------------- */
   var THEMES = [
     { id: "light", name: "いつもの色", bg: "#e6effa", accent: "#2f74cc", bar: "#e6effa" },
-    { id: "dark", name: "ダーク", bg: "#142036", accent: "#7fb0f0", bar: "#163a6b" },
+    { id: "purple", name: "パープル", bg: "#ece4f8", accent: "#7b5cc4", bar: "#ece4f8" },
     { id: "pink", name: "ピンク", bg: "#fbe4ec", accent: "#d4567e", bar: "#fbe4ec" },
     { id: "green", name: "グリーン", bg: "#e2f0df", accent: "#3a8a5a", bar: "#e2f0df" },
     { id: "flower", name: "フラワー", bg: "#fde6ee", accent: "#cf5f8c", bar: "#fde6ee", cls: "theme-pick__sw--flower" },
   ];
-  /** 選んだテーマ（未選択なら端末のダークモード設定に合わせる） */
+  /** 選んだテーマ（未選択はいつもの色） */
   function currentTheme() {
     var t = Store.getPref("theme", "");
-    if (t) return t;
-    var a = document.documentElement.getAttribute("data-theme");
-    if (a === "dark" || a === "light") return a;
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return THEMES.some(function (x) { return x.id === t; }) ? t : "light";
   }
   function applyTheme() {
-    var t = Store.getPref("theme", "");
+    // ダークは選べなくなったので、未選択・以前ダークを選んでいた人も「いつもの色」にする（端末のダークモードにも合わせない）
+    var t = currentTheme();
     var root = document.documentElement;
-    if (t) root.setAttribute("data-theme", t);
-    var th = THEMES.filter(function (x) { return x.id === currentTheme(); })[0] || THEMES[0];
+    root.setAttribute("data-theme", t);
+    root.style.colorScheme = "light";
+    var th = THEMES.filter(function (x) { return x.id === t; })[0] || THEMES[0];
     var metas = document.querySelectorAll('meta[name="theme-color"]');
-    for (var i = 0; i < metas.length; i++) {
-      if (t) { metas[i].removeAttribute("media"); metas[i].setAttribute("content", th.bar); }
-    }
-    if (t) root.style.colorScheme = t === "dark" ? "dark" : "light";
+    for (var i = 0; i < metas.length; i++) { metas[i].removeAttribute("media"); metas[i].setAttribute("content", th.bar); }
   }
   applyTheme();
 
