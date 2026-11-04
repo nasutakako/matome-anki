@@ -38,7 +38,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme]) {
     --bg: #0d1626;
     --surface: #142036;
     --tint: #18273f;
@@ -1173,7 +1173,7 @@ a.btn { text-decoration: none; }
 
 /* 重要語の赤字 */
 :root { --kw: #d0312d; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kw: #ff7b72; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --kw: #ff7b72; } }
 :root[data-theme="dark"] { --kw: #ff7b72; }
 em.kw { font-style: normal; color: var(--kw); font-weight: 600; }
 
@@ -1210,7 +1210,7 @@ a.row { text-decoration: none; color: inherit; }
   --title-font: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", var(--font);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --label: #d2b48c; --radius: 18px; --radius-sm: 13px; }
+  :root:not([data-theme]) { --label: #d2b48c; --radius: 18px; --radius-sm: 13px; }
 }
 :root[data-theme="dark"] { --label: #d2b48c; }
 
@@ -1223,7 +1223,7 @@ body { background: var(--bg); }
 .page-tag__title, .resume__title { font-family: var(--title-font); font-weight: 700; font-size: 17px; letter-spacing: 0.02em; color: var(--brand-ink); }
 .done-hero__title { font-family: var(--title-font); font-weight: 700; letter-spacing: 0.02em; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .page-tag__title, :root:not([data-theme="light"]) .resume__title { color: var(--ink); }
+  :root:not([data-theme]) .page-tag__title, :root:not([data-theme]) .resume__title { color: var(--ink); }
 }
 :root[data-theme="dark"] .page-tag__title, :root[data-theme="dark"] .resume__title { color: var(--ink); }
 
@@ -1246,7 +1246,7 @@ body { background: var(--bg); }
    マイ教科書（ピックアップ）
    ========================================================================== */
 :root { --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme]) { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; } }
 :root[data-theme="dark"] { --pin: #f08a72; --pin-soft: #3a2420; --pin-ink: #f6a592; }
 
 /* 説明つきで読む：右にスライドすると左にピンが出る */
@@ -1424,3 +1424,32 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .seg--analysis { margin-bottom: 14px; display: grid; grid-template-columns: repeat(3, 1fr); }
 .seg--analysis.seg--n4 { grid-template-columns: repeat(4, 1fr); }
 .seg--analysis .seg__btn { padding-inline: 4px; white-space: nowrap; font-size: 13px; }
+
+/* ==========================================================================
+   テーマカラー（設定で選ぶ）
+   data-theme なし＝端末の設定に合わせる／light＝いつもの色／dark／pink／green
+   ========================================================================== */
+:root[data-theme="pink"] {
+  --bg: #fdf7f8; --surface: #fffdfd; --tint: #fbeff2; --ink: #3a2a31; --muted: #6b5562; --faint: #9a8591;
+  --line: #f1dfe5; --accent: #d4567e; --accent-ink: #ffffff; --accent-soft: #fce8ef;
+  --brand: #fbe4ec; --brand-ink: #8a2f50; --brand-muted: #b07a8e; --label: #c0617f;
+  --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f;
+}
+:root[data-theme="green"] {
+  --bg: #f7faf6; --surface: #fdfefc; --tint: #edf4ea; --ink: #23332a; --muted: #4c6155; --faint: #7a8e80;
+  --line: #dde9d8; --accent: #3a8a5a; --accent-ink: #ffffff; --accent-soft: #e4f2e7;
+  --brand: #e2f0df; --brand-ink: #2c5a3c; --brand-muted: #6f8f78; --label: #7d8a3f;
+  --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f;
+}
+:root[data-theme="pink"] .topbar .icon-btn:active { background: rgba(138, 47, 80, 0.08); }
+:root[data-theme="green"] .topbar .icon-btn:active { background: rgba(44, 90, 60, 0.08); }
+
+/* 設定：テーマカラーの選択 */
+.theme-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.theme-pick__btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px; border-radius: var(--radius-sm);
+  border: 2px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: var(--fs-sm); cursor: pointer;
+}
+.theme-pick__btn[aria-pressed="true"] { border-color: var(--accent); font-weight: 700; }
+.theme-pick__sw { width: 38px; height: 38px; border-radius: 50%; display: block; position: relative; overflow: hidden; border: 1px solid rgba(0, 0, 0, 0.08); }
+.theme-pick__sw::after { content: ""; position: absolute; right: 0; bottom: 0; width: 50%; height: 50%; border-top-left-radius: 100%; background: var(--sw-accent); }
