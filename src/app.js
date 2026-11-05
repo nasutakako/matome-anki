@@ -992,7 +992,8 @@
 
   function buildItems(termIds, dir) {
     return shuffle(termIds).map(function (id, i) {
-      return buildTermItem(id, dir === "mix" ? (i % 2 ? "d2t" : "t2d") : dir);
+      // ミックスは、用語→説明・説明→用語を1問ごとにランダムに決める（出題順もランダム）
+      return buildTermItem(id, dir === "mix" ? (Math.random() < 0.5 ? "d2t" : "t2d") : dir);
     });
   }
 
@@ -1020,7 +1021,7 @@
     quiz = {
       kind: "theme", themeId: themeId, termIds: themeTermIds(theme),
       title: theme.name, eyebrow: fieldOfTheme[themeId].name,
-      dir: null, items: null, index: 0, saved: false, full: true,
+      dir: "mix", items: buildItems(themeTermIds(theme), "mix"), index: 0, saved: false, full: true,
     };
     go({ name: "quiz", themeId: themeId, ctx: "quiz" });
   }
@@ -1028,7 +1029,7 @@
   function startReviewQuiz(termIds, title, eyebrow) {
     quiz = {
       kind: "review", termIds: termIds, title: title, eyebrow: eyebrow,
-      dir: null, items: null, index: 0, saved: false, full: false,
+      dir: "mix", items: buildItems(termIds, "mix"), index: 0, saved: false, full: false,
     };
     go({ name: "quiz", ctx: "review" });
   }
@@ -1047,33 +1048,7 @@
     return "back-review";
   }
 
-  function renderQuizSetup() {
-    var total = quiz.termIds.length;
-    var q = quiz.kind === "theme" ? Store.getQuizResult(quiz.themeId) : null;
-    var opt = function (dir, title, sub) {
-      return (
-        '<button class="row" data-action="quiz-dir" data-dir="' + dir + '">' +
-        '<span class="row__body"><span class="row__title">' + title + "</span>" +
-        '<span class="row__sub">' + sub + "</span></span>" + icon("chev", "row__chev") + "</button>"
-      );
-    };
-    return (
-      topbar(quiz.eyebrow, quiz.title, quizBackAction()) +
-      '<main class="content">' +
-      '<section class="section"><h2 class="section__label">' +
-      (quiz.kind === "theme" ? "基礎問題" : "間違えた問題") + " ・ 全" + total + "問 ・ 5択</h2>" +
-      (q ? '<p class="hint">' + icon("info") + "<span>前回 " + q.last + " / " + q.total + " 問正解 ・ 最高 " + q.best + "%</span></p>" : "") +
-      '<div class="rows">' +
-      opt("t2d", "用語を見て、説明を選ぶ", "一語だけ違う「ひっかけ」の説明が混ざります") +
-      opt("d2t", "説明を見て、用語を選ぶ", "国家試験と同じく、説明から用語を思い出す") +
-      opt("mix", "ミックス", "2つの形式を交互に出題") +
-      "</div></section>" +
-      (quiz.kind === "theme"
-        ? '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "先に基礎学習で見る</button>"
-        : "") +
-      "</main>"
-    );
-  }
+
 
   function renderQuizQuestion() {
     var item = quiz.items[quiz.index];
@@ -1225,7 +1200,7 @@
 
   function renderQuiz() {
     if (!quiz) return renderHome();
-    if (!quiz.items) return renderQuizSetup();
+    if (!quiz.items) { quiz.dir = "mix"; quiz.items = buildItems(quiz.termIds, "mix"); }
     if (quiz.index >= quiz.items.length) return renderQuizResult();
     return renderQuizQuestion();
   }
