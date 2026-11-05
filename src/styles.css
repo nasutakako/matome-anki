@@ -1481,3 +1481,59 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
   --pin: #e0664f; --pin-soft: #fdeee9; --pin-ink: #b8462f;
 }
 :root[data-theme="purple"] .topbar .icon-btn:active { background: rgba(74, 52, 130, 0.08); }
+
+/* ---------- オススメの勉強法 ---------- */
+.home-link--method { margin-top: -6px; }
+.method-hero { text-align: center; color: var(--brand-ink); }
+.method-hero__eyebrow { margin: 0; font-size: var(--fs-sm); color: var(--label); font-weight: 700; }
+.method-hero__title { margin: 2px 0 6px; font-family: var(--title-font); font-size: 22px; color: var(--brand-ink); }
+.method-cycle { width: 100%; max-width: 320px; height: auto; color: var(--accent); display: block; margin: 0 auto; }
+.method-cycle__node circle { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.method-cycle__node.is-b circle { fill: var(--pin-soft); stroke: var(--pin); }
+.method-cycle__node text { text-anchor: middle; font-family: var(--title-font); font-weight: 700; font-size: 15px; fill: var(--brand-ink); }
+.method-cycle__node text.sub { font-size: 12px; font-weight: 700; fill: var(--muted); }
+.msteps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.mstep { display: flex; gap: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+.mstep__num { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: var(--title-font); }
+.mstep:nth-child(even) .mstep__num { background: var(--pin); color: #fff; }
+.mstep__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.mstep__title { margin: 2px 0 0; font-family: var(--title-font); font-size: 17px; color: var(--brand-ink); }
+.mstep__body p { margin: 0; font-size: var(--fs-sm); line-height: 1.75; color: var(--muted); }
+/* 画面の見本（イラスト） */
+.mm { margin-top: 4px; padding: 10px; border-radius: 14px; background: var(--tint); border: 1px dashed var(--line); font-size: 12px; }
+.mm--cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mm__card { display: flex; flex-direction: column; gap: 4px; padding: 8px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.mm__card b { font-size: 13px; color: var(--ink); }
+.mm__card i { display: block; height: 5px; width: 70%; border-radius: 3px; background: var(--line); }
+.mm__card.is-checked { background: var(--ok-soft); border-color: var(--ok-line); }
+.mm--quiz { display: flex; flex-direction: column; gap: 5px; }
+.mm__q { margin: 0 0 2px; font-weight: 700; color: var(--ink); line-height: 1.5; }
+.mm__opt { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 9px; background: var(--surface); border: 1px solid var(--line); color: var(--ink); }
+.mm__opt.is-ok { border-color: var(--ok); background: var(--ok-soft); font-weight: 700; }
+.mm__opt svg { width: 14px; height: 14px; color: var(--ok); }
+.mm--read p { margin: 0; padding: 6px 8px; border-radius: 8px; background: var(--surface); color: var(--ink); line-height: 1.6; }
+.mm--read p + p { margin-top: 5px; }
+.mm--read b { color: var(--accent); margin-right: 4px; }
+.mm--read em { font-style: normal; color: var(--kw, #d0312d); font-weight: 700; }
+.mm--read .is-focus { outline: 2px solid var(--pin); }
+.mm--score { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.mm__ring { width: 74px; height: 74px; border-radius: 50%; border: 6px solid var(--ok); display: flex; align-items: center; justify-content: center; color: var(--muted); background: var(--surface); }
+.mm__ring b { font-size: 22px; color: var(--ok); }
+.mm__up { color: var(--muted); line-height: 1.4; }
+.mm__up b { color: var(--ok); font-size: 18px; }
+.method-point { text-align: center; padding: 16px; }
+.method-point__title { margin: 0 0 6px !important; font-family: var(--title-font); font-weight: 700; font-size: 17px; color: var(--brand-ink); }
+.method-point p { margin: 0; font-size: var(--fs-sm); line-height: 1.8; color: var(--muted); }
+.method-stat { text-align: center; padding: 18px 16px; display: flex; flex-direction: column; gap: 6px; }
+.method-stat p { margin: 0; font-size: var(--fs-sm); line-height: 1.75; color: var(--muted); }
+.method-stat__lead { font-family: var(--title-font); font-weight: 700; font-size: 16px !important; color: var(--brand-ink) !important; }
+.method-stat__big { font-family: var(--title-font); font-weight: 700; font-size: 22px !important; color: var(--pin-ink) !important; line-height: 1.1 !important; }
+.method-stat__big b { font-size: 56px; margin: 0 2px; }
+.method-stat__cap { font-weight: 700; color: var(--ink) !important; }
+.method-bars { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 6px; text-align: left; }
+.method-bars__row { display: grid; grid-template-columns: 96px 1fr 40px; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--ink); }
+.method-bars__bar { height: 14px; border-radius: 7px; background: var(--faint); justify-self: start; }
+.method-bars__bar.is-a { background: var(--pin); }
+.method-bars__row b { text-align: right; }
+.method-stat__src { font-size: 11px !important; color: var(--faint) !important; }
+.method-actions .btn { flex: 1; }

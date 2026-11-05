@@ -42,6 +42,7 @@
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
     save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
     bag: '<path d="M5 8h14l-1.2 11.2a1 1 0 01-1 .8H7.2a1 1 0 01-1-.8L5 8z"/><path d="M9 10V7a3 3 0 016 0v3"/>',
+    bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/>',
     crown: '<path d="M4 18h16M5 16l-1-9 5 4 3-6 3 6 5-4-1 9H5z"/>',
   };
   /* ---------------- テーマカラー ---------------- */
@@ -369,6 +370,7 @@
       '<section class="section"><h2 class="section__label">学習メニュー</h2><div class="tiles">' + menu + "</div></section>" +
       '<section class="section"><h2 class="section__label">その他</h2><div class="tiles">' + other + "</div></section>" +
       '<button class="home-link" data-action="open-settings">' + icon("gear") + "<span>設定・バックアップ・このアプリについて</span>" + icon("chev") + "</button>" +
+      '<button class="home-link home-link--method" data-action="open-method">' + icon("bulb") + "<span>オススメの勉強法</span>" + icon("chev") + "</button>" +
       "</main>"
     );
   }
@@ -2356,6 +2358,61 @@
     try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
   }
 
+  /* ---------------- オススメの勉強法 ---------------- */
+  function renderMethod() {
+    // 小さな画面の見本（実際の画面をイメージしたイラスト）
+    var mockCards = '<div class="mm mm--cards">' + ["脱健着患", "端座位", "誤嚥", "褥瘡"].map(function (t, i) {
+      return '<span class="mm__card' + (i === 1 ? " is-checked" : "") + '"><b>' + t + "</b><i></i></span>";
+    }).join("") + "</div>";
+    var mockQuiz = '<div class="mm mm--quiz"><p class="mm__q">「体の健康な側から脱ぎ、麻痺のある側から着る」原則は？</p>' +
+      ["半側空間無視", "脱健着患", "ボディメカニクス"].map(function (t, i) {
+        return '<span class="mm__opt' + (i === 1 ? " is-ok" : "") + '">' + t + (i === 1 ? icon("check") : "") + "</span>";
+      }).join("") + "</div>";
+    var mockRead = '<div class="mm mm--read"><p><b>誤嚥</b> 食べ物などが<em>気管</em>に入ること。</p><p class="is-focus"><b>褥瘡</b> 圧迫で皮膚が傷つく。<em>仙骨部</em>に多い。</p></div>';
+    var mockAgain = '<div class="mm mm--score"><span class="mm__ring"><b>15</b>/16</span><span class="mm__up">前回より<br><b>+4問</b></span></div>';
+    var step = function (n, title, text, mock) {
+      return '<li class="mstep"><div class="mstep__num">' + n + "</div><div class=\"mstep__body\"><h3 class=\"mstep__title\">" + esc(title) + "</h3>" +
+        text.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + mock + "</div></li>";
+    };
+    return (
+      topbar("キソマナ", "オススメの勉強法", "home") +
+      '<main class="content">' +
+      '<section class="method-hero">' +
+      '<p class="method-hero__eyebrow">キソマナを使った</p>' +
+      '<h2 class="method-hero__title">効果的な学習サイクル</h2>' +
+      '<svg class="method-cycle" viewBox="0 0 300 150" aria-hidden="true">' +
+      '<path d="M95 40 A60 60 0 0 1 205 40" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="6 6" marker-end="url(#ah)"/>' +
+      '<path d="M205 110 A60 60 0 0 1 95 110" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="6 6" marker-end="url(#ah)"/>' +
+      '<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>' +
+      '<g class="method-cycle__node"><circle cx="62" cy="75" r="46"/><text x="62" y="70">基礎学習</text><text x="62" y="92" class="sub">で覚える</text></g>' +
+      '<g class="method-cycle__node is-b"><circle cx="238" cy="75" r="46"/><text x="238" y="70">基礎問題</text><text x="238" y="92" class="sub">で思い出す</text></g>' +
+      "</svg></section>" +
+      '<ol class="msteps">' +
+      step(1, "基礎学習をサクッと1周", ["まずは用語と意味を確認。最初から完璧に覚える必要はありません。"], mockCards) +
+      step(2, "基礎問題に挑戦", ["学んだ内容をすぐに思い出す練習をします。", "基礎問題は、過去問のように難しく考え込むのではなく、学んだ用語や説明をスムーズに思い出せるように作られています。"], mockQuiz) +
+      step(3, "基礎学習をもう1周", ["問題で思い出せなかった用語や、あいまいだった部分を確認します。"], mockRead) +
+      step(4, "もう一度、基礎問題に挑戦", ["繰り返し思い出すことで、知識を定着させていきます。"], mockAgain) +
+      "</ol>" +
+      '<section class="panel method-point"><p class="method-point__title">基礎学習で覚える。基礎問題で思い出す。</p>' +
+      "<p>知識は、ただ読むだけでなく、自分で思い出す練習を繰り返すことが大切です。慣れてきたら、翌日や数日後にも復習してみましょう。</p></section>" +
+      '<section class="panel method-stat">' +
+      '<p class="method-stat__lead">思い出す練習で、記憶に差がつく！</p>' +
+      '<p class="method-stat__big">約<b>1.5</b>倍<span aria-hidden="true">💪</span></p>' +
+      '<p class="method-stat__cap">1週間後の正答率</p>' +
+      '<div class="method-bars">' +
+      '<div class="method-bars__row"><span class="method-bars__label">思い出す練習</span><span class="method-bars__bar is-a" style="width:61%"></span><b>61%</b></div>' +
+      '<div class="method-bars__row"><span class="method-bars__label">読み直し</span><span class="method-bars__bar" style="width:40%"></span><b>40%</b></div>' +
+      "</div>" +
+      "<p>思い出す練習（テスト）をくり返したグループは、読み直しをくり返したグループより、1週間後の正答率が約1.5倍高い結果でした。</p>" +
+      '<p class="method-stat__src">出典：Roediger & Karpicke（2006）の学習実験。大学生が短い文章を学んだ、特定の実験条件での結果です。</p>' +
+      "</section>" +
+      '<div class="btn-row method-actions">' +
+      '<button class="btn btn--primary" data-action="open-fields" data-ctx="study">' + icon("grid") + "基礎学習へ</button>" +
+      '<button class="btn btn--ghost" data-action="open-fields" data-ctx="quiz">' + icon("quiz") + "基礎問題へ</button></div>" +
+      "</main>"
+    );
+  }
+
   /* ---------------- ショップ（買い切りの購入をまとめた画面） ---------------- */
   var shopMsg = "";
   function shopButton() {
@@ -2444,6 +2501,7 @@
       case "settings": html = renderSettings(); break;
       case "paywall": view = { name: "shop", reason: "originals", back: { name: "exams" } }; html = renderShop(); break;
       case "shop": html = renderShop(); break;
+      case "method": html = renderMethod(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -2582,6 +2640,7 @@
     },
     "open-paywall": function () { openShop("originals"); },
     "open-shop": function () { openShop(""); },
+    "open-method": function () { go({ name: "method" }); window.scrollTo(0, 0); },
     "set-theme": function (el) { Store.setPref("theme", el.dataset.id); applyTheme(); var y = window.scrollY; render(); window.scrollTo(0, y); },
     "analysis-src": function (el) { Store.setPref("analysisSrc", el.dataset.src); render(); window.scrollTo(0, 0); },
     "analysis-open-exams": function (el) { Store.setPref("examTab", el.dataset.tab); go({ name: "exams" }); },
