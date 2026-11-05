@@ -2397,14 +2397,14 @@
       "<p>知識は、ただ読むだけでなく、自分で思い出す練習を繰り返すことが大切です。慣れてきたら、翌日や数日後にも復習してみましょう。</p></section>" +
       '<section class="panel method-stat">' +
       '<p class="method-stat__lead">思い出す練習で、記憶に差がつく！</p>' +
-      '<p class="method-stat__big">約<b>1.5</b>倍<span aria-hidden="true">💪</span></p>' +
-      '<p class="method-stat__cap">1週間後の正答率</p>' +
+      '<p class="method-stat__big">約<b>2.4</b>倍<span aria-hidden="true">💪</span></p>' +
+      '<p class="method-stat__cap">1週間後に思い出せた割合</p>' +
       '<div class="method-bars">' +
-      '<div class="method-bars__row"><span class="method-bars__label">思い出す練習</span><span class="method-bars__bar is-a" style="width:61%"></span><b>61%</b></div>' +
-      '<div class="method-bars__row"><span class="method-bars__label">読み直し</span><span class="method-bars__bar" style="width:40%"></span><b>40%</b></div>' +
+      '<div class="method-bars__row"><span class="method-bars__label">繰り返し思い出す練習</span><span class="method-bars__bar is-a" style="width:80%"></span><b>80%</b></div>' +
+      '<div class="method-bars__row"><span class="method-bars__label">1回思い出せたら終わり</span><span class="method-bars__bar" style="width:33%"></span><b>33%</b></div>' +
       "</div>" +
-      "<p>思い出す練習（テスト）をくり返したグループは、読み直しをくり返したグループより、1週間後の正答率が約1.5倍高い結果でした。</p>" +
-      '<p class="method-stat__src">出典：Roediger & Karpicke（2006）の学習実験。大学生が短い文章を学んだ、特定の実験条件での結果です。</p>' +
+      "<p>33%に対して80%。くり返し思い出す練習をしたほうが、約2.4倍の正答率でした。</p>" +
+      '<p class="method-stat__src">出典：Karpicke & Roediger (2008), The Critical Importance of Retrieval for Learning.（Science）大学生が外国語の単語を覚えた、特定の実験条件での結果です。</p>' +
       "</section>" +
       '<div class="btn-row method-actions">' +
       '<button class="btn btn--primary" data-action="open-fields" data-ctx="study">' + icon("grid") + "基礎学習へ</button>" +
