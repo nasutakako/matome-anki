@@ -1583,3 +1583,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .mm__tile svg { width: 18px; height: 18px; color: var(--accent); }
 .mm__tile b { font-size: 13px; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .ilogo__b, .ilogo__man, .intro__name, .intro__sub, .intro__tag { animation-duration: 0.01s !important; animation-delay: 0s !important; } }
+
+/* 確認済みの丸：押せる範囲を左に広げる（文字の右端あたりを押しても確認済みになる） */
+.rs-item__check { position: relative; width: 2.4em; min-width: 38px; }
+.rs-item__check::before { content: ""; position: absolute; top: 0; bottom: 0; left: -16px; right: 0; }

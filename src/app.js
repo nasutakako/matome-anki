@@ -520,7 +520,7 @@
     var multi = pages.length > 1;
     var isLastPage = view.pageIndex === pages.length - 1;
 
-    var mode = Store.getPref("studyMode", "cards");
+    var mode = "list"; // 基礎学習は一覧（説明つきで読む）だけにした
 
     // 説明つきで読む：用語・説明・ポイントを1画面に収めた「まとめシート」
     // 右にスライドすると左側にピンが出る（マイ教科書への追加・削除）
@@ -539,19 +539,6 @@
         '<button class="rs-item__check" data-action="toggle-check" data-id="' + t.id + '" aria-pressed="' + on + '" aria-label="' +
         esc(t.term) + (on ? "の確認を外す" : "を確認済みにする") + '">' + icon("check") + "</button>" +
         "</div></div>"
-      );
-    }).join("");
-
-    var cards = page.terms.map(function (t) {
-      var on = Store.isChecked(t.id);
-      return (
-        '<button class="term' + (on ? " is-checked" : "") + (justChecked === t.id ? " just-checked" : "") +
-        '" data-action="open-term" data-id="' + t.id + '" aria-label="' + esc(t.term) + (on ? "（確認済み）" : "") + '">' +
-        '<span class="term__check">' + icon("check") + "</span>" +
-        (Store.isPicked(t.id) ? '<span class="term__pin" aria-label="マイ教科書">' + icon("pin") + "</span>" : "") +
-        '<span class="term__name">' + esc(t.term) + "</span>" +
-        (t.reading ? '<span class="term__reading">' + esc(t.reading) + "</span>" : "") +
-        "</button>"
       );
     }).join("");
 
@@ -582,15 +569,8 @@
       bar(done, total) +
       (page.lead && mode !== "list" ? '<p class="page-tag__lead">' + esc(page.lead) + "</p>" : "") +
       "</div>" +
-      '<div class="seg" role="group" aria-label="表示の切り替え">' +
-      '<button class="seg__btn" data-action="mode" data-mode="cards" aria-pressed="' + (mode === "cards") + '">カードで覚える</button>' +
-      '<button class="seg__btn" data-action="mode" data-mode="list" aria-pressed="' + (mode === "list") + '">説明つきで読む</button>' +
-      "</div>" +
-      (mode === "list"
-        ? '<div class="read-sheet">' + list + "</div>" +
-          '<p class="hint">' + icon("info") + "<span>1画面のまとめとして、配置ごと目で覚えましょう。用語を右にスライドすると、マイ教科書に追加できます。</span></p>"
-        : '<div class="term-grid">' + cards + "</div>" +
-          '<p class="hint">' + icon("info") + "<span>用語を見て意味を思い出してから、カードをタップして説明を確認しましょう。確認画面から、マイ教科書に追加できます。</span></p>") +
+      '<div class="read-sheet">' + list + "</div>" +
+      '<p class="hint">' + icon("info") + "<span>覚えたら右の丸で確認済みに。用語をタップすると詳しい説明、右にスライドするとマイ教科書に追加できます。</span></p>" +
       '<p class="notice">' + esc(DATA.disclaimer) + "</p>" +
       "</main>" +
       '<div class="dock"><div class="dock__inner">' + dock + "</div></div>"
@@ -2464,9 +2444,7 @@
   /* ---------------- オススメの勉強法 ---------------- */
   function renderMethod() {
     // 小さな画面の見本（実際の画面をイメージしたイラスト）
-    var mockCards = '<div class="mm mm--cards">' + ["脱健着患", "端座位", "誤嚥", "褥瘡"].map(function (t, i) {
-      return '<span class="mm__card' + (i === 1 ? " is-checked" : "") + '"><b>' + t + "</b><i></i></span>";
-    }).join("") + "</div>";
+    var mockCards = '<div class="mm mm--read"><p><b>脱健着患</b> 脱ぐときは<em>健側</em>から、着るときは<em>患側</em>から。</p><p><b>端座位</b> ベッドの端に腰かけ、足を床につけた姿勢。</p><p><b>誤嚥</b> 食べ物などが<em>気管</em>に入ること。</p></div>';
     var mockQuiz = '<div class="mm mm--quiz"><p class="mm__q">「体の健康な側から脱ぎ、麻痺のある側から着る」原則は？</p>' +
       ["半側空間無視", "脱健着患", "ボディメカニクス"].map(function (t, i) {
         return '<span class="mm__opt' + (i === 1 ? " is-ok" : "") + '">' + t + (i === 1 ? icon("check") : "") + "</span>";
