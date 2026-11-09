@@ -238,6 +238,8 @@
       while ((n = w.nextNode())) {
         if (!KJ.test(n.nodeValue)) continue;
         var p = n.parentNode, ok = true;
+        // SVG の中の文字（図の中のラベルなど）には付けない。付けると文字が消える
+        if (n.parentNode && (n.parentNode.ownerSVGElement || n.parentNode.namespaceURI === "http://www.w3.org/2000/svg")) continue;
         while (p && p !== root) { if (SKIP[p.nodeName] || (p.classList && p.classList.contains("no-furi"))) { ok = false; break; } p = p.parentNode; }
         if (ok) nodes.push(n);
       }
