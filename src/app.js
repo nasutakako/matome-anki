@@ -704,12 +704,13 @@
       '<section class="done-hero"><div class="done-hero__mark">' + icon("check") + "</div>" +
       '<h2 class="done-hero__title">' + Store.getCompletedCount(theme.id) + "周目 完了</h2>" +
       '<p class="done-hero__sub">' + total + "語すべて確認しました" + (theme.pages.length > 1 ? "（" + theme.pages.length + "ページ）" : "") + "</p>" +
-      '<p class="done-hero__tip">繰り返し見るほど、配置ごと記憶に残ります。時間をおいてもう一周しましょう。</p></section>' +
+      '<p class="done-hero__tip">覚えたら、すぐに基礎問題で思い出す練習をしましょう。思い出すほど記憶に残ります。</p></section>' +
       '<section class="section"><h2 class="section__label">このテーマで覚えた用語</h2>' +
       '<div class="panel review">' + groups + "</div></section>" +
       '<div class="btn-stack">' +
+      '<button class="btn btn--primary" data-action="open-quiz" data-id="' + theme.id + '">' + icon("quiz") + "このテーマの基礎問題に挑戦</button>" +
       (next
-        ? '<button class="btn btn--primary" data-action="open-theme" data-id="' + next.id + '">次のテーマ：' + esc(next.name) + icon("arrow") + "</button>"
+        ? '<button class="btn btn--ghost" data-action="open-theme" data-id="' + next.id + '">次のテーマ：' + esc(next.name) + icon("arrow") + "</button>"
         : "") +
       '<button class="btn btn--ghost" data-action="restart">' + icon("redo") + "もう一度学習する</button>" +
       '<button class="btn btn--ghost" data-action="back-themes">テーマ一覧へ</button>' +
