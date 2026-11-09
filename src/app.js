@@ -2315,6 +2315,10 @@
       (settingsMsg ? '<p class="set-msg" role="status">' + esc(settingsMsg) + "</p>" : "") +
       "</div></section>" +
       ads +
+      '<section class="section"><h2 class="section__label">使い方</h2><div class="rows">' +
+      '<button class="row" data-action="show-intro"><span class="row__body"><span class="row__title">オープニングと使い方をもう一度見る</span></span>' + icon("chev", "row__chev") + "</button>" +
+      '<button class="row" data-action="open-method"><span class="row__body"><span class="row__title">オススメの勉強法</span></span>' + icon("chev", "row__chev") + "</button>" +
+      "</div></section>" +
       '<section class="section"><h2 class="section__label">このアプリについて</h2><div class="rows">' +
       link("privacy.html", "プライバシーポリシー") + link("terms.html", "利用規約・免責事項") + link("contact.html", "お問い合わせ") +
       "</div></section>" +
@@ -2356,6 +2360,105 @@
     if (now - Store.getPref("adLastAt", 0) < AD_INTERVAL) return;
     Store.setPref("adLastAt", now);
     try { N.showInterstitial(); } catch (e) { /* 広告が出せなくても学習は続ける */ }
+  }
+
+  /* ---------------- オープニングと最初の操作説明 ---------------- */
+  var INTRO_TAGLINE = "見やすく学び、問題を解いて思い出す。";
+  var INTRO_CONCEPT = "知識を着実に身につける介護福祉士試験対策アプリ。";
+  function introLogo() {
+    // 5段の階段（積み木）と、上っていく人。CSS アニメーションで順に積み上がる
+    var s = 64, g = 8, x0 = 20, base = 360, o = "", k = 0;
+    for (var col = 0; col < 5; col++) {
+      for (var row = 0; row <= col; row++) {
+        var top = col === 4 && row === 4;
+        o += '<rect class="ilogo__b' + (top ? " ilogo__b--top" : "") + '" style="animation-delay:' + (top ? 1.75 : k * 0.05) + 's" x="' + (x0 + col * (s + g)) +
+          '" y="' + (base - (row + 1) * s - row * g) + '" width="' + s + '" height="' + s + '" rx="14"/>';
+        k++;
+      }
+    }
+    var st = 'fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"';
+    var man = '<g class="ilogo__man"><g transform="scale(0.78)"><circle cx="40" cy="-150" r="24" fill="currentColor"/>' +
+      '<path d="M36,-116 L24,-60" ' + st + '/><path d="M24,-60 L14,-28 L2,0" ' + st + '/><path d="M24,-60 L62,-52 L64,-18" ' + st + '/>' +
+      '<path d="M34,-104 L58,-82 L72,-90" ' + st + '/><path d="M34,-104 L12,-84 L4,-66" ' + st + "/></g></g>";
+    return '<svg class="ilogo" viewBox="0 0 400 380" aria-hidden="true">' + o + man + "</svg>";
+  }
+  function introSlides() {
+    var mockRead = '<div class="mm mm--read"><p><b>介護保険の保険者</b> <em>市町村</em>および特別区。</p><p><b>第1号被保険者</b> <em>65歳以上</em>の人。</p><p><b>第2号被保険者</b> <em>40歳以上65歳未満</em>の医療保険加入者。</p></div>';
+    var mockKw = '<div class="mm mm--read"><p><b>脱健着患</b> 衣服を脱ぐときは<em>健側</em>から、着るときは<em>患側</em>から。</p><p><b>爪切り</b> 異常があるときは<em>医療職に相談</em>する。</p></div>';
+    var mockQuiz = '<div class="mm mm--quiz"><p class="mm__q">「65歳以上の人」にあてはまる用語は？</p>' +
+      ["第2号被保険者", "第1号被保険者", "特定疾病"].map(function (t, i) {
+        return '<span class="mm__opt' + (i === 1 ? " is-ok" : "") + '">' + t + (i === 1 ? icon("check") : "") + "</span>";
+      }).join("") + "</div>";
+    var mockHome = '<div class="mm mm--menu">' + [["grid", "基礎学習"], ["quiz", "基礎問題"], ["doc", "過去問題"], ["pin", "マイ教科書"]].map(function (x) {
+      return '<span class="mm__tile">' + icon(x[0]) + "<b>" + x[1] + "</b></span>";
+    }).join("") + "</div>";
+    var free = '<ul class="intro__free">' + ["基礎学習（約500語）", "基礎問題", "過去問題5年分・解説つき", "苦手傾向分析"].map(function (t) {
+      return "<li>" + icon("check") + t + "</li>";
+    }).join("") + "</ul>";
+    return [
+      { title: "キソマナへようこそ", text: [INTRO_TAGLINE + INTRO_CONCEPT], body: '<div class="intro__mark">' + introLogo() + "</div>" },
+      { title: "1画面で全体を見渡せる基礎学習", text: ["用語を一覧で確認できます。スクロールしても、学習内容の全体像をつかみやすい作りです。"], body: mockRead },
+      { title: "重要なところがひと目で分かる", text: ["用語だけでなく、説明文の大事な部分も赤字で強調。どこを覚えればいいかが分かります。"], body: mockKw },
+      { title: "基礎問題で、思い出す練習", text: ["基礎学習で理解した内容を、問題を通して自分の記憶から引き出します。読み返すだけでなく、思い出す練習をくり返せます。"], body: mockQuiz },
+      { title: "シンプルで迷わない", text: ["ホームから学びたいものを選ぶだけ。余計なボタンや画面を減らして、すぐに学習に入れます。", "覚えたい用語は、右にスライドしてピン留めすると「マイ教科書」に集まります。右上の「ふりがな」で読みがなも表示できます。"], body: mockHome },
+      { title: "主な機能は無料で使えます", text: ["課金のストレスが少ないように、基礎学習などの主要な機能は無料です。"], body: free, last: true },
+    ];
+  }
+  var introEl = null;
+  function closeIntro() {
+    Store.setPref("introSeen", true);
+    if (introEl) { introEl.classList.add("is-leaving"); var el = introEl; introEl = null; setTimeout(function () { el.remove(); }, 260); }
+    document.body.classList.remove("is-locked");
+  }
+  function showIntro(skipMovie) {
+    if (introEl) introEl.remove();
+    var slides = introSlides();
+    introEl = document.createElement("div");
+    introEl.className = "intro" + (skipMovie ? " is-guide" : "");
+    introEl.setAttribute("role", "dialog");
+    introEl.setAttribute("aria-label", "キソマナの使い方");
+    introEl.innerHTML =
+      '<div class="intro__movie" data-intro="to-guide">' +
+      '<div class="intro__mark">' + introLogo() + "</div>" +
+      '<p class="intro__name">キソマナ</p>' +
+      '<p class="intro__sub">介護福祉士 国家試験対策</p>' +
+      '<p class="intro__tag">' + esc(INTRO_TAGLINE) + "</p>" +
+      '<button class="intro__skip" data-intro="to-guide">スキップ</button></div>' +
+      '<div class="intro__guide">' +
+      '<button class="intro__close" data-intro="close">スキップ</button>' +
+      '<div class="intro__track">' + slides.map(function (sl, i) {
+        return '<section class="intro__slide">' + sl.body +
+          '<h2 class="intro__title">' + esc(sl.title) + "</h2>" +
+          sl.text.map(function (t) { return '<p class="intro__text">' + esc(t) + "</p>"; }).join("") + "</section>";
+      }).join("") + "</div>" +
+      '<div class="intro__foot"><div class="intro__dots">' + slides.map(function (_, i) { return '<span class="intro__dot' + (i ? "" : " is-on") + '"></span>'; }).join("") + "</div>" +
+      '<button class="btn btn--primary intro__next" data-intro="next">次へ' + icon("arrow") + "</button></div></div>";
+    document.body.appendChild(introEl);
+    document.body.classList.add("is-locked");
+    if (furiOn() && Furi) Furi.apply(introEl);
+    var track = introEl.querySelector(".intro__track");
+    var dots = introEl.querySelectorAll(".intro__dot");
+    var next = introEl.querySelector(".intro__next");
+    var idx = 0;
+    var setIdx = function (i) {
+      idx = i;
+      for (var d = 0; d < dots.length; d++) dots[d].classList.toggle("is-on", d === i);
+      next.innerHTML = i === slides.length - 1 ? "はじめる" : "次へ" + icon("arrow");
+    };
+    track.addEventListener("scroll", function () { var i = Math.round(track.scrollLeft / track.clientWidth); if (i !== idx) setIdx(i); });
+    var toGuide = function () { if (introEl) introEl.classList.add("is-guide"); };
+    var timer = skipMovie ? null : setTimeout(toGuide, 4200);
+    introEl.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-intro]");
+      if (!b) return;
+      var a = b.dataset.intro;
+      if (a === "to-guide") { clearTimeout(timer); toGuide(); }
+      else if (a === "close") closeIntro();
+      else if (a === "next") {
+        if (idx >= slides.length - 1) closeIntro();
+        else { track.scrollTo({ left: track.clientWidth * (idx + 1), behavior: "smooth" }); setIdx(idx + 1); }
+      }
+    });
   }
 
   /* ---------------- オススメの勉強法 ---------------- */
@@ -2601,6 +2704,7 @@
     },
     "back-review": function () { quiz = null; go({ name: "review" }); },
     "open-settings": function () { settingsMsg = ""; go({ name: "settings" }); },
+    "show-intro": function () { showIntro(false); },
     "backup-download": function () {
       var text = Store.exportData();
       var name = "matome-anki-backup-" + new Date().toISOString().slice(0, 10) + ".json";
@@ -2878,4 +2982,6 @@
   });
 
   render();
+  // はじめて開いたときだけ、オープニングと使い方を表示する（自動テストのブラウザでは出さない。?intro=1 で確認用に表示）
+  if (/[?&]intro=1/.test(location.search) || (!Store.getPref("introSeen", false) && !navigator.webdriver)) showIntro(false);
 })();
