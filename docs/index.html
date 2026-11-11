@@ -1616,9 +1616,11 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .splash { position: fixed; inset: 0; z-index: 110; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   background: radial-gradient(circle at 50% 40%, var(--surface) 0%, var(--brand) 70%); }
 .splash.is-leaving { animation: introOut 0.42s ease-in forwards; }
-.splash__mark { width: 128px; animation: splashMark 0.6s cubic-bezier(.2,1.4,.5,1) both; }
-.splash__mark .ilogo__b { animation: none; opacity: 1; }
-.splash__mark .ilogo__man { animation: none; opacity: 1; transform: translate(98px, 224px); }
+.splash__mark { width: 150px; }
+.splash__mark .ilogo__b { animation: splashBlock 0.32s cubic-bezier(.3,1.6,.6,1) forwards; }
+@keyframes splashBlock { from { opacity: 0; transform: translateY(-46px) scale(.7); } 70% { opacity: 1; } to { opacity: 1; transform: none; } }
+.splash__mark .ilogo__man { opacity: 0; transform: translate(98px, 224px); animation: splashMan 0.45s cubic-bezier(.2,1.7,.5,1) 1.4s forwards; }
+@keyframes splashMan { from { opacity: 0; transform: translate(98px, 244px) scale(.4); } to { opacity: 1; transform: translate(98px, 224px); } }
 @keyframes splashMark { from { opacity: 0; transform: translateY(16px) scale(0.7); } to { opacity: 1; transform: none; } }
 .splash__word { margin: 14px 0 0; font-family: var(--title-font); font-weight: 700; font-size: 52px; letter-spacing: 0.08em; line-height: 1; }
 .splash__word span { display: inline-block; opacity: 0;
@@ -1626,7 +1628,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
   filter: drop-shadow(0 3px 0 rgba(255, 255, 255, 0.9)) drop-shadow(0 6px 14px rgba(35, 67, 111, 0.18));
   animation: splashChar 0.5s cubic-bezier(.2,1.6,.5,1) forwards; }
 @keyframes splashChar { from { opacity: 0; transform: translateY(18px) scale(0.6) rotate(-6deg); } to { opacity: 1; transform: none; } }
-.splash__sub { margin: 10px 0 0; font-size: var(--fs-sm); letter-spacing: 0.24em; color: var(--brand-muted); font-weight: 700; opacity: 0; animation: fadeUp 0.5s ease-out 0.85s forwards; }
+.splash__sub { margin: 10px 0 0; font-size: var(--fs-sm); letter-spacing: 0.24em; color: var(--brand-muted); font-weight: 700; opacity: 0; animation: fadeUp 0.5s ease-out 2.3s forwards; }
 /* 過去問の見本 */
 .mm--past { display: flex; flex-direction: column; gap: 5px; }
 .mm__year { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 9px; background: var(--surface); border: 1px solid var(--line); }
@@ -8457,13 +8459,15 @@ window.KaigoStore = (function () {
   /* ---------------- オープニングと最初の操作説明 ---------------- */
   var INTRO_TAGLINE = "見やすく学び、問題を解いて思い出す。";
   var INTRO_CONCEPT = "知識を着実に身につける介護福祉士試験対策アプリ。";
-  function introLogo() {
+  function introLogo(step) {
     // 5段の階段（積み木）と、上っていく人。CSS アニメーションで順に積み上がる
     var s = 64, g = 8, x0 = 20, base = 360, o = "", k = 0;
     for (var col = 0; col < 5; col++) {
       for (var row = 0; row <= col; row++) {
         var top = col === 4 && row === 4;
-        o += '<rect class="ilogo__b' + (top ? " ilogo__b--top" : "") + '" style="animation-delay:' + (top ? 1.75 : k * 0.05) + 's" x="' + (x0 + col * (s + g)) +
+        // step を指定すると、1個ずつ順番に（最後にてっぺんの赤いブロック）積み上がる
+        var delay = step ? k * step : (top ? 1.75 : k * 0.05);
+        o += '<rect class="ilogo__b' + (top ? " ilogo__b--top" : "") + '" style="animation-delay:' + delay.toFixed(2) + 's" x="' + (x0 + col * (s + g)) +
           '" y="' + (base - (row + 1) * s - row * g) + '" width="' + s + '" height="' + s + '" rx="14"/>';
         k++;
       }
@@ -8504,8 +8508,9 @@ window.KaigoStore = (function () {
     var el = document.createElement("div");
     el.className = "splash";
     el.setAttribute("aria-hidden", "true");
-    el.innerHTML = '<div class="splash__mark">' + introLogo() + "</div>" +
-      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (0.35 + i * 0.09) + 's">' + c + "</span>"; }).join("") + "</p>" +
+    // ブロックが1個ずつ積み上がる → 人が出てくる → 文字が入る
+    el.innerHTML = '<div class="splash__mark">' + introLogo(0.085) + "</div>" +
+      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (1.75 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
       '<p class="splash__sub">介護福祉士 国家試験対策</p>';
     document.body.appendChild(el);
     var done = false;
@@ -8515,7 +8520,7 @@ window.KaigoStore = (function () {
       setTimeout(function () { el.remove(); if (then) then(); }, 420);
     };
     el.addEventListener("click", close);
-    setTimeout(close, 1900);
+    setTimeout(close, 3300);
   }
   var introEl = null;
   function closeIntro() {

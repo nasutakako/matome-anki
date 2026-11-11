@@ -2373,13 +2373,15 @@
   /* ---------------- オープニングと最初の操作説明 ---------------- */
   var INTRO_TAGLINE = "見やすく学び、問題を解いて思い出す。";
   var INTRO_CONCEPT = "知識を着実に身につける介護福祉士試験対策アプリ。";
-  function introLogo() {
+  function introLogo(step) {
     // 5段の階段（積み木）と、上っていく人。CSS アニメーションで順に積み上がる
     var s = 64, g = 8, x0 = 20, base = 360, o = "", k = 0;
     for (var col = 0; col < 5; col++) {
       for (var row = 0; row <= col; row++) {
         var top = col === 4 && row === 4;
-        o += '<rect class="ilogo__b' + (top ? " ilogo__b--top" : "") + '" style="animation-delay:' + (top ? 1.75 : k * 0.05) + 's" x="' + (x0 + col * (s + g)) +
+        // step を指定すると、1個ずつ順番に（最後にてっぺんの赤いブロック）積み上がる
+        var delay = step ? k * step : (top ? 1.75 : k * 0.05);
+        o += '<rect class="ilogo__b' + (top ? " ilogo__b--top" : "") + '" style="animation-delay:' + delay.toFixed(2) + 's" x="' + (x0 + col * (s + g)) +
           '" y="' + (base - (row + 1) * s - row * g) + '" width="' + s + '" height="' + s + '" rx="14"/>';
         k++;
       }
@@ -2420,8 +2422,9 @@
     var el = document.createElement("div");
     el.className = "splash";
     el.setAttribute("aria-hidden", "true");
-    el.innerHTML = '<div class="splash__mark">' + introLogo() + "</div>" +
-      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (0.35 + i * 0.09) + 's">' + c + "</span>"; }).join("") + "</p>" +
+    // ブロックが1個ずつ積み上がる → 人が出てくる → 文字が入る
+    el.innerHTML = '<div class="splash__mark">' + introLogo(0.085) + "</div>" +
+      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (1.75 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
       '<p class="splash__sub">介護福祉士 国家試験対策</p>';
     document.body.appendChild(el);
     var done = false;
@@ -2431,7 +2434,7 @@
       setTimeout(function () { el.remove(); if (then) then(); }, 420);
     };
     el.addEventListener("click", close);
-    setTimeout(close, 1900);
+    setTimeout(close, 3300);
   }
   var introEl = null;
   function closeIntro() {
