@@ -1,6 +1,6 @@
 // オフラインでも開けるよう、アプリ本体をキャッシュする
 // 教材や画面を更新したら VERSION を上げる（古いキャッシュが入れ替わる）
-const VERSION = "v47";
+const VERSION = "v48";
 const CACHE = "matome-anki-" + VERSION;
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 

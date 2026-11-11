@@ -613,7 +613,8 @@ h1, h2, h3 { text-wrap: balance; line-height: 1.35; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  /* オープニング（ロゴが積み上がる演出）だけは止めない。動きを減らす設定では、下のほうで「その場でふわっと出る」形に切り替える */
+  *:not(.splash):not(.splash *):not(.intro__movie *), *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 /* ---------- 表示切り替え ---------- */
@@ -1571,6 +1572,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .ilogo { width: 100%; height: auto; display: block; color: var(--brand-ink); overflow: visible; }
 .ilogo__b { fill: var(--accent); opacity: 0; transform-box: fill-box; transform-origin: 50% 100%; animation: blockIn 0.35s cubic-bezier(.3,1.5,.6,1) forwards; }
 .ilogo__b--top { fill: var(--pin); }
+.intro__movie .ilogo__man { animation-delay: 1.65s; }
 @keyframes blockIn { from { opacity: 0; transform: translateY(-30px) scale(.6); } to { opacity: 1; transform: none; } }
 .ilogo__man { color: var(--brand-ink); opacity: 0; animation: manClimb 1.1s ease-in-out 0.9s forwards; }
 @keyframes manClimb {
@@ -1580,9 +1582,9 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
   65% { transform: translate(170px, 152px); }
   100% { opacity: 1; transform: translate(242px, 80px); }
 }
-.intro__name { margin: 10px 0 0; font-family: var(--title-font); font-size: 40px; font-weight: 700; letter-spacing: 0.12em; color: var(--brand-ink); opacity: 0; animation: fadeUp 0.6s ease-out 2.1s forwards; }
-.intro__sub { margin: 0; font-size: var(--fs-md); color: var(--brand-muted); opacity: 0; animation: fadeUp 0.6s ease-out 2.35s forwards; }
-.intro__tag { margin: 14px 0 0; font-family: var(--title-font); font-weight: 700; font-size: 16px; color: var(--label); opacity: 0; animation: fadeUp 0.6s ease-out 2.7s forwards; }
+.intro__name { margin: 10px 0 0; font-family: var(--title-font); font-size: 40px; font-weight: 700; letter-spacing: 0.12em; color: var(--brand-ink); opacity: 0; animation: fadeUp 0.6s ease-out 2.8s forwards; }
+.intro__sub { margin: 0; font-size: var(--fs-md); color: var(--brand-muted); opacity: 0; animation: fadeUp 0.6s ease-out 3.05s forwards; }
+.intro__tag { margin: 14px 0 0; font-family: var(--title-font); font-weight: 700; font-size: 16px; color: var(--label); opacity: 0; animation: fadeUp 0.6s ease-out 3.4s forwards; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .intro__skip, .intro__close { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 16px; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: var(--fs-sm); padding: 8px; cursor: pointer; }
 .intro__guide { flex: 1; display: flex; flex-direction: column; min-height: 0; padding-top: 44px; position: relative; max-width: var(--app-max); width: 100%; margin: 0 auto; }
@@ -1606,7 +1608,6 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .mm__tile { display: flex; align-items: center; gap: 6px; padding: 10px 8px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
 .mm__tile svg { width: 18px; height: 18px; color: var(--accent); }
 .mm__tile b { font-size: 13px; color: var(--ink); }
-@media (prefers-reduced-motion: reduce) { .ilogo__b, .ilogo__man, .intro__name, .intro__sub, .intro__tag { animation-duration: 0.01s !important; animation-delay: 0s !important; } }
 
 /* 確認済みの丸：押せる範囲を左に広げる（文字の右端あたりを押しても確認済みになる） */
 .rs-item__check { position: relative; width: 2.4em; min-width: 38px; }
@@ -1619,7 +1620,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .splash__mark { width: 150px; }
 .splash__mark .ilogo__b { animation: splashBlock 0.32s cubic-bezier(.3,1.6,.6,1) forwards; }
 @keyframes splashBlock { from { opacity: 0; transform: translateY(-46px) scale(.7); } 70% { opacity: 1; } to { opacity: 1; transform: none; } }
-.splash__mark .ilogo__man { opacity: 0; transform: translate(98px, 224px); animation: splashMan 0.45s cubic-bezier(.2,1.7,.5,1) 1.4s forwards; }
+.splash__mark .ilogo__man { opacity: 0; transform: translate(98px, 224px); animation: splashMan 0.45s cubic-bezier(.2,1.7,.5,1) 1.65s forwards; }
 @keyframes splashMan { from { opacity: 0; transform: translate(98px, 244px) scale(.4); } to { opacity: 1; transform: translate(98px, 224px); } }
 @keyframes splashMark { from { opacity: 0; transform: translateY(16px) scale(0.7); } to { opacity: 1; transform: none; } }
 .splash__word { margin: 14px 0 0; font-family: var(--title-font); font-weight: 700; font-size: 52px; letter-spacing: 0.08em; line-height: 1; }
@@ -1628,7 +1629,7 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
   filter: drop-shadow(0 3px 0 rgba(255, 255, 255, 0.9)) drop-shadow(0 6px 14px rgba(35, 67, 111, 0.18));
   animation: splashChar 0.5s cubic-bezier(.2,1.6,.5,1) forwards; }
 @keyframes splashChar { from { opacity: 0; transform: translateY(18px) scale(0.6) rotate(-6deg); } to { opacity: 1; transform: none; } }
-.splash__sub { margin: 10px 0 0; font-size: var(--fs-sm); letter-spacing: 0.24em; color: var(--brand-muted); font-weight: 700; opacity: 0; animation: fadeUp 0.5s ease-out 2.3s forwards; }
+.splash__sub { margin: 10px 0 0; font-size: var(--fs-sm); letter-spacing: 0.24em; color: var(--brand-muted); font-weight: 700; opacity: 0; animation: fadeUp 0.5s ease-out 2.55s forwards; }
 /* 過去問の見本 */
 .mm--past { display: flex; flex-direction: column; gap: 5px; }
 .mm__year { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 9px; background: var(--surface); border: 1px solid var(--line); }
@@ -1636,7 +1637,13 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .mm__yearsub { flex: 1; color: var(--muted); font-size: 11.5px; }
 .mm__year i { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--muted); }
 .mm__year i.is-ok { background: var(--ok-soft); color: var(--ok); }
-@media (prefers-reduced-motion: reduce) { .splash__mark, .splash__word span, .splash__sub { animation-duration: 0.01s !important; animation-delay: 0s !important; } }
+/* 動きを減らす設定の端末：落ちてくる動きをやめ、同じ順番で1個ずつその場に現れる（何も見えなくならないように） */
+@keyframes logoFade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .splash__mark .ilogo__b, .intro__movie .ilogo__b { animation-name: logoFade !important; animation-duration: 0.3s !important; animation-timing-function: ease-out !important; }
+  .splash__mark .ilogo__man, .splash__word span, .splash__sub, .intro__name, .intro__sub, .intro__tag { animation-name: logoFade !important; animation-timing-function: ease-out !important; }
+  .intro__movie .ilogo__man { transform: translate(242px, 80px); animation-name: logoFade !important; animation-duration: 0.4s !important; }
+}
 
 </style>
 </head>
@@ -8509,8 +8516,8 @@ window.KaigoStore = (function () {
     el.className = "splash";
     el.setAttribute("aria-hidden", "true");
     // ブロックが1個ずつ積み上がる → 人が出てくる → 文字が入る
-    el.innerHTML = '<div class="splash__mark">' + introLogo(0.085) + "</div>" +
-      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (1.75 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
+    el.innerHTML = '<div class="splash__mark">' + introLogo(0.1) + "</div>" +
+      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (2.0 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
       '<p class="splash__sub">介護福祉士 国家試験対策</p>';
     document.body.appendChild(el);
     var done = false;
@@ -8520,7 +8527,7 @@ window.KaigoStore = (function () {
       setTimeout(function () { el.remove(); if (then) then(); }, 420);
     };
     el.addEventListener("click", close);
-    setTimeout(close, 3300);
+    setTimeout(close, 3600);
   }
   var introEl = null;
   function closeIntro() {
@@ -8537,7 +8544,7 @@ window.KaigoStore = (function () {
     introEl.setAttribute("aria-label", "キソマナの使い方");
     introEl.innerHTML =
       '<div class="intro__movie" data-intro="to-guide">' +
-      '<div class="intro__mark">' + introLogo() + "</div>" +
+      '<div class="intro__mark">' + introLogo(0.1) + "</div>" +
       '<p class="intro__name">キソマナ</p>' +
       '<p class="intro__sub">介護福祉士 国家試験対策</p>' +
       '<p class="intro__tag">' + esc(INTRO_TAGLINE) + "</p>" +
@@ -8565,7 +8572,7 @@ window.KaigoStore = (function () {
     };
     track.addEventListener("scroll", function () { var i = Math.round(track.scrollLeft / track.clientWidth); if (i !== idx) setIdx(i); });
     var toGuide = function () { if (introEl) introEl.classList.add("is-guide"); };
-    var timer = skipMovie ? null : setTimeout(toGuide, 4200);
+    var timer = skipMovie ? null : setTimeout(toGuide, 4800);
     introEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-intro]");
       if (!b) return;

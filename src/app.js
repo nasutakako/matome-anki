@@ -2423,8 +2423,8 @@
     el.className = "splash";
     el.setAttribute("aria-hidden", "true");
     // ブロックが1個ずつ積み上がる → 人が出てくる → 文字が入る
-    el.innerHTML = '<div class="splash__mark">' + introLogo(0.085) + "</div>" +
-      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (1.75 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
+    el.innerHTML = '<div class="splash__mark">' + introLogo(0.1) + "</div>" +
+      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (2.0 + i * 0.1).toFixed(2) + 's">' + c + "</span>"; }).join("") + "</p>" +
       '<p class="splash__sub">介護福祉士 国家試験対策</p>';
     document.body.appendChild(el);
     var done = false;
@@ -2434,7 +2434,7 @@
       setTimeout(function () { el.remove(); if (then) then(); }, 420);
     };
     el.addEventListener("click", close);
-    setTimeout(close, 3300);
+    setTimeout(close, 3600);
   }
   var introEl = null;
   function closeIntro() {
@@ -2451,7 +2451,7 @@
     introEl.setAttribute("aria-label", "キソマナの使い方");
     introEl.innerHTML =
       '<div class="intro__movie" data-intro="to-guide">' +
-      '<div class="intro__mark">' + introLogo() + "</div>" +
+      '<div class="intro__mark">' + introLogo(0.1) + "</div>" +
       '<p class="intro__name">キソマナ</p>' +
       '<p class="intro__sub">介護福祉士 国家試験対策</p>' +
       '<p class="intro__tag">' + esc(INTRO_TAGLINE) + "</p>" +
@@ -2479,7 +2479,7 @@
     };
     track.addEventListener("scroll", function () { var i = Math.round(track.scrollLeft / track.clientWidth); if (i !== idx) setIdx(i); });
     var toGuide = function () { if (introEl) introEl.classList.add("is-guide"); };
-    var timer = skipMovie ? null : setTimeout(toGuide, 4200);
+    var timer = skipMovie ? null : setTimeout(toGuide, 4800);
     introEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-intro]");
       if (!b) return;
