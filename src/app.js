@@ -2408,9 +2408,30 @@
       { title: "1画面で全体を見渡せる基礎学習", text: ["用語を一覧で確認できます。スクロールしても、学習内容の全体像をつかみやすい作りです。"], body: mockRead },
       { title: "重要なところがひと目で分かる", text: ["用語だけでなく、説明文の大事な部分も赤字で強調。どこを覚えればいいかが分かります。"], body: mockKw },
       { title: "基礎問題で、思い出す練習", text: ["基礎学習で理解した内容を、問題を通して自分の記憶から引き出します。読み返すだけでなく、思い出す練習をくり返せます。"], body: mockQuiz },
+      { title: "仕上げは、過去問で腕試し", text: ["基礎問題を解き終えたら、同じ科目の過去問を年度ごとに選べます。本番の問題で、覚えた知識が使えるか確かめましょう。"], body: '<div class="mm mm--past">' + [["第38回", "8 / 12", "is-ok"], ["第37回", "未挑戦", ""], ["第36回", "未挑戦", ""]].map(function (x) {
+        return '<span class="mm__year"><b>' + x[0] + '</b><span class="mm__yearsub">社会の理解</span><i class="' + x[2] + '">' + x[1] + "</i></span>";
+      }).join("") + "</div>" },
       { title: "シンプルで迷わない", text: ["ホームから学びたいものを選ぶだけ。余計なボタンや画面を減らして、すぐに学習に入れます。", "覚えたい用語は、右にスライドしてピン留めすると「マイ教科書」に集まります。右上の「ふりがな」で読みがなも表示できます。"], body: mockHome },
       { title: "主な機能は無料で使えます", text: ["課金のストレスが少ないように、基礎学習などの主要な機能は無料です。"], body: free, last: true },
     ];
+  }
+  /** 毎回の起動時に出すオープニング（ロゴ）。タップで閉じる */
+  function showSplash(then) {
+    var el = document.createElement("div");
+    el.className = "splash";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<div class="splash__mark">' + introLogo() + "</div>" +
+      '<p class="splash__word">' + "キソマナ".split("").map(function (c, i) { return '<span style="animation-delay:' + (0.35 + i * 0.09) + 's">' + c + "</span>"; }).join("") + "</p>" +
+      '<p class="splash__sub">介護福祉士 国家試験対策</p>';
+    document.body.appendChild(el);
+    var done = false;
+    var close = function () {
+      if (done) return; done = true;
+      el.classList.add("is-leaving");
+      setTimeout(function () { el.remove(); if (then) then(); }, 420);
+    };
+    el.addEventListener("click", close);
+    setTimeout(close, 1900);
   }
   var introEl = null;
   function closeIntro() {
@@ -2479,6 +2500,9 @@
       }).join("") + "</div>";
     var mockRead = '<div class="mm mm--read"><p><b>誤嚥</b> 食べ物などが<em>気管</em>に入ること。</p><p class="is-focus"><b>褥瘡</b> 圧迫で皮膚が傷つく。<em>仙骨部</em>に多い。</p></div>';
     var mockAgain = '<div class="mm mm--score"><span class="mm__ring"><b>15</b>/16</span><span class="mm__up">前回より<br><b>+4問</b></span></div>';
+    var mockPast = '<div class="mm mm--past">' + [["第38回", "8 / 12", "is-ok"], ["第37回", "未挑戦", ""], ["第36回", "未挑戦", ""]].map(function (x) {
+      return '<span class="mm__year"><b>' + x[0] + '</b><span class="mm__yearsub">社会の理解</span><i class="' + x[2] + '">' + x[1] + "</i></span>";
+    }).join("") + "</div>";
     var step = function (n, title, text, mock) {
       return '<li class="mstep"><div class="mstep__num">' + n + "</div><div class=\"mstep__body\"><h3 class=\"mstep__title\">" + esc(title) + "</h3>" +
         text.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") + mock + "</div></li>";
@@ -2501,6 +2525,7 @@
       step(2, "基礎問題に挑戦", ["学んだ内容をすぐに思い出す練習をします。", "基礎問題は、過去問のように難しく考え込むのではなく、学んだ用語や説明をスムーズに思い出せるように作られています。"], mockQuiz) +
       step(3, "基礎学習をもう1周", ["問題で思い出せなかった用語や、あいまいだった部分を確認します。"], mockRead) +
       step(4, "もう一度、基礎問題に挑戦", ["繰り返し思い出すことで、知識を定着させていきます。"], mockAgain) +
+      step(5, "過去問で腕試し！", ["基礎問題を終えたら、結果の画面から同じ科目の過去問（第34〜38回）を選んで、本番の問題で力を確かめましょう。", "解けなかった問題は解説を読み、基礎学習に戻って確認します。"], mockPast) +
       "</ol>" +
       '<section class="panel method-point"><p class="method-point__title">基礎学習で覚える。基礎問題で思い出す。</p>' +
       "<p>知識は、ただ読むだけでなく、自分で思い出す練習を繰り返すことが大切です。慣れてきたら、翌日や数日後にも復習してみましょう。</p></section>" +
@@ -2994,5 +3019,10 @@
 
   render();
   // はじめて開いたときだけ、オープニングと使い方を表示する（自動テストのブラウザでは出さない。?intro=1 で確認用に表示）
-  if (/[?&]intro=1/.test(location.search) || (!Store.getPref("introSeen", false) && !navigator.webdriver)) showIntro(false);
+  // 起動のたびにロゴのオープニングを出し、はじめての人にはそのあと使い方を表示する
+  // （自動テストのブラウザでは出さない。?intro=1 で確認用に表示）
+  var forceIntro = /[?&]intro=1/.test(location.search);
+  if (forceIntro || !navigator.webdriver) {
+    showSplash(function () { if (forceIntro || !Store.getPref("introSeen", false)) showIntro(true); });
+  }
 })();
