@@ -7200,8 +7200,33 @@ window.KaigoStore = (function () {
       : quiz.practice ? "正解した問題は、新しい問題に入れ替わります"
       : wrong.length ? "正解した問題は「まだ正解していない」から外れます" : "すべて正解しました";
 
-    var buttons;
+    var buttons, pastHtml = "";
     if (quiz.kind === "theme") {
+      // この科目の本試験（年度別）に進めるように、各年度の同じ科目を並べる
+      var fid = fieldOfTheme[quiz.themeId].id;
+      var pastRows = [];
+      PAST.years.forEach(function (y) {
+        y.subjects.forEach(function (sj, si) {
+          if (sj.field !== fid) return;
+          var rec = Store.getPast(y.id), chip;
+          if (rec.graded[si]) {
+            var r = 0, nn = sj.to - sj.from + 1;
+            for (var q = sj.from; q <= sj.to; q++) if (rec.answers[q] && isRight(y, q, rec.answers[q])) r++;
+            chip = '<span class="chip ' + (r / nn >= 0.6 ? "chip--done" : "chip--ng") + '">' + r + " / " + nn + "</span>";
+          } else chip = '<span class="chip">未挑戦</span>';
+          pastRows.push(
+            '<button class="row" data-action="open-past-sheet-at" data-year="' + y.id + '" data-index="' + si + '">' +
+            '<span class="row__body"><span class="row__title">' + esc(y.name) + "（" + esc(y.nendo) + "）</span>" +
+            '<span class="row__sub">' + esc(sj.name) + " ・ 問題" + sj.from + "〜" + sj.to + "（" + (sj.to - sj.from + 1) + "問）</span></span>" +
+            '<span class="row__aside">' + chip + icon("chev", "row__chev") + "</span></button>"
+          );
+        });
+      });
+      if (pastRows.length) {
+        pastHtml = '<section class="section"><h2 class="section__label">過去問に挑戦（' + esc(fieldOfTheme[quiz.themeId].name) + "）</h2>" +
+          '<p class="hint">' + icon("info") + "<span>本試験で、この科目がどう出題されたかを確かめましょう。年度を選んでください。</span></p>" +
+          '<div class="rows">' + pastRows.join("") + "</div></section>";
+      }
       buttons =
         '<button class="btn btn--ghost" data-action="quiz-again">もう一度全問解く</button>' +
         '<button class="btn btn--ghost" data-action="open-theme" data-id="' + quiz.themeId + '">' + icon("grid") + "基礎学習で見直す</button>" +
@@ -7239,7 +7264,7 @@ window.KaigoStore = (function () {
       '<div class="btn-stack">' +
       (wrong.length ? '<button class="btn btn--primary" data-action="quiz-retry-wrong">' + icon("redo") + "間違えた問題を解き直す</button>" : "") +
       buttons +
-      "</div></main>"
+      "</div>" + pastHtml + "</main>"
     );
   }
 
@@ -8813,6 +8838,11 @@ window.KaigoStore = (function () {
     },
     "open-past-year": function (el) { go({ name: "pastYear", yearId: el.dataset.id }); },
     "back-past-year": function () { go({ name: "pastYear", yearId: view.yearId }); },
+    "open-past-sheet-at": function (el) {
+      quiz = null;
+      go({ name: "pastSheet", yearId: el.dataset.year, subjectIndex: parseInt(el.dataset.index, 10) });
+      window.scrollTo(0, 0);
+    },
     "open-past-sheet": function (el) {
       go({ name: "pastSheet", yearId: view.yearId, subjectIndex: parseInt(el.dataset.index, 10) });
     },
