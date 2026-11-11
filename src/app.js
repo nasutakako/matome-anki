@@ -2386,8 +2386,9 @@
         k++;
       }
     }
-    var st = 'fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"';
-    var man = '<g class="ilogo__man"><g transform="scale(0.78)"><circle cx="40" cy="-150" r="24" fill="currentColor"/>' +
+    // 人はアプリのアイコンと同じ位置・大きさ（1段目の上に立ち、2段目に足をかける）
+    var st = 'fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"';
+    var man = '<g class="ilogo__man"><g transform="scale(0.964)"><circle cx="40" cy="-150" r="25" fill="currentColor"/>' +
       '<path d="M36,-116 L24,-60" ' + st + '/><path d="M24,-60 L14,-28 L2,0" ' + st + '/><path d="M24,-60 L62,-52 L64,-18" ' + st + '/>' +
       '<path d="M34,-104 L58,-82 L72,-90" ' + st + '/><path d="M34,-104 L12,-84 L4,-66" ' + st + "/></g></g>";
     return '<svg class="ilogo" viewBox="0 0 400 380" aria-hidden="true">' + o + man + "</svg>";
