@@ -1638,6 +1638,38 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
   .intro__movie .ilogo__man { animation-name: logoFade !important; animation-duration: 0.4s !important; }
 }
 
+/* ---------- 用語の検索 ---------- */
+.home-search { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 42px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--muted); font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; box-shadow: 0 1px 0 rgba(0,0,0,0.02); }
+.home-search svg, .search__box > svg { width: 18px; height: 18px; flex: none; color: var(--accent); }
+.home-search__ph { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content--search { gap: 12px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+.search__box { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 60px); z-index: 5; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 14px;
+  border: 2px solid var(--accent); border-radius: 999px; background: var(--surface); }
+.search__input { flex: 1; min-width: 0; height: 44px; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 16px; -webkit-appearance: none; appearance: none; }
+.search__input::-webkit-search-cancel-button { display: none; }
+.search__clear { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--tint); color: var(--muted); cursor: pointer; }
+.search__clear[hidden] { display: none; }
+.search__clear svg { width: 16px; height: 16px; }
+.search__hint, .search__empty { margin: 4px 2px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.7; }
+.search__empty { padding: 18px 4px; text-align: center; }
+.search__label { margin: 8px 2px 6px; font-size: var(--fs-sm); font-weight: 700; color: var(--label); }
+.search__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.search__chip { padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; }
+.search__count { margin: 0 2px; font-size: var(--fs-sm); font-weight: 700; color: var(--label); }
+.search__rel { display: block; margin-top: 2px; font-weight: 400; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.sres-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.sres { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm, 12px);
+  background: var(--surface); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.sres__where { font-size: 11.5px; color: var(--muted); }
+.sres__term { font-size: var(--fs-md, 16px); font-weight: 700; color: var(--brand-ink); }
+.sres__term small { margin-left: 8px; font-size: 11.5px; font-weight: 400; color: var(--muted); }
+.sres__def { font-size: var(--fs-sm); line-height: 1.65; color: var(--ink); }
+.sres mark, .search__results mark { background: var(--accent-soft); color: inherit; border-radius: 3px; padding: 0 1px; }
+.search__note { margin: 10px 2px 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
+.rs-item.is-found .rs-item__slide { animation: foundFlash 2.2s ease-out; }
+@keyframes foundFlash { 0%, 35% { box-shadow: 0 0 0 3px var(--accent); background: var(--accent-soft); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
 </style>
 </head>
 <body>
@@ -6124,6 +6156,7 @@ window.KaigoStore = (function () {
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
     chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+    search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
     pin: '<path d="M9 3.5h6l-.8 5.2 3.3 3.3H6.5l3.3-3.3L9 3.5z"/><path d="M12 12v8"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
     save: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/>',
@@ -6350,7 +6383,19 @@ window.KaigoStore = (function () {
       });
       root.normalize();
     }
-    return { apply: apply, strip: strip };
+    // 文字列の読みがな（ひらがな）。検索で「みとり」「じょくそう」などのかな入力に当てるために使う
+    function reading(text) {
+      var out = "", i = 0;
+      text = String(text || "");
+      while (i < text.length) {
+        var c = text.charAt(i), found = null;
+        if (idx[c]) for (var b = 0; b < idx[c].length; b++) if (text.startsWith(idx[c][b], i)) { found = idx[c][b]; break; }
+        if (found) { out += D[found].replace(/[\u4e00-\u9fff々〆ヶ]+\{([^}]*)\}/g, "$1"); i += found.length; }
+        else { out += c; i++; }
+      }
+      return out;
+    }
+    return { apply: apply, strip: strip, reading: reading };
   })();
   function furiOn() { return Boolean(Furi) && Store.getPref("furigana", false); }
   function furiButton() {
@@ -6446,6 +6491,7 @@ window.KaigoStore = (function () {
     return (
       topbar("介護福祉士 国家試験対策", "キソマナ", null, shopButton()) +
       '<main class="content content--home">' +
+      '<button class="home-search" data-action="open-search">' + icon("search") + '<span class="home-search__ph">用語をさがす（例：看取り・褥瘡）</span></button>' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
       '<div><p class="stat__label">確認した用語</p><p class="stat__value">' + checked + "<small>/ " + ids.length + "語</small></p></div>" +
@@ -6640,7 +6686,7 @@ window.KaigoStore = (function () {
       : '<p class="dock__status">すべて確認すると次へ進めます（あと ' + (total - done) + " 語）</p>";
 
     return (
-      topbar(mine ? "マイ教科書 ・ " + field.name : field.name, theme.name, "back-themes") +
+      topbar(mine ? "マイ教科書 ・ " + field.name : field.name, theme.name, view.fromSearch ? "back-search" : "back-themes") +
       '<main class="content content--with-dock' + (mode === "list" ? " content--read" : "") + '">' +
       '<div class="study-head">' +
       '<div class="study-head__row">' +
@@ -6696,7 +6742,10 @@ window.KaigoStore = (function () {
     var picked = Store.isPicked(t.id);
     var pinBtn = '<button class="btn btn--pin' + (picked ? " is-picked" : "") + '" data-action="toggle-pick">' + icon("pin") +
       (picked ? "マイ教科書に追加済み（外す）" : "マイ教科書に追加") + "</button>";
-    var foot = on
+    var foot = view.name === "search"
+      ? '<button class="btn btn--primary" data-action="search-open-study" data-autofocus>' + icon("book") + "基礎学習のこのページを開く</button>" + pinBtn +
+        '<button class="btn btn--ghost" data-action="close-sheet">検索結果に戻る</button>'
+      : on
       ? '<p class="sheet__done">' + icon("check") + "確認済み</p>" + pinBtn +
         '<button class="btn btn--ghost" data-action="close-sheet" data-autofocus>一覧に戻る</button>' +
         '<button class="btn btn--text" data-action="uncheck">未確認に戻す</button>'
@@ -8706,6 +8755,177 @@ window.KaigoStore = (function () {
     );
   }
 
+  /* ---------------- 用語の検索 ---------------- */
+  // 言い換え・関連する言葉。キーワード（keys）のどれかで探したら、terms の用語もあわせて出す
+  var SEARCH_GROUPS = [
+    { label: "看取り・終末期", keys: ["看取り", "みとり", "終末期", "ターミナル", "エンドオブライフ", "人生会議", "ACP", "エンゼルケア", "緩和ケア", "臨終", "最期"],
+      terms: ["ターミナルケア", "アドバンス・ケア・プランニング", "死の受容の5段階", "死が近づいたときの変化", "グリーフケア", "デスカンファレンス", "死後の介護", "死の三徴候", "尊厳死", "モルヒネの副作用"] },
+    { label: "床ずれ", keys: ["床ずれ", "とこずれ", "褥瘡", "じょくそう", "除圧"], terms: ["褥瘡", "体位変換", "皮膚の構造"] },
+    { label: "認知症の行動・心理症状（BPSD）", keys: ["BPSD", "行動心理症状", "周辺症状"],
+      terms: ["徘徊", "物盗られ妄想", "幻覚", "夕暮れ症候群", "暴言・暴力", "介護への抵抗", "抑うつ", "異食", "アパシー", "帰宅願望への対応", "物盗られ妄想への対応"] },
+    { label: "認知症の中核症状", keys: ["中核症状"], terms: ["記憶障害", "見当識障害", "理解・判断力の障害", "実行機能障害", "注意障害", "失語", "失行", "失認"] },
+    { label: "誤嚥・むせ", keys: ["誤嚥", "ごえん", "むせ", "嚥下", "えんげ", "飲み込み", "誤嚥性肺炎", "窒息"],
+      terms: ["誤嚥", "嚥下障害のある人の食事", "摂食・嚥下の5分類", "食事の姿勢", "高齢者の肺炎", "口腔ケア", "窒息のサイン"] },
+    { label: "感染対策", keys: ["感染", "標準予防策", "スタンダードプリコーション", "消毒", "食中毒"],
+      terms: ["スタンダードプリコーション", "手洗い", "ノロウイルス", "インフルエンザ", "結核", "疥癬", "MRSA", "レジオネラ菌", "清潔と滅菌", "食中毒予防の3原則"] },
+    { label: "虐待・身体拘束", keys: ["虐待", "身体拘束", "拘束", "抑制"],
+      terms: ["高齢者虐待防止法", "虐待の通報", "養護者による虐待の傾向", "障害者虐待防止法", "DV防止法", "身体拘束の禁止", "身体拘束の具体例"] },
+    { label: "ケアマネジャー", keys: ["ケアマネ", "ケアマネジャー", "ケアマネージャー"], terms: ["介護支援専門員", "ケアプラン", "サービス担当者会議"] },
+    { label: "排泄・失禁", keys: ["排泄", "はいせつ", "失禁", "トイレ", "おむつ", "便秘", "尿"],
+      terms: ["機能性尿失禁", "腹圧性尿失禁", "切迫性尿失禁", "溢流性尿失禁", "排泄の姿勢", "ポータブルトイレ", "おむつ交換", "便秘の予防", "便秘の種類", "排尿のしくみ"] },
+    { label: "入浴", keys: ["入浴", "お風呂", "おふろ", "風呂"], terms: ["入浴の注意", "ヒートショック", "片麻痺のある人の入浴", "シャワー浴", "入浴の作用", "入浴用の福祉用具", "足浴", "洗髪", "清拭"] },
+    { label: "睡眠", keys: ["睡眠", "眠れない", "不眠", "眠り"], terms: ["安眠への支援", "概日リズム", "睡眠薬を飲んでいる人への注意", "高齢者の睡眠の特徴", "レム睡眠・ノンレム睡眠", "睡眠障害の種類"] },
+    { label: "災害への備え", keys: ["災害", "防災", "避難", "地震", "BCP"], terms: ["BCP", "福祉避難所", "警戒レベル", "要配慮者への情報伝達"] },
+    { label: "たんの吸引", keys: ["吸引", "たん", "痰", "喀痰"], terms: ["喀痰吸引等を行う介護福祉士", "喀痰吸引の範囲", "吸引の時間", "吸引圧", "吸引前後の観察", "痰の性状", "吸引中の異常", "気管カニューレ内の吸引"] },
+    { label: "胃ろう・経管栄養", keys: ["胃ろう", "胃瘻", "いろう", "経管栄養", "PEG"], terms: ["経管栄養の種類", "胃ろうのスキンケア", "胃ろう・ストーマのある人の入浴", "半固形栄養剤", "経管栄養の姿勢", "注入速度"] },
+    { label: "記録", keys: ["記録", "きろく", "日誌"], terms: ["介護記録", "SOAP", "記録の訂正", "記録の管理", "主観的情報・客観的情報"] },
+    { label: "報連相", keys: ["報連相", "ほうれんそう", "報告"], terms: ["報告・連絡・相談", "報告のしかた"] },
+    { label: "急変時の対応", keys: ["急変", "救急", "救命", "心停止", "意識がない"], terms: ["心肺蘇生", "AED", "気道確保", "窒息のサイン", "バイタルサイン"] },
+    { label: "脳卒中", keys: ["脳卒中", "脳梗塞", "脳出血", "片麻痺"], terms: ["脳血管障害", "血管性認知症", "片麻痺のある人の食事介助", "片麻痺のある人の入浴", "脱健着患", "半側空間無視", "高次脳機能障害"] },
+    { label: "ハラスメント", keys: ["ハラスメント", "カスハラ", "セクハラ"], terms: ["利用者・家族からのハラスメント"] },
+    { label: "燃え尽き・ストレス", keys: ["燃え尽き", "ストレス"], terms: ["バーンアウト", "ストレスチェック制度", "ストレスへの対処", "ストレッサー"] },
+    { label: "権利擁護", keys: ["権利擁護", "代弁"], terms: ["アドボカシー", "成年後見制度", "日常生活自立支援事業"] },
+    { label: "家族・介護者の支援", keys: ["家族支援", "介護者支援", "介護疲れ", "家族"], terms: ["レスパイトケア", "家族の心理的ステップ", "ヤングケアラー", "老老介護", "介護休業"] },
+    { label: "転倒・骨折", keys: ["転倒", "骨折", "転ぶ"], terms: ["大腿骨頸部骨折", "骨粗鬆症", "杖歩行", "歩行器の種類", "フレイル", "サルコペニア"] },
+    { label: "口と歯", keys: ["口腔", "こうくう", "歯", "入れ歯", "義歯"], terms: ["口腔ケア", "口腔ケアの方法", "義歯の扱い", "歯周病", "経管栄養の人の口腔ケア"] },
+    { label: "会議", keys: ["会議", "カンファレンス"], terms: ["サービス担当者会議", "地域ケア会議", "カンファレンス", "デスカンファレンス"] },
+    { label: "薬", keys: ["薬", "くすり", "服薬", "副作用"], terms: ["服薬の介助", "高齢者と薬", "睡眠薬を飲んでいる人への注意", "抗精神病薬の副作用", "坐薬の挿入", "モルヒネの副作用"] },
+    { label: "移乗・移動", keys: ["移乗", "トランスファー", "移動", "車いす", "車椅子"], terms: ["車いすへの移乗", "ボディメカニクス", "ノーリフティングケア", "立ち上がりの介助", "車いすの操作", "車いすの安全"] },
+  ];
+  var SEARCH_SUGGEST = ["看取り", "褥瘡", "誤嚥", "感染対策", "BPSD", "身体拘束", "記録", "急変"];
+
+  /** 検索用に文字をそろえる（全角・半角、カタカナ→ひらがな、大文字・小文字、記号の違いを吸収） */
+  function normSearch(text) {
+    return String(text || "").normalize("NFKC").toLowerCase()
+      .replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0x60); })
+      .replace(/[\s・･\-‐－―、。，．,.()（）「」『』]/g, "");
+  }
+  var searchIndex = null;
+  function buildSearchIndex() {
+    if (searchIndex) return searchIndex;
+    var byName = {};
+    searchIndex = [];
+    DATA.fields.forEach(function (f) {
+      f.themes.forEach(function (th) {
+        th.pages.forEach(function (pg) {
+          pg.terms.forEach(function (t) {
+            var body = [t.definition, t.point, t.example, t.person, t.profile].filter(Boolean).join(" ");
+            var e = {
+              id: t.id, t: t, field: f, theme: th,
+              name: normSearch(t.term),
+              read: normSearch((t.reading || "") + " " + (Furi ? Furi.reading(t.term) : "")),
+              where: normSearch(th.name + " " + pg.title),
+              body: normSearch(body),
+              bodyRead: Furi ? normSearch(Furi.reading(body)) : "",
+            };
+            searchIndex.push(e);
+            (byName[t.term] = byName[t.term] || []).push(e);
+          });
+        });
+      });
+    });
+    searchIndex.byName = byName;
+    return searchIndex;
+  }
+  function searchTerms(q) {
+    var idx = buildSearchIndex();
+    var tokens = String(q || "").split(/[\s　]+/).map(normSearch).filter(Boolean);
+    if (!tokens.length) return { hits: [], groups: [] };
+    var related = {}, groups = [];
+    SEARCH_GROUPS.forEach(function (g) {
+      var hit = tokens.some(function (tk) {
+        return g.keys.some(function (k) { var nk = normSearch(k); return nk === tk || (tk.length >= 2 && nk.indexOf(tk) === 0) || (nk.length >= 2 && tk.indexOf(nk) !== -1); });
+      });
+      if (!hit) return;
+      groups.push(g.label);
+      g.terms.forEach(function (name) { (idx.byName[name] || []).forEach(function (e) { related[e.id] = true; }); });
+    });
+    var hits = [];
+    idx.forEach(function (e) {
+      var score = 0;
+      for (var i = 0; i < tokens.length; i++) {
+        var tk = tokens[i], s = 0;
+        if (e.name === tk) s = 100;
+        else if (e.name.indexOf(tk) === 0) s = 85;
+        else if (e.name.indexOf(tk) !== -1) s = 70;
+        else if (e.read.indexOf(tk) !== -1) s = 60;
+        else if (e.where.indexOf(tk) !== -1) s = 35;
+        else if (e.body.indexOf(tk) !== -1) s = 25;
+        else if (tk.length >= 2 && e.bodyRead.indexOf(tk) !== -1) s = 20;
+        if (!s && !related[e.id]) { score = 0; break; }
+        score += s;
+      }
+      if (related[e.id]) score = Math.max(score, 45);
+      if (score) hits.push({ e: e, score: score });
+    });
+    hits.sort(function (a, b) { return b.score - a.score; });
+    return { hits: hits, groups: groups };
+  }
+  /** 入力した言葉を、表示する文の中で目立たせる */
+  function markSearch(text, q) {
+    var html = esc(text);
+    String(q || "").split(/[\s　]+/).filter(function (w) { return w.length >= 1; }).forEach(function (w) {
+      var ew = esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      html = html.replace(new RegExp(ew, "gi"), function (m) { return "<mark>" + m + "</mark>"; });
+    });
+    return html;
+  }
+  function searchResultsHtml() {
+    var q = view.q || "";
+    if (!normSearch(q)) {
+      return '<p class="search__hint">用語の名前だけでなく、説明の中の言葉や、ひらがなでも探せます。</p>' +
+        '<p class="search__label">よく調べられる言葉</p><div class="search__chips">' +
+        SEARCH_SUGGEST.map(function (w) { return '<button class="search__chip" data-action="search-set" data-q="' + esc(w) + '">' + esc(w) + "</button>"; }).join("") + "</div>";
+    }
+    var r = searchTerms(q);
+    if (!r.hits.length) {
+      return '<p class="search__empty">「' + esc(q) + "」に当てはまる用語は見つかりませんでした。<br>言い方を変えるか、短い言葉で探してみてください。</p>";
+    }
+    var list = r.hits.slice(0, 80).map(function (h) {
+      var t = h.e.t;
+      return '<button class="sres" data-action="search-open" data-id="' + esc(t.id) + '">' +
+        '<span class="sres__where">' + esc(h.e.field.name) + " ・ " + esc(h.e.theme.name) + "</span>" +
+        '<span class="sres__term">' + markSearch(t.term, q) + (t.reading ? '<small class="no-furi">' + esc(t.reading) + "</small>" : "") + "</span>" +
+        '<span class="sres__def">' + markSearch(t.definition, q) + "</span>" +
+        "</button>";
+    }).join("");
+    return '<p class="search__count">' + r.hits.length + "件" +
+      (r.groups.length ? '<span class="search__rel">関連する言葉も表示しています（' + esc(r.groups.join("、")) + "）</span>" : "") + "</p>" +
+      '<div class="sres-list">' + list + "</div>";
+  }
+  function renderSearch() {
+    return (
+      topbar("キソマナ", "用語をさがす", "home") +
+      '<main class="content content--search">' +
+      '<div class="search__box">' + icon("search") +
+      '<input class="search__input" type="search" enterkeyhint="search" autocomplete="off" placeholder="例：看取り、じょくそう、ケアマネ" aria-label="用語をさがす" value="' + esc(view.q || "") + '">' +
+      '<button class="search__clear" data-action="search-clear" aria-label="入力を消す"' + (view.q ? "" : " hidden") + ">" + icon("close") + "</button></div>" +
+      '<div class="search__results" aria-live="polite">' + searchResultsHtml() + "</div>" +
+      '<p class="search__note">試験対策用の要点です。実務では、最新の公式資料や職場の手順もあわせて確認してください。</p>' +
+      "</main>"
+    );
+  }
+  function updateSearchResults() {
+    var box = $app.querySelector(".search__results");
+    if (!box) return;
+    box.innerHTML = searchResultsHtml();
+    if (furiOn()) Furi.apply(box);
+    var clr = $app.querySelector(".search__clear");
+    if (clr) clr.hidden = !view.q;
+  }
+  function focusSearch() {
+    var inp = $app.querySelector(".search__input");
+    if (inp) { inp.focus({ preventScroll: true }); var n = inp.value.length; try { inp.setSelectionRange(n, n); } catch (e) { /* type=search で使えない環境 */ } }
+  }
+  $app.addEventListener("input", function (e) {
+    if (!e.target.classList || !e.target.classList.contains("search__input")) return;
+    view.q = e.target.value;
+    updateSearchResults();
+  });
+  $app.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && e.target.classList && e.target.classList.contains("search__input") && !e.isComposing) e.target.blur();
+  });
+
   /* ---------------- 描画 ---------------- */
   function render() {
     openSwipeEl = null;
@@ -8726,6 +8946,7 @@ window.KaigoStore = (function () {
       case "paywall": view = { name: "shop", reason: "originals", back: { name: "exams" } }; html = renderShop(); break;
       case "shop": html = renderShop(); break;
       case "method": html = renderMethod(); break;
+      case "search": html = renderSearch(); break;
       default: html = renderHome();
     }
     $app.innerHTML = html;
@@ -8745,6 +8966,24 @@ window.KaigoStore = (function () {
       window.scrollTo(0, y);
     },
     home: function () { go({ name: "home" }); },
+    "open-search": function () { go({ name: "search", q: "" }); focusSearch(); },
+    "back-search": function () { go({ name: "search", q: (view.fromSearch || "").trim() }); },
+    "search-set": function (el) { view.q = el.dataset.q; var inp = $app.querySelector(".search__input"); if (inp) inp.value = view.q; updateSearchResults(); },
+    "search-clear": function () { view.q = ""; var inp = $app.querySelector(".search__input"); if (inp) inp.value = ""; updateSearchResults(); focusSearch(); },
+    "search-open": function (el) { var inp = $app.querySelector(".search__input"); if (inp) inp.blur(); openSheet(el.dataset.id, el); },
+    "search-open-study": function () {
+      var id = openTermId, entry = termById[id];
+      if (!entry) return;
+      var q = view.q || "";
+      Store.setLast(entry.theme.id, entry.pageIndex);
+      go({ name: "study", themeId: entry.theme.id, pageIndex: entry.pageIndex, fromSearch: q || " " });
+      setTimeout(function () {
+        var item = $app.querySelector('.rs-item[data-id="' + id.replace(/"/g, '\\"') + '"]');
+        if (!item) return;
+        item.scrollIntoView({ block: "center" });
+        item.classList.add("is-found");
+      }, 30);
+    },
     "open-fields": function (el) { go({ name: "fields", ctx: el.dataset.ctx }); },
     fields: function () { go({ name: "fields", ctx: view.ctx || "study" }); },
     "open-field": function (el) { go({ name: "themes", fieldId: el.dataset.id, ctx: view.ctx }); },
