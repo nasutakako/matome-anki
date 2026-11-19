@@ -38,6 +38,7 @@
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     redo: '<path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/>',
     chart: '<path d="M4 20h16M7 16v-5M12 16V7M17 16v-8"/>',
+    career: '<rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 13h17"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
     pin: '<path d="M9 3.5h6l-.8 5.2 3.3 3.3H6.5l3.3-3.3L9 3.5z"/><path d="M12 12v8"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',
@@ -373,7 +374,6 @@
     return (
       topbar("介護福祉士 国家試験対策", "キソマナ", null, shopButton()) +
       '<main class="content content--home">' +
-      '<button class="home-search" data-action="open-search">' + icon("search") + '<span class="home-search__ph">用語をさがす（例：看取り・褥瘡）</span></button>' +
       '<section class="section"><h2 class="section__label">学習の進み具合</h2>' +
       '<div class="panel stats">' +
       '<div><p class="stat__label">確認した用語</p><p class="stat__value">' + checked + "<small>/ " + ids.length + "語</small></p></div>" +
@@ -2777,7 +2777,7 @@
   }
   function renderSearch() {
     return (
-      topbar("キソマナ", "用語をさがす", "home") +
+      topbar("キソマナ", "用語をさがす", null) +
       '<main class="content content--search">' +
       '<div class="search__box">' + icon("search") +
       '<input class="search__input" type="search" enterkeyhint="search" autocomplete="off" placeholder="例：看取り、じょくそう、ケアマネ" aria-label="用語をさがす" value="' + esc(view.q || "") + '">' +
@@ -2808,6 +2808,84 @@
     if (e.key === "Enter" && e.target.classList && e.target.classList.contains("search__input") && !e.isComposing) e.target.blur();
   });
 
+  /* ---------------- 下のタブ（学ぶ・さがす・キャリア） ---------------- */
+  var TAB_VIEWS = { home: "home", search: "search", career: "career" };
+  function tabBar() {
+    var cur = TAB_VIEWS[view.name] || "home";
+    var tab = function (id, label, ic, action) {
+      var on = cur === id;
+      return '<button class="tabbar__btn' + (on ? " is-on" : "") + '" data-action="' + action + '"' + (on ? ' aria-current="page"' : "") + ">" +
+        icon(ic) + "<span>" + label + "</span></button>";
+    };
+    return '<nav class="tabbar" aria-label="メインメニュー">' +
+      tab("home", "学ぶ", "book", "home") + tab("search", "さがす", "search", "open-search") + tab("career", "キャリア", "career", "open-career") + "</nav>";
+  }
+
+  /* ---------------- キャリア（資格を活かす） ---------------- */
+  /**
+   * 紹介するサービス（アフィリエイトの提携が済んだら追加する）。
+   * group: "job"（転職）・"next"（次の資格）・"book"（参考書）
+   * 例：{ group: "job", name: "〇〇介護", lead: "特徴の一言", points: ["全国の求人", "面接の日程調整"], url: "https://..." }
+   * 1件もないグループは、見出しごと表示しない。
+   */
+  var CAREER_LINKS = [];
+  var CAREER_GROUPS = [
+    { id: "job", title: "転職を考えるなら", lead: "資格を活かせる職場を、専門のサービスで探せます。" },
+    { id: "next", title: "次の資格へ", lead: "実務者研修やケアマネジャーなど、次のステップの講座です。" },
+    { id: "book", title: "おすすめの参考書", lead: "アプリとあわせて使える本です。" },
+  ];
+  function renderCareer() {
+    var card = function (title, items) {
+      return '<section class="panel career__card"><h2 class="career__h">' + esc(title) + "</h2><ul class=\"career__list\">" +
+        items.map(function (x) { return "<li><b>" + esc(x[0]) + "</b>" + esc(x[1]) + "</li>"; }).join("") + "</ul></section>";
+    };
+    var path = [
+      ["現場のリーダー・主任", "ユニットやフロアのまとめ役。新人の指導や、ケアの質の管理を任されます。"],
+      ["サービス提供責任者", "訪問介護で、訪問介護計画をつくり、ヘルパーの調整をする役割です。介護福祉士は就くことができる資格の一つです。"],
+      ["ケアマネジャー（介護支援専門員）", "介護福祉士としての実務経験が5年以上（従事した日数が900日以上）になると、介護支援専門員実務研修受講試験を受けられます。"],
+      ["管理者・施設長", "事業所の運営や、職員の育成を担います。"],
+      ["認定介護福祉士", "研修を受けて目指す、介護福祉士のさらに上の段階の資格です。"],
+    ];
+    var links = CAREER_GROUPS.map(function (g) {
+      var items = CAREER_LINKS.filter(function (l) { return l.group === g.id; });
+      if (!items.length) return "";
+      return '<section class="career__pr"><h2 class="career__prh">' + esc(g.title) + '<span class="career__badge">PR</span></h2>' +
+        '<p class="career__prlead">' + esc(g.lead) + "</p>" +
+        items.map(function (l) {
+          return '<a class="panel career__link" href="' + esc(l.url) + '" target="_blank" rel="noopener sponsored">' +
+            '<span class="career__lname">' + esc(l.name) + "</span>" +
+            (l.lead ? '<span class="career__llead">' + esc(l.lead) + "</span>" : "") +
+            (l.points && l.points.length ? '<span class="career__lpts">' + l.points.map(function (p) { return "<i>" + esc(p) + "</i>"; }).join("") + "</span>" : "") +
+            '<span class="career__lgo">くわしく見る' + icon("arrow") + "</span></a>";
+        }).join("") + "</section>";
+    }).join("");
+    return (
+      topbar("キソマナ", "資格を活かす", null) +
+      '<main class="content content--career">' +
+      '<section class="career__hero"><p class="career__eyebrow">合格したら、その先へ</p>' +
+      '<h2 class="career__title">介護福祉士は、介護の仕事で<br>ただ一つの国家資格</h2>' +
+      '<p class="career__lead">取ったあとにどんな道があるかを知っておくと、勉強のはげみにもなります。</p></section>' +
+      card("資格を取ると変わること", [
+        ["「介護福祉士」と名乗れる", "名称独占の資格です。資格のない人は、この名前を名乗れません。"],
+        ["待遇がよくなりやすい", "資格手当をつける職場が多く、処遇改善の配分でも評価されやすくなります。金額は職場によって違います。"],
+        ["任される仕事が広がる", "リーダーや、サービス提供責任者などの役割に就きやすくなります。"],
+        ["医療的ケアにつながる", "必要な研修（実地研修）を終え、登録した事業所で働けば、たんの吸引や経管栄養を行えるようになります。"],
+      ]) +
+      '<section class="panel career__card"><h2 class="career__h">キャリアの道すじ</h2><ol class="career__steps">' +
+      path.map(function (x) { return "<li><b>" + esc(x[0]) + "</b><span>" + esc(x[1]) + "</span></li>"; }).join("") + "</ol></section>" +
+      card("職場を選ぶときに確かめたいこと", [
+        ["資格手当と処遇改善", "手当があるか、いくらか。処遇改善加算がどう配られているか。"],
+        ["夜勤", "月の回数と、1回あたりの手当。"],
+        ["学びの支援", "研修の機会や、ケアマネなど次の資格の受験を支援してくれるか。"],
+        ["職場の雰囲気", "見学のとき、職員どうしの声かけや、利用者への接し方を見ておく。"],
+      ]) +
+      links +
+      '<p class="career__note">' + (CAREER_LINKS.length ? "このページで紹介しているサービスには、広告（PR）を含みます。" : "") +
+      "制度や要件は変わることがあります。最新の情報は、公式の資料でご確認ください。</p>" +
+      "</main>"
+    );
+  }
+
   /* ---------------- 描画 ---------------- */
   function render() {
     openSwipeEl = null;
@@ -2829,9 +2907,12 @@
       case "shop": html = renderShop(); break;
       case "method": html = renderMethod(); break;
       case "search": html = renderSearch(); break;
+      case "career": html = renderCareer(); break;
       default: html = renderHome();
     }
-    $app.innerHTML = html;
+    var tabbed = !!TAB_VIEWS[view.name]; // 学ぶ（ホーム）・さがす・キャリアの3画面だけ、下にタブを出す
+    $app.innerHTML = html + (tabbed ? tabBar() : "");
+    document.body.classList.toggle("has-tabs", !!tabbed);
     document.body.classList.toggle("is-furi", furiOn());
     if (furiOn()) Furi.apply($app);
     fitAll();
@@ -2849,6 +2930,7 @@
     },
     home: function () { go({ name: "home" }); },
     "open-search": function () { go({ name: "search", q: "" }); focusSearch(); },
+    "open-career": function () { go({ name: "career" }); },
     "back-search": function () { go({ name: "search", q: (view.fromSearch || "").trim() }); },
     "search-set": function (el) { view.q = el.dataset.q; var inp = $app.querySelector(".search__input"); if (inp) inp.value = view.q; updateSearchResults(); },
     "search-clear": function () { view.q = ""; var inp = $app.querySelector(".search__input"); if (inp) inp.value = ""; updateSearchResults(); focusSearch(); },

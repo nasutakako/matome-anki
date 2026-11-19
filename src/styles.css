@@ -1645,3 +1645,47 @@ ruby rt { font-size: 0.46em; letter-spacing: -0.06em; -webkit-user-select: none;
 .search__note { margin: 10px 2px 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
 .rs-item.is-found .rs-item__slide { animation: foundFlash 2.2s ease-out; }
 @keyframes foundFlash { 0%, 35% { box-shadow: 0 0 0 3px var(--accent); background: var(--accent-soft); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+/* ---------- 下のタブ（学ぶ・さがす・キャリア） ---------- */
+:root { --tabbar-h: 58px; }
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; justify-content: center;
+  padding: 0 max(8px, env(safe-area-inset-left, 0px)) env(safe-area-inset-bottom, 0px);
+  background: var(--surface); background: color-mix(in srgb, var(--surface) 94%, transparent); border-top: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.tabbar__btn { flex: 1; max-width: 160px; height: var(--tabbar-h); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 0; background: none; color: var(--muted); font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.tabbar__btn svg { width: 23px; height: 23px; }
+.tabbar__btn.is-on { color: var(--accent); }
+body.has-tabs .content { padding-bottom: calc(var(--tabbar-h) + 14px + env(safe-area-inset-bottom, 0px)); }
+body.has-tabs .content--home { padding-bottom: calc(var(--tabbar-h) + 8px + env(safe-area-inset-bottom, 0px)); }
+body.is-furi .tabbar__btn { font-size: 10.5px; }
+
+/* ---------- キャリア（資格を活かす） ---------- */
+.content--career { gap: 12px; }
+.career__hero { padding: 18px 18px 16px; border-radius: var(--radius, 16px); background: linear-gradient(135deg, var(--accent-soft), var(--surface)); border: 1px solid var(--line); }
+.career__eyebrow { margin: 0; font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; }
+.career__title { margin: 4px 0 6px; font-family: var(--title-font); font-size: 21px; line-height: 1.45; color: var(--brand-ink); }
+.career__lead { margin: 0; font-size: var(--fs-sm); line-height: 1.7; color: var(--ink); }
+.career__card { padding: 14px 16px; }
+.career__h { margin: 0 0 8px; font-size: 16px; color: var(--brand-ink); }
+.career__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.career__list li { font-size: var(--fs-sm); line-height: 1.65; }
+.career__list b { display: block; color: var(--ink); }
+.career__steps { margin: 0; padding: 0; list-style: none; counter-reset: cs; display: flex; flex-direction: column; gap: 10px; }
+.career__steps li { position: relative; padding-left: 34px; font-size: var(--fs-sm); line-height: 1.65; counter-increment: cs; }
+.career__steps li::before { content: counter(cs); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; }
+.career__steps b { display: block; color: var(--ink); }
+.career__steps span { color: var(--muted); }
+.career__pr { display: flex; flex-direction: column; gap: 8px; }
+.career__prh { margin: 6px 2px 0; font-size: 16px; color: var(--brand-ink); display: flex; align-items: center; gap: 8px; }
+.career__badge { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--muted); color: var(--muted); }
+.career__prlead { margin: 0 2px; font-size: 12.5px; color: var(--muted); }
+.career__link { display: flex; flex-direction: column; gap: 4px; padding: 13px 16px; text-decoration: none; color: var(--ink); }
+.career__lname { font-weight: 700; color: var(--brand-ink); }
+.career__llead { font-size: var(--fs-sm); }
+.career__lpts { display: flex; flex-wrap: wrap; gap: 6px; }
+.career__lpts i { font-style: normal; font-size: 11.5px; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--muted); }
+.career__lgo { display: flex; align-items: center; gap: 4px; font-size: var(--fs-sm); font-weight: 700; color: var(--accent); }
+.career__lgo svg { width: 16px; height: 16px; }
+.career__note { margin: 4px 2px 0; font-size: 11.5px; line-height: 1.6; color: var(--muted); }
