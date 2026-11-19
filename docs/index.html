@@ -237,7 +237,10 @@ h1, h2, h3 { text-wrap: balance; line-height: 1.35; }
   border-color: var(--accent-soft);
   background: var(--surface);
 }
-.resume__meta { font-size: var(--fs-xs); color: var(--muted); }
+.resume__meta { font-size: var(--fs-xs); color: var(--muted); display: flex; min-width: 0; white-space: nowrap; }
+/* 科目名が長いときは科目名のほうを「…」で省き、「確認済み 0/8」は改行させない */
+.resume__field { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.resume__count { flex: none; }
 .resume__title { font-size: var(--fs-lg); font-weight: 700; }
 
 /* ---------- List rows ---------- */
@@ -6513,7 +6516,7 @@ window.KaigoStore = (function () {
       resume =
         '<section class="section"><h2 class="section__label">' + (finished ? "前回の学習" : "続きから") + "</h2>" +
         '<div class="panel resume resume--compact">' +
-        '<div class="resume__main"><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + " ・ 確認済み " + lDone + " / " + lIds.length + "</p>" +
+        '<div class="resume__main"><p class="resume__meta"><span class="resume__field">' + esc(fieldOfTheme[lastTheme.id].name) + '</span><span class="resume__count">・確認 ' + lDone + "/" + lIds.length + "</span></p>" +
         '<p class="resume__title">' + esc(lastTheme.name) + "</p>" + bar(lDone, lIds.length) + "</div>" +
         '<button class="btn btn--primary resume__btn" data-action="resume">' +
         (finished ? "もう一度" : "続きから") + icon("arrow") + "</button>" +

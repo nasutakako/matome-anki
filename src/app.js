@@ -351,7 +351,7 @@
       resume =
         '<section class="section"><h2 class="section__label">' + (finished ? "前回の学習" : "続きから") + "</h2>" +
         '<div class="panel resume resume--compact">' +
-        '<div class="resume__main"><p class="resume__meta">' + esc(fieldOfTheme[lastTheme.id].name) + " ・ 確認済み " + lDone + " / " + lIds.length + "</p>" +
+        '<div class="resume__main"><p class="resume__meta"><span class="resume__field">' + esc(fieldOfTheme[lastTheme.id].name) + '</span><span class="resume__count">・確認 ' + lDone + "/" + lIds.length + "</span></p>" +
         '<p class="resume__title">' + esc(lastTheme.name) + "</p>" + bar(lDone, lIds.length) + "</div>" +
         '<button class="btn btn--primary resume__btn" data-action="resume">' +
         (finished ? "もう一度" : "続きから") + icon("arrow") + "</button>" +

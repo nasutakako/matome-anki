@@ -213,7 +213,10 @@ h1, h2, h3 { text-wrap: balance; line-height: 1.35; }
   border-color: var(--accent-soft);
   background: var(--surface);
 }
-.resume__meta { font-size: var(--fs-xs); color: var(--muted); }
+.resume__meta { font-size: var(--fs-xs); color: var(--muted); display: flex; min-width: 0; white-space: nowrap; }
+/* 科目名が長いときは科目名のほうを「…」で省き、「確認済み 0/8」は改行させない */
+.resume__field { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.resume__count { flex: none; }
 .resume__title { font-size: var(--fs-lg); font-weight: 700; }
 
 /* ---------- List rows ---------- */
